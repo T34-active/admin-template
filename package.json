@@ -1,0 +1,79 @@
+{
+    "name": "admin-template",
+    "private": true,
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build:prod": "vite build",
+        "build:stage": "vite build --mode staging",
+        "preview": "vite preview",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix"
+    },
+    "lint-staged": {
+        "**/*.{html,vue,ts,cjs,json,md}": [
+            "prettier --write"
+        ],
+        "**/*.{vue,js,ts,jsx,tsx}": [
+            "eslint --cache --fix"
+        ],
+        "**/*.{vue,css,scss,html}": [
+            "stylelint --fix"
+        ]
+    },
+    "dependencies": {
+        "@amap/amap-jsapi-loader": "^1.0.1",
+        "@element-plus/icons-vue": "2.3.1",
+        "@vueup/vue-quill": "1.1.0",
+        "@vueuse/core": "9.5.0",
+        "@zeronejs/utils": "^1.4.0",
+        "axios": "^1.8.2",
+        "coordtransform": "^2.1.2",
+        "dayjs": "^1.11.13",
+        "echarts": "5.4.0",
+        "element-plus": "^2.9.10",
+        "file-saver": "2.0.5",
+        "fuse.js": "6.6.2",
+        "highlight.js": "^11.11.1",
+        "js-cookie": "3.0.1",
+        "jsencrypt": "3.3.1",
+        "nprogress": "0.2.0",
+        "pinia": "2.0.22",
+        "vue": "^3.5.14",
+        "vue-cropper": "1.0.3",
+        "vue-router": "^4.5.1"
+    },
+    "devDependencies": {
+        "@types/file-saver": "^2.0.5",
+        "@types/js-cookie": "^3.0.2",
+        "@types/node": "^18.7.15",
+        "@types/nprogress": "^0.2.0",
+        "@typescript-eslint/eslint-plugin": "^6.21.0",
+        "@typescript-eslint/parser": "^6.21.0",
+        "@unhead/vue": "^1.11.18",
+        "@unocss/eslint-plugin": "65.4.3",
+        "@unocss/reset": "66.1.0-beta.12",
+        "@unocss/vite": "^66.1.2",
+        "@vitejs/plugin-vue": "3.1.0",
+        "autoprefixer": "^10.4.21",
+        "eslint": "^8.57.1",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-config-standard": "^17.1.0",
+        "eslint-import-resolver-typescript": "^3.7.0",
+        "eslint-plugin-import": "^2.31.0",
+        "eslint-plugin-prettier": "^5.2.1",
+        "eslint-plugin-vue": "^9.32.0",
+        "sass": "1.56.1",
+        "ts-node": "^10.9.1",
+        "tsconfig-paths": "^4.1.0",
+        "typescript": "^5.7.2",
+        "unocss": "^66.1.2",
+        "unplugin-auto-import": "0.11.4",
+        "unplugin-vue-components": "^0.22.4",
+        "vite": "5.2.8",
+        "vite-plugin-compression": "^0.5.1",
+        "vite-plugin-svg-icons": "2.0.1",
+        "vite-plugin-vue-setup-extend": "^0.4.0"
+    }
+}
