@@ -15,7 +15,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()

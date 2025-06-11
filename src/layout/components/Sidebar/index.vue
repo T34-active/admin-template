@@ -38,7 +38,6 @@ import variables from '@/assets/styles/variables.module.scss'
 import useAppStore from '@/store/modules/app'
 import useSettingsStore from '@/store/modules/settings'
 import usePermissionStore from '@/store/modules/permission'
-import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
