@@ -55,25 +55,24 @@ export function validEmail(email: string) {
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   return reg.test(email)
 }
+// 适用于简单的非空校验
+export const validatorIsEmpty = (val: any) => {
+  return val !== null && val !== undefined && String(val).trim().length > 0
+}
 
-// /**
-//  * @param {string} str
-//  * @returns {Boolean}
-//  */
-// export function isString(str: string) {
-//     if (typeof str === 'string' || str instanceof String) {
-//         return true;
-//     }
-//     return false;
-// }
+// 检测手机号是否正确
+export function isPhoneNumber(phoneStr: string): boolean {
+  const reg = /^(?:13\d|14[014-9]|15[0-35-9]|16[2567]|17[0-8]|18\d|19[0-35-9])\d{8}$/
+  return reg.test(phoneStr)
+}
 
-// /**
-//  * @param {Array} arg
-//  * @returns {Boolean}
-//  */
-// export function isArray(arg:any) {
-//     if (typeof Array.isArray === 'undefined') {
-//         return Object.prototype.toString.call(arg) === '[object Array]';
-//     }
-//     return Array.isArray(arg);
-// }
+// 手机号校验函数
+export const validatePhone = (rule, value, callback) => {
+  if (!validatorIsEmpty(value)) {
+    callback(new Error('请输入手机号'))
+  } else if (!isPhoneNumber(value)) {
+    callback(new Error('请输入正确的手机号'))
+  } else {
+    callback() // 验证通过
+  }
+}

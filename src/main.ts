@@ -22,12 +22,12 @@ import './permission' // permission control
 
 import { useDict } from '@/utils/dict'
 import {
-    parseTime,
-    resetForm,
-    addDateRange,
-    handleTree,
-    selectDictLabel,
-    selectDictLabels,
+  parseTime,
+  resetForm,
+  addDateRange,
+  handleTree,
+  selectDictLabel,
+  selectDictLabels,
 } from '@/utils/ruoyi'
 
 // 分页组件

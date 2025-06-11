@@ -1,10 +1,3 @@
-// 协议版本列表
-export const agreementVersionsList = ref([
-  { value: '1', label: 'JT808-2011' },
-  { value: '2', label: 'JT808-2013' },
-  { value: '3', label: 'JT808-2019' },
-  { value: '5', label: '其他协议' },
-])
 /** 数据范围选项 */
 export const dataScopeOptions = ref([
   { value: '1', label: '全部数据权限' },

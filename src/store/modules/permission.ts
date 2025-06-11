@@ -4,73 +4,83 @@ import { getRouters } from '@/api/menu'
 import Layout from '@/layout/index.vue'
 import ParentView from '@/components/ParentView/index.vue'
 import InnerLink from '@/layout/components/InnerLink/index.vue'
-import { defineStore } from 'pinia'
 import type { RouteRecordRaw } from 'vue-router'
 
-// 匹配views里面所有的.vue文件
+// 匹配 views 目录下所有 .vue 文件
 const modules = import.meta.glob('./../../views/**/*.vue')
 
-const usePermissionStore = defineStore('permission', {
-  state: (): {
-    routes: RouteRecordRaw[]
-    addRoutes: RouteRecordRaw[]
-    defaultRoutes: RouteRecordRaw[]
-    topbarRouters: RouteRecordRaw[]
-    sidebarRouters: RouteRecordRaw[]
-  } => ({
-    routes: [],
-    addRoutes: [],
-    defaultRoutes: [],
-    topbarRouters: [],
-    sidebarRouters: [],
-  }),
-  actions: {
-    setRoutes(routes: RouteRecordRaw[]) {
-      this.addRoutes = routes
-      this.routes = constantRoutes.concat(routes)
-    },
-    setDefaultRoutes(routes: RouteRecordRaw[]) {
-      this.defaultRoutes = constantRoutes.concat(routes)
-    },
-    setTopbarRoutes(routes: RouteRecordRaw[]) {
-      this.topbarRouters = routes
-    },
-    setSidebarRouters(routes: RouteRecordRaw[]) {
-      this.sidebarRouters = routes
-    },
-    generateRoutes(routes?: RouteRecordRaw[]) {
-      return new Promise<any[]>((resolve) => {
-        // 向后端请求路由数据
-        getRouters().then((res) => {
-          const sdata = JSON.parse(JSON.stringify(res.data))
-          const rdata = JSON.parse(JSON.stringify(res.data))
-          const defaultData = JSON.parse(JSON.stringify(res.data))
-          const sidebarRoutes = filterAsyncRouter(sdata)
-          const rewriteRoutes = filterAsyncRouter(rdata, false, true)
-          const defaultRoutes = filterAsyncRouter(defaultData)
-          const asyncRoutes = filterDynamicRoutes(dynamicRoutes)
-          asyncRoutes.forEach((route) => {
-            router.addRoute(route)
-          })
-          this.setRoutes(rewriteRoutes)
-          this.setSidebarRouters(constantRoutes.concat(sidebarRoutes))
-          this.setDefaultRoutes(sidebarRoutes)
-          this.setTopbarRoutes(defaultRoutes)
-          resolve(rewriteRoutes)
-        })
-      })
-    },
-  },
+const usePermissionStore = defineStore('permission', () => {
+  const routes = ref<RouteRecordRaw[]>([])
+  const addRoutes = ref<RouteRecordRaw[]>([])
+  const defaultRoutes = ref<RouteRecordRaw[]>([])
+  const topbarRouters = ref<RouteRecordRaw[]>([])
+  const sidebarRouters = ref<RouteRecordRaw[]>([])
+
+  function setRoutes(newRoutes: RouteRecordRaw[]) {
+    addRoutes.value = newRoutes
+    routes.value = constantRoutes.concat(newRoutes)
+  }
+
+  function setDefaultRoutes(newRoutes: RouteRecordRaw[]) {
+    defaultRoutes.value = constantRoutes.concat(newRoutes)
+  }
+
+  function setTopbarRoutes(newRoutes: RouteRecordRaw[]) {
+    topbarRouters.value = newRoutes
+  }
+
+  function setSidebarRouters(newRoutes: RouteRecordRaw[]) {
+    sidebarRouters.value = newRoutes
+  }
+
+  async function generateRoutes(): Promise<RouteRecordRaw[]> {
+    const res = await getRouters()
+    const sdata = JSON.parse(JSON.stringify(res.data))
+    const rdata = JSON.parse(JSON.stringify(res.data))
+    const defaultData = JSON.parse(JSON.stringify(res.data))
+
+    const sidebar = filterAsyncRouter(sdata)
+    const rewrite = filterAsyncRouter(rdata, false, true)
+    const defaultR = filterAsyncRouter(defaultData)
+
+    const asyncRoutes = filterDynamicRoutes(dynamicRoutes)
+    asyncRoutes.forEach((route) => {
+      router.addRoute(route)
+    })
+
+    setRoutes(rewrite)
+    setSidebarRouters(constantRoutes.concat(sidebar))
+    setDefaultRoutes(sidebar)
+    setTopbarRoutes(defaultR)
+
+    return rewrite
+  }
+
+  return {
+    routes,
+    addRoutes,
+    defaultRoutes,
+    topbarRouters,
+    sidebarRouters,
+    setRoutes,
+    setDefaultRoutes,
+    setTopbarRoutes,
+    setSidebarRouters,
+    generateRoutes,
+  }
 })
 
 // 遍历后台传来的路由字符串，转换为组件对象
-function filterAsyncRouter(asyncRouterMap: any[], lastRouter = false, type = false) {
+function filterAsyncRouter(
+  asyncRouterMap: any[],
+  lastRouter = false,
+  type = false,
+): RouteRecordRaw[] {
   return asyncRouterMap.filter((route) => {
     if (type && route.children) {
       route.children = filterChildren(route.children)
     }
     if (route.component) {
-      // Layout ParentView 组件特殊处理
       if (route.component === 'Layout') {
         route.component = Layout
       } else if (route.component === 'ParentView') {
@@ -81,7 +91,7 @@ function filterAsyncRouter(asyncRouterMap: any[], lastRouter = false, type = fal
         route.component = loadView(route.component)
       }
     }
-    if (route.children !== null && route.children && route.children.length) {
+    if (route.children && route.children.length) {
       route.children = filterAsyncRouter(route.children, route, type)
     } else {
       delete route.children
@@ -91,24 +101,24 @@ function filterAsyncRouter(asyncRouterMap: any[], lastRouter = false, type = fal
   })
 }
 
-function filterChildren(childrenMap: any[], lastRouter: any = false) {
+function filterChildren(childrenMap: any[], lastRouter: any = false): any[] {
   let children: any[] = []
-  childrenMap.forEach((el, index) => {
+  childrenMap.forEach((el) => {
     if (el.children && el.children.length) {
       if (el.component === 'ParentView' && !lastRouter) {
         el.children.forEach((c: any) => {
-          c.path = el.path + '/' + c.path
+          c.path = `${el.path}/${c.path}`
           if (c.children && c.children.length) {
             children = children.concat(filterChildren(c.children, c))
-            return
+          } else {
+            children.push(c)
           }
-          children.push(c)
         })
         return
       }
     }
     if (lastRouter) {
-      el.path = lastRouter.path + '/' + el.path
+      el.path = `${lastRouter.path}/${el.path}`
     }
     children = children.concat(el)
   })
@@ -116,7 +126,7 @@ function filterChildren(childrenMap: any[], lastRouter: any = false) {
 }
 
 // 动态路由遍历，验证是否具备权限
-export function filterDynamicRoutes(routes: any[]) {
+function filterDynamicRoutes(routes: any[]): any[] {
   const res: any[] = []
   routes.forEach((route) => {
     if (route.permissions) {
@@ -132,15 +142,16 @@ export function filterDynamicRoutes(routes: any[]) {
   return res
 }
 
-export const loadView = (view: any) => {
+// 加载组件视图
+export const loadView = (view: string) => {
   let res
   for (const path in modules) {
     const dir = path.split('views/')[1].split('.vue')[0]
     if (dir === view) {
       res = () => modules[path]()
+      break
     }
   }
   return res
 }
-
 export default usePermissionStore
