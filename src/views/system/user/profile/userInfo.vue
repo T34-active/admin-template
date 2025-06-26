@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/no-mutating-props -->
 <template>
   <el-form ref="userRef" :model="user" :rules="rules" label-width="auto">
     <el-form-item label="用户昵称" prop="nickName">
@@ -58,6 +57,6 @@ async function submit() {
 
 /** 关闭按钮 */
 function close() {
-  proxy!.$tab.closePage()
+  proxy.$tab.closePage()
 }
 </script>

@@ -25,7 +25,7 @@
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
+    <el-row :gutter="10">
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['system:role:add']"
@@ -98,7 +98,6 @@
 </template>
 
 <script setup name="AuthUser" lang="ts">
-/* eslint-disable camelcase */
 import selectUser from './selectUser.vue'
 import { allocatedUserList, authUserCancel, authUserCancelAll } from '@/api/system/role'
 import { parseTime } from '@/utils/ruoyi'
@@ -107,7 +106,7 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const { proxy } = getCurrentInstance()
-const { sys_normal_disable } = proxy!.useDict('sys_normal_disable')
+const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
 
 const userList = ref<any[]>([])
 const loading = ref(true)
@@ -142,7 +141,7 @@ function getList() {
 // 返回按钮
 function handleClose() {
   const obj = { path: '/system/role' }
-  proxy!.$tab.closeOpenPage(obj)
+  proxy.$tab.closeOpenPage(obj)
 }
 /** 搜索按钮操作 */
 function handleQuery() {
@@ -183,7 +182,7 @@ function cancelAuthUserAll(row) {
   const roleId = queryParams.roleId
   const uIds = userIds.value.join(',')
   proxy.$modal
-    .confirm('是否取消选中用户授权数据项?')
+    .confirm('是否取消选中用户授权数据项？')
     .then(function () {
       return authUserCancelAll({ roleId, userIds: uIds })
     })

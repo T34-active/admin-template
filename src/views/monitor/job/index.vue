@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
-    <el-form v-show="showSearch" ref="queryRef" :model="queryParams">
-      <el-row>
+    <el-form v-show="showSearch" ref="queryRef" :model="queryParams" label-width="auto">
+      <el-row :gutter="20">
         <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4">
           <el-form-item label="任务名称" prop="jobName">
             <el-input
@@ -39,7 +39,7 @@
       </el-row>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
+    <el-row :gutter="10">
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['monitor:job:add']"
@@ -207,7 +207,13 @@
     />
 
     <!-- 添加或修改定时任务对话框 -->
-    <el-dialog v-model="open" :title="title" width="800px" append-to-body>
+    <el-dialog
+      v-model="open"
+      :title="title"
+      width="800px"
+      append-to-body
+      :close-on-click-modal="false"
+    >
       <el-form ref="jobRef" :model="form" :rules="rules" label-width="auto">
         <el-row>
           <el-col :span="12">
@@ -305,7 +311,13 @@
       ></crontab>
     </el-dialog>
     <!-- 任务日志详细 -->
-    <el-dialog v-model="openView" title="任务详细" width="700px" append-to-body>
+    <el-dialog
+      v-model="openView"
+      title="任务详细"
+      width="700px"
+      append-to-body
+      :close-on-click-modal="false"
+    >
       <el-form :model="form" label-width="auto">
         <el-row>
           <el-col :span="12">
@@ -357,7 +369,6 @@
 </template>
 
 <script setup name="Job" lang="ts">
-/* eslint-disable camelcase */
 import {
   listJob,
   getJob,
@@ -373,7 +384,7 @@ import { useRouter } from 'vue-router'
 import Crontab from '@/components/Crontab/index.vue'
 const router = useRouter()
 const { proxy } = getCurrentInstance()
-const { sys_job_group, sys_job_status } = proxy!.useDict('sys_job_group', 'sys_job_status')
+const { sys_job_group, sys_job_status } = proxy.useDict('sys_job_group', 'sys_job_status')
 
 const jobList = ref<any[]>([])
 const open = ref(false)
@@ -478,7 +489,7 @@ function handleCommand(command: any, row: any) {
 function handleStatusChange(row) {
   const text = row.status === '0' ? '启用' : '停用'
   proxy.$modal
-    .confirm('确认要"' + text + '""' + row.jobName + '"任务吗?')
+    .confirm('确认要"' + text + '""' + row.jobName + '"任务吗？')
     .then(function () {
       return changeJobStatus(row.jobId, row.status)
     })
@@ -492,7 +503,7 @@ function handleStatusChange(row) {
 /* 立即执行一次 */
 function handleRun(row) {
   proxy.$modal
-    .confirm('确认要立即执行一次"' + row.jobName + '"任务吗?')
+    .confirm('确认要立即执行一次"' + row.jobName + '"任务吗？')
     .then(function () {
       return runJob(row.jobId, row.jobGroup)
     })
@@ -562,7 +573,7 @@ function submitForm() {
 function handleDelete(row) {
   const jobIds = row.jobId || ids.value
   proxy.$modal
-    .confirm('是否确认删除定时任务编号为"' + jobIds + '"的数据项?')
+    .confirm('是否确认删除定时任务编号为"' + jobIds + '"的数据项？')
     .then(function () {
       return delJob(jobIds)
     })
@@ -574,7 +585,7 @@ function handleDelete(row) {
 }
 /** 导出按钮操作 */
 function handleExport() {
-  proxy!.download(
+  proxy.download(
     'monitor/job/export',
     {
       ...queryParams.value,

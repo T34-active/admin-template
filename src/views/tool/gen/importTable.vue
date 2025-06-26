@@ -1,6 +1,13 @@
 <template>
   <!-- 导入表 -->
-  <el-dialog title="导入表" v-model="visible" width="800px" top="5vh" append-to-body>
+  <el-dialog
+    title="导入表"
+    v-model="visible"
+    width="800px"
+    top="5vh"
+    append-to-body
+    :close-on-click-modal="false"
+  >
     <el-form :model="queryParams" ref="queryRef" :inline="true">
       <el-form-item label="表名称" prop="tableName">
         <el-input
@@ -31,7 +38,6 @@
         ref="table"
         :data="dbTableList"
         @selection-change="handleSelectionChange"
-        height="260px"
       >
         <el-table-column type="selection" width="55" />
         <el-table-column prop="tableName" label="表名称" :show-overflow-tooltip="true" />
@@ -39,6 +45,8 @@
         <el-table-column prop="createTime" label="创建时间" />
         <el-table-column prop="updateTime" label="更新时间" />
       </el-table>
+    </el-row>
+    <div class="flex items-center justify-end p-4">
       <pagination
         v-show="total > 0"
         :total="total"
@@ -46,7 +54,7 @@
         v-model:limit="queryParams.pageSize"
         @pagination="getList"
       />
-    </el-row>
+    </div>
     <template #footer>
       <div class="dialog-footer">
         <el-button plain type="primary" @click="handleImportTable">确 定</el-button>
@@ -113,7 +121,7 @@ function resetQuery() {
 /** 导入按钮操作 */
 function handleImportTable() {
   const tableNames = tables.value.join(',')
-  if (tableNames == '') {
+  if (tableNames === '') {
     proxy.$modal.msgError('请选择要导入的表')
     return
   }

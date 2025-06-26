@@ -50,7 +50,7 @@ defineProps({
   },
 })
 
-const title = ref('管理系统模板')
+const title = ref('保险后台管理系统')
 const settingsStore = useSettingsStore()
 const sideTheme = computed(() => settingsStore.sideTheme)
 </script>

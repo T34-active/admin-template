@@ -185,7 +185,7 @@ function handleTheme(val: any) {
   sideTheme.value = val
 }
 function saveSetting() {
-  proxy!.$modal.loading('正在保存到本地，请稍候...')
+  proxy.$modal.loading('正在保存到本地，请稍候...')
   const layoutSetting = {
     topNav: storeSettings.value.topNav,
     tagsView: storeSettings.value.tagsView,
@@ -196,10 +196,10 @@ function saveSetting() {
     theme: storeSettings.value.theme,
   }
   localStorage.setItem('layout-setting', JSON.stringify(layoutSetting))
-  setTimeout(proxy!.$modal.closeLoading() as any, 1000)
+  setTimeout(proxy.$modal.closeLoading() as any, 1000)
 }
 function resetSetting() {
-  proxy!.$modal.loading('正在清除设置缓存并刷新，请稍候...')
+  proxy.$modal.loading('正在清除设置缓存并刷新，请稍候...')
   localStorage.removeItem('layout-setting')
   setTimeout('window.location.reload()', 1000)
 }

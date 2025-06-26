@@ -88,7 +88,7 @@ function getRowKey(row) {
 /** 关闭按钮 */
 function close() {
   const obj = { path: '/system/user' }
-  proxy!.$tab.closeOpenPage(obj)
+  proxy.$tab.closeOpenPage(obj)
 }
 /** 提交按钮 */
 function submitForm() {

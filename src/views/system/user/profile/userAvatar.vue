@@ -1,68 +1,72 @@
 <template>
-  <div class="user-info-head" @click="editCropper()">
-    <img :src="options.img" title="点击上传头像" class="img-circle img-lg" alt="点击上传头像" />
+  <div>
+    <div class="user-info-head" @click="editCropper()">
+      <img :src="options.img" title="点击上传头像" class="img-circle img-lg" alt="点击上传头像" />
+    </div>
+    <el-dialog
+      v-model="open"
+      :title="title"
+      width="800px"
+      append-to-body
+      @opened="modalOpened"
+      @close="closeDialog"
+      :close-on-click-modal="false"
+    >
+      <el-row :gutter="20">
+        <el-col :xs="24" :md="12" :style="{ height: '350px' }">
+          <vue-cropper
+            v-if="visible"
+            ref="cropper"
+            :img="options.img"
+            :info="true"
+            :autoCrop="options.autoCrop"
+            :autoCropWidth="options.autoCropWidth"
+            :autoCropHeight="options.autoCropHeight"
+            :fixedBox="options.fixedBox"
+            :outputType="options.outputType"
+            @realTime="realTime"
+          />
+        </el-col>
+        <el-col :xs="24" :md="12" :style="{ height: '350px' }">
+          <div class="avatar-upload-preview">
+            <img
+              :src="options.previews.url"
+              :style="options.previews.img"
+              :alt="options.previews.url"
+            />
+          </div>
+        </el-col>
+        <el-col :lg="2" :md="2">
+          <el-upload
+            action="#"
+            :http-request="requestUpload"
+            :show-file-list="false"
+            :before-upload="beforeUpload"
+          >
+            <el-button>
+              选择
+              <el-icon class="el-icon--right"><Upload /></el-icon>
+            </el-button>
+          </el-upload>
+        </el-col>
+        <el-col :lg="{ span: 1, offset: 2 }" :md="2">
+          <el-button icon="Plus" @click="changeScale(1)" />
+        </el-col>
+        <el-col :lg="{ span: 1, offset: 1 }" :md="2">
+          <el-button icon="Minus" @click="changeScale(-1)" />
+        </el-col>
+        <el-col :lg="{ span: 1, offset: 1 }" :md="2">
+          <el-button icon="RefreshLeft" @click="rotateLeft()" />
+        </el-col>
+        <el-col :lg="{ span: 1, offset: 1 }" :md="2">
+          <el-button icon="RefreshRight" @click="rotateRight()" />
+        </el-col>
+        <el-col :lg="{ span: 2, offset: 6 }" :md="2">
+          <el-button type="primary" @click="uploadImg()">提 交</el-button>
+        </el-col>
+      </el-row>
+    </el-dialog>
   </div>
-  <el-dialog
-    v-model="open"
-    :title="title"
-    width="800px"
-    append-to-body
-    @opened="modalOpened"
-    @close="closeDialog"
-  >
-    <el-row>
-      <el-col :xs="24" :md="12" :style="{ height: '350px' }">
-        <vue-cropper
-          v-if="visible"
-          ref="cropper"
-          :img="options.img"
-          :info="true"
-          :autoCrop="options.autoCrop"
-          :autoCropWidth="options.autoCropWidth"
-          :autoCropHeight="options.autoCropHeight"
-          :fixedBox="options.fixedBox"
-          :outputType="options.outputType"
-          @realTime="realTime"
-        />
-      </el-col>
-      <el-col :xs="24" :md="12" :style="{ height: '350px' }">
-        <div class="avatar-upload-preview">
-          <img :src="options.previews.url" :style="options.previews.img" />
-        </div>
-      </el-col>
-    </el-row>
-    <br />
-    <el-row>
-      <el-col :lg="2" :md="2">
-        <el-upload
-          action="#"
-          :http-request="requestUpload"
-          :show-file-list="false"
-          :before-upload="beforeUpload"
-        >
-          <el-button>
-            选择
-            <el-icon class="el-icon--right"><Upload /></el-icon>
-          </el-button>
-        </el-upload>
-      </el-col>
-      <el-col :lg="{ span: 1, offset: 2 }" :md="2">
-        <el-button icon="Plus" @click="changeScale(1)" />
-      </el-col>
-      <el-col :lg="{ span: 1, offset: 1 }" :md="2">
-        <el-button icon="Minus" @click="changeScale(-1)" />
-      </el-col>
-      <el-col :lg="{ span: 1, offset: 1 }" :md="2">
-        <el-button icon="RefreshLeft" @click="rotateLeft()" />
-      </el-col>
-      <el-col :lg="{ span: 1, offset: 1 }" :md="2">
-        <el-button icon="RefreshRight" @click="rotateRight()" />
-      </el-col>
-      <el-col :lg="{ span: 2, offset: 6 }" :md="2">
-        <el-button type="primary" @click="uploadImg()">提 交</el-button>
-      </el-col>
-    </el-row>
-  </el-dialog>
 </template>
 
 <script setup lang="ts">
@@ -79,23 +83,17 @@ const visible = ref(false)
 const title = ref('修改头像')
 
 // 图片裁剪数据
-const options = reactive<{
-  img // 裁剪图片的地址
-  autoCrop: boolean // 是否默认生成截图框
-  autoCropWidth: number // 默认生成截图框宽度
-  autoCropHeight: number // 默认生成截图框高度
-  fixedBox: boolean // 固定截图框大小 不允许改变
-  outputType: string // 默认生成截图为PNG格式
-  previews // 预览数据
-  visible: boolean
-}>({
+const options = reactive({
   img: userStore.avatar, // 裁剪图片的地址
   autoCrop: true, // 是否默认生成截图框
   autoCropWidth: 200, // 默认生成截图框宽度
   autoCropHeight: 200, // 默认生成截图框高度
   fixedBox: true, // 固定截图框大小 不允许改变
   outputType: 'png', // 默认生成截图为PNG格式
-  previews: {}, // 预览数据
+  previews: {
+    img: '',
+    url: '',
+  }, // 预览数据
   visible: false,
 })
 
@@ -139,16 +137,10 @@ function beforeUpload(file) {
 /** 上传图片 */
 async function uploadImg() {
   try {
-    const blob = await new Promise((resolve, reject) => {
-      proxy.$refs.cropper.getCropBlob((data) => {
-        if (data) resolve(data)
-        else reject(new Error('裁剪失败'))
-      })
-    })
+    const blob = await proxy.$refs.cropper.getCropBlob()
     const formData = new FormData()
     formData.append('avatarfile', blob)
     const response = await uploadAvatar(formData)
-    // 拼接图片 URL（确保不会重复 /）
     const baseUrl = import.meta.env.VITE_APP_BASE_URL.replace(/\/$/, '')
     const imgUrl = response.imgUrl.replace(/^\//, '')
     const fullUrl = `${baseUrl}/${imgUrl}`

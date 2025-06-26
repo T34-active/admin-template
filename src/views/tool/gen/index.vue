@@ -3,6 +3,8 @@ import { listTable, previewTable, delTable, genCode, synchDb } from '@/api/tool/
 import router from '@/router'
 import importTable from './importTable.vue'
 import createTable from './createTable.vue'
+import QueryForm from '@/components/QueryForm/index.vue'
+import { disabledFutureDate } from '@/utils'
 
 const route = useRoute()
 const { proxy } = getCurrentInstance()
@@ -15,7 +17,7 @@ const single = ref(true)
 const multiple = ref(true)
 const total = ref(0)
 const tableNames = ref([])
-const dateRange = ref([])
+const dateRange = ref<[Date | null, Date | null]>([null, null])
 const uniqueId = ref('')
 
 const data = reactive({
@@ -40,7 +42,7 @@ onActivated(() => {
   if (time != null && time !== uniqueId.value) {
     uniqueId.value = time
     queryParams.value.pageNum = Number(route.query.pageNum)
-    dateRange.value = []
+    dateRange.value = [null, null]
     proxy.resetForm('queryForm')
     getList()
   }
@@ -102,7 +104,7 @@ function openCreateTable() {
 
 /** 重置按钮操作 */
 function resetQuery() {
-  dateRange.value = []
+  dateRange.value = [null, null]
   proxy.resetForm('queryRef')
   handleQuery()
 }
@@ -160,6 +162,16 @@ function getTabName(path: string): string {
   return path.substring(start, end)
 }
 
+function getLangClass(fileName: string): string {
+  // 去掉 .vm 后缀再处理
+  const pureName = fileName.replace(/\.vm$/, '').toLowerCase()
+  if (pureName.endsWith('.java')) return 'language-java'
+  if (pureName.endsWith('.xml')) return 'language-xml'
+  if (pureName.endsWith('.sql')) return 'language-java'
+  if (pureName.endsWith('.js') || pureName.endsWith('.vue')) return 'language-javascript'
+  return 'language-plaintext'
+}
+
 onMounted(async () => {
   await getList()
 })
@@ -167,105 +179,113 @@ onMounted(async () => {
 
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryRef" v-show="showSearch">
-      <el-row :gutter="20">
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4">
-          <el-form-item label="表名称" prop="tableName">
-            <el-input
-              v-model="queryParams.tableName"
-              placeholder="请输入表名称"
-              clearable
-              @keyup.enter="handleQuery"
-            />
-          </el-form-item>
-        </el-col>
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4">
-          <el-form-item label="表描述" prop="tableComment">
-            <el-input
-              v-model="queryParams.tableComment"
-              placeholder="请输入表描述"
-              clearable
-              @keyup.enter="handleQuery"
-            />
-          </el-form-item>
-        </el-col>
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4">
-          <el-form-item label="创建时间">
-            <el-date-picker
-              v-model="dateRange"
-              value-format="YYYY-MM-DD"
-              type="daterange"
-              range-separator="-"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-            />
-          </el-form-item>
-        </el-col>
-      </el-row>
-    </el-form>
-
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          plain
-          type="primary"
-          icon="Download"
-          :disabled="multiple"
-          @click="handleGenTable"
-          v-hasPermi="['tool:gen:code']"
-        >
-          生成
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button plain type="primary" icon="Plus" @click="openCreateTable" v-hasRole="['admin']">
-          创建
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="info"
-          plain
-          icon="Upload"
-          @click="openImportTable"
-          v-hasPermi="['tool:gen:import']"
-        >
-          导入
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="Edit"
-          :disabled="single"
-          @click="handleEditTable"
-          v-hasPermi="['tool:gen:edit']"
-        >
-          修改
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="Delete"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['tool:gen:remove']"
-        >
-          删除
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button plain icon="Refresh" @click="resetQuery">重置</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button plain type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-      </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" />
-    </el-row>
-
+    <collapsePanel v-model="showSearch">
+      <div class="p-4">
+        <el-form :model="queryParams" ref="queryRef" label-width="auto">
+          <el-row :gutter="20">
+            <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="8">
+              <el-form-item label="表名称" prop="tableName">
+                <el-input
+                  v-model="queryParams.tableName"
+                  placeholder="请输入表名称"
+                  clearable
+                  @keyup.enter="handleQuery"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="8">
+              <el-form-item label="表描述" prop="tableComment">
+                <el-input
+                  v-model="queryParams.tableComment"
+                  placeholder="请输入表描述"
+                  clearable
+                  @keyup.enter="handleQuery"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="8">
+              <el-form-item label="创建时间">
+                <el-date-picker
+                  v-model="dateRange"
+                  value-format="YYYY-MM-DD"
+                  type="daterange"
+                  range-separator="-"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  :disabled-date="disabledFutureDate"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <el-row :gutter="10">
+          <el-col :span="1.5">
+            <el-button
+              plain
+              type="primary"
+              icon="Download"
+              :disabled="multiple"
+              @click="handleGenTable"
+              v-hasPermi="['tool:gen:code']"
+            >
+              生成
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              type="primary"
+              icon="Plus"
+              @click="openCreateTable"
+              v-hasRole="['admin']"
+            >
+              创建
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              type="info"
+              plain
+              icon="Upload"
+              @click="openImportTable"
+              v-hasPermi="['tool:gen:import']"
+            >
+              导入
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              type="success"
+              plain
+              icon="Edit"
+              :disabled="single"
+              @click="handleEditTable"
+              v-hasPermi="['tool:gen:edit']"
+            >
+              修改
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              type="danger"
+              plain
+              icon="Delete"
+              :disabled="multiple"
+              @click="handleDelete"
+              v-hasPermi="['tool:gen:remove']"
+            >
+              删除
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button plain icon="Refresh" @click="resetQuery">重置</el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button plain type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+          </el-col>
+        </el-row>
+      </div>
+    </collapsePanel>
     <el-table v-loading="loading" :data="tableList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" align="center" width="55" />
       <el-table-column label="序号" type="index" width="50" align="center">
@@ -357,13 +377,17 @@ onMounted(async () => {
         </template>
       </el-table-column>
     </el-table>
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      @pagination="getList"
-    />
+    <BottomFixed>
+      <div class="flex items-center justify-end p-4">
+        <pagination
+          :total="total"
+          v-model:page="queryParams.pageNum"
+          v-model:limit="queryParams.pageSize"
+          @pagination="getList"
+        />
+      </div>
+    </BottomFixed>
+
     <!-- 预览界面 -->
     <el-dialog
       :title="preview.title"
@@ -380,7 +404,9 @@ onMounted(async () => {
           :label="getTabName(key)"
           :name="getTabName(key)"
         >
-          <div class="flex justify-end items-center mb-2">
+          <!-- 输出当前语言 class 供调试 -->
+          <div class="text-xs text-gray-400 mb-1">{{ getLangClass(key) }}</div>
+          <div class="flex justify-end items-center mb-2 lan">
             <el-link underline="always" v-copyText="value" v-copyText:callback="copyTextSuccess">
               <span class="inline-flex items-center gap-x-1">
                 <el-icon><DocumentCopy /></el-icon>
@@ -389,7 +415,7 @@ onMounted(async () => {
             </el-link>
           </div>
           <div v-highlight>
-            <pre><code class="language-javascript">{{ value }}</code></pre>
+            <pre><code :class="getLangClass(key)">{{ value }}</code></pre>
           </div>
         </el-tab-pane>
       </el-tabs>

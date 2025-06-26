@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ hidden: hidden }" class="flex items-center justify-end pt-4">
+  <div :class="{ hidden: hidden }" class="flex items-center justify-end">
     <el-pagination
       v-model:current-page="currentPage"
       v-model:page-size="pageSize"
