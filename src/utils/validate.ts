@@ -1,3 +1,10 @@
+// 手机号正则
+import type { FormItemRule } from 'element-plus'
+
+const phoneRegex = /^(?:13\d|14[014-9]|15[0-35-9]|16[2567]|17[0-8]|18\d|19[0-35-9])\d{8}$/
+// 密码正则：密码需包含字母、数字、特殊字符，且不少于9位
+const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()[\]{}\-_=+\\|;:'",.<>/?`~]).{9,}$/
+
 /**
  * 判断url是否是http或https
  */
@@ -55,24 +62,40 @@ export function validEmail(email: string) {
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   return reg.test(email)
 }
-// 适用于简单的非空校验
-export const validatorIsEmpty = (val: any) => {
-  return val !== null && val !== undefined && String(val).trim().length > 0
+
+export const validatePhone = (
+  rule: FormItemRule,
+  value: string,
+  callback: (error?: string | Error) => void,
+): void => {
+  if (!value) {
+    callback(new Error('请输入手机号码'))
+  } else if (!phoneRegex.test(value)) {
+    callback(new Error('请输入正确的手机号码'))
+  } else {
+    callback()
+  }
 }
 
-// 检测手机号是否正确
-export function isPhoneNumber(phoneStr: string): boolean {
-  const reg = /^(?:13\d|14[014-9]|15[0-35-9]|16[2567]|17[0-8]|18\d|19[0-35-9])\d{8}$/
-  return reg.test(phoneStr)
+export const isValidPhone = (value: string): boolean => {
+  return phoneRegex.test(value)
 }
 
-// 手机号校验函数
-export const validatePhone = (rule, value, callback) => {
-  if (!validatorIsEmpty(value)) {
+export const validatePassword = (
+  rule: FormItemRule,
+  value: string,
+  callback: (error?: string | Error) => void,
+): void => {
+  if (!value) {
     callback(new Error('请输入手机号'))
-  } else if (!isPhoneNumber(value)) {
+  } else if (!passwordRegex.test(value)) {
     callback(new Error('请输入正确的手机号'))
   } else {
-    callback() // 验证通过
+    callback()
   }
+}
+
+// 可在代码逻辑中使用的同步函数
+export const isPassword = (value: string): boolean => {
+  return passwordRegex.test(value)
 }

@@ -90,7 +90,15 @@ import { getUserProfile } from '@/api/system/user'
 
 const activeTab = ref('userinfo')
 const state = reactive({
-  user: {},
+  user: {
+    userName: '',
+    phonenumber: '',
+    email: '',
+    dept: {
+      deptName: '',
+    },
+    createTime: '',
+  },
   roleGroup: {},
   postGroup: {},
 })

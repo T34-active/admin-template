@@ -1,5 +1,4 @@
 <script setup lang="ts">
-/* eslint-disable camelcase */
 import {
   addRole,
   changeRoleStatus,
@@ -17,13 +16,14 @@ import { useRouter } from 'vue-router'
 import { createRules } from '@/utils'
 import type { FormInstance } from 'element-plus'
 import { dataScopeOptions } from '@/utils/column'
+import QueryForm, { type QueryItemConfig } from '@/components/QueryForm/index.vue'
 
 const router = useRouter()
 const { proxy } = getCurrentInstance()
 
-const { sys_normal_disable } = proxy!.useDict('sys_normal_disable')
+const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
 
-const roleList = ref<any[]>([])
+const roleList = ref([])
 const roleRef = ref<FormInstance>(null)
 const open = ref(false)
 const loading = ref(true)
@@ -33,21 +33,48 @@ const single = ref(true)
 const multiple = ref(true)
 const total = ref(0)
 const title = ref('')
-const dateRange = ref<any>([])
-const menuOptions = ref<any[]>([])
+const menuOptions = ref([])
 const menuExpand = ref(false)
 const menuNodeAll = ref(false)
 const deptExpand = ref(true)
 const deptNodeAll = ref(false)
-const deptOptions = ref<any[]>([])
+const deptOptions = ref([])
 const openDataScope = ref(false)
-const menuRef = ref<any>(null)
-const deptRef = ref<any>(null)
+const menuRef = ref(null)
+const deptRef = ref(null)
 
 const treeRefs = {
   menu: menuRef,
   dept: deptRef,
 }
+
+const queryItem = ref<QueryItemConfig[]>([
+  {
+    label: '角色名称',
+    prop: 'roleName',
+    type: 'input',
+    placeholder: '请输入角色名称',
+  },
+  {
+    label: '权限字符',
+    prop: 'roleName',
+    type: 'input',
+    placeholder: '请输入权限字符',
+  },
+  {
+    label: '状态',
+    prop: 'status',
+    type: 'radio',
+    dict: sys_normal_disable,
+  },
+  {
+    label: '创建时间',
+    prop: 'dateRange',
+    type: 'daterange',
+    startPlaceholder: '开始时间',
+    endPlaceholder: '结束时间',
+  },
+])
 
 const treeOptions = {
   menu: menuOptions,
@@ -74,6 +101,7 @@ const data = reactive({
     roleName: undefined,
     roleKey: undefined,
     status: undefined,
+    dateRange: [undefined, undefined] as [Date | string | undefined, Date | string | undefined],
   },
   rules: {
     roleName: createRules('角色名称不能为空'),
@@ -87,7 +115,11 @@ const { queryParams, form, rules } = toRefs(data)
 /** 查询角色列表 */
 async function getList() {
   loading.value = true
-  const response = await listRole(proxy!.addDateRange(queryParams.value, dateRange.value))
+  const safeRange: [Date | string | undefined, Date | string | undefined] =
+    Array.isArray(queryParams.value.dateRange) && queryParams.value.dateRange.length === 2
+      ? [queryParams.value.dateRange[0], queryParams.value.dateRange[1]]
+      : [undefined, undefined]
+  const response = await listRole(proxy.addDateRange(queryParams.value, safeRange))
   roleList.value = response.rows
   total.value = response.total
   loading.value = false
@@ -99,7 +131,7 @@ function handleQuery() {
 }
 /** 重置按钮操作 */
 function resetQuery() {
-  dateRange.value = []
+  queryParams.value.dateRange = [null, null]
   proxy.resetForm('queryRef')
   handleQuery()
 }
@@ -107,7 +139,7 @@ function resetQuery() {
 function handleDelete(row) {
   const roleIds = row.roleId || ids.value
   proxy.$modal
-    .confirm('是否确认删除角色编号为"' + roleIds + '"的数据项?')
+    .confirm('是否确认删除角色编号为"' + roleIds + '"的数据项？')
     .then(function () {
       return delRole(roleIds)
     })
@@ -121,7 +153,7 @@ function handleDelete(row) {
 }
 /** 导出按钮操作 */
 function handleExport() {
-  proxy!.download(
+  proxy.download(
     'system/role/export',
     {
       ...queryParams.value,
@@ -139,7 +171,7 @@ function handleSelectionChange(selection) {
 function handleStatusChange(row) {
   const text = row.status === '0' ? '启用' : '停用'
   proxy.$modal
-    .confirm('确认要"' + text + '""' + row.roleName + '"角色吗?')
+    .confirm('确认要"' + text + '""' + row.roleName + '"角色吗？')
     .then(function () {
       return changeRoleStatus(row.roleId, row.status)
     })
@@ -236,7 +268,6 @@ async function getDeptTree(roleId: number) {
 function handleCheckedTreeExpand(value: boolean, type: 'menu' | 'dept') {
   const ref = treeRefs[type].value
   const list = treeOptions[type].value
-
   list.forEach((item) => {
     const node = ref.store.nodesMap[item.id]
     if (node) node.expanded = value
@@ -329,107 +360,69 @@ onMounted(async () => {
 </script>
 <template>
   <div class="app-container">
-    <el-form v-show="showSearch" ref="queryRef" :model="queryParams" label-width="auto">
-      <el-row :gutter="20">
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4">
-          <el-form-item label="角色名称" prop="roleName">
-            <el-input
-              v-model="queryParams.roleName"
-              placeholder="请输入角色名称"
-              clearable
-              @keyup.enter="handleQuery"
-            />
-          </el-form-item>
-        </el-col>
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4">
-          <el-form-item label="权限字符" prop="roleKey">
-            <el-input
-              v-model="queryParams.roleKey"
-              placeholder="请输入权限字符"
-              clearable
-              @keyup.enter="handleQuery"
-            />
-          </el-form-item>
-        </el-col>
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4">
-          <el-form-item label="状态" prop="status">
-            <el-radio-group v-model="queryParams.status">
-              <el-radio v-for="dict in sys_normal_disable" :key="dict.value" :value="dict.value">
-                {{ dict.label }}
-              </el-radio>
-            </el-radio-group>
-          </el-form-item>
-        </el-col>
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
-          <el-form-item label="创建时间">
-            <el-date-picker
-              v-model="dateRange"
-              value-format="YYYY-MM-DD"
-              type="daterange"
-              range-separator="-"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-            />
-          </el-form-item>
-        </el-col>
-      </el-row>
-    </el-form>
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['system:role:add']"
-          type="primary"
-          plain
-          icon="Plus"
-          @click="handleAdd"
-        >
-          新增
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['system:role:edit']"
-          type="success"
-          plain
-          icon="Edit"
-          :disabled="single"
-          @click="handleUpdate"
-        >
-          修改
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['system:role:remove']"
-          type="danger"
-          plain
-          icon="Delete"
-          :disabled="multiple"
-          @click="handleDelete"
-        >
-          删除
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['system:role:export']"
-          type="warning"
-          plain
-          icon="Download"
-          @click="handleExport"
-        >
-          导出
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-      </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" />
-    </el-row>
-
+    <CollapsePanel v-model="showSearch">
+      <div class="p-4">
+        <el-form ref="queryRef" :model="queryParams" label-width="auto">
+          <el-row :gutter="20">
+            <QueryForm :model="queryParams" :items="queryItem" />
+          </el-row>
+        </el-form>
+        <el-row :gutter="10">
+          <el-col :span="1.5">
+            <el-button
+              v-hasPermi="['system:role:add']"
+              type="primary"
+              plain
+              icon="Plus"
+              @click="handleAdd"
+            >
+              新增
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              v-hasPermi="['system:role:edit']"
+              type="success"
+              plain
+              icon="Edit"
+              :disabled="single"
+              @click="handleUpdate"
+            >
+              修改
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              v-hasPermi="['system:role:remove']"
+              type="danger"
+              plain
+              icon="Delete"
+              :disabled="multiple"
+              @click="handleDelete"
+            >
+              删除
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              v-hasPermi="['system:role:export']"
+              type="warning"
+              plain
+              icon="Download"
+              @click="handleExport"
+            >
+              导出
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+          </el-col>
+        </el-row>
+      </div>
+    </CollapsePanel>
     <!-- 表格数据 -->
     <el-table v-loading="loading" :data="roleList" @selectionChange="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
@@ -499,17 +492,24 @@ onMounted(async () => {
         </template>
       </el-table-column>
     </el-table>
-
-    <pagination
-      v-show="total > 0"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      :total="total"
-      @pagination="getList"
-    />
-
+    <BottomFixed>
+      <div class="flex items-center justify-end p-4">
+        <pagination
+          v-model:page="queryParams.pageNum"
+          v-model:limit="queryParams.pageSize"
+          :total="total"
+          @pagination="getList"
+        />
+      </div>
+    </BottomFixed>
     <!-- 添加或修改角色配置对话框 -->
-    <el-dialog v-model="open" :title="title" width="500px" append-to-body>
+    <el-dialog
+      v-model="open"
+      :title="title"
+      width="500px"
+      append-to-body
+      :close-on-click-modal="false"
+    >
       <el-form ref="roleRef" :model="form" :rules="rules" label-width="auto">
         <el-form-item label="角色名称" prop="roleName">
           <el-input v-model="form.roleName" placeholder="请输入角色名称" />
@@ -575,7 +575,13 @@ onMounted(async () => {
     </el-dialog>
 
     <!-- 分配角色数据权限对话框 -->
-    <el-dialog v-model="openDataScope" :title="title" width="500px" append-to-body>
+    <el-dialog
+      v-model="openDataScope"
+      :title="title"
+      width="500px"
+      append-to-body
+      :close-on-click-modal="false"
+    >
       <el-form :model="form" label-width="auto">
         <el-form-item label="角色名称">
           <el-input v-model="form.roleName" :disabled="true" />

@@ -62,7 +62,7 @@
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
+    <el-row :gutter="10">
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['monitor:job:remove']"
@@ -168,7 +168,13 @@
     />
 
     <!-- 调度日志详细 -->
-    <el-dialog v-model="open" title="调度日志详细" width="700px" append-to-body>
+    <el-dialog
+      v-model="open"
+      title="调度日志详细"
+      width="700px"
+      append-to-body
+      :close-on-click-modal="false"
+    >
       <el-form :model="form" label-width="auto">
         <el-row>
           <el-col :span="12">
@@ -208,7 +214,6 @@
 </template>
 
 <script setup name="JobLog" lang="ts">
-/* eslint-disable camelcase */
 import { getJob } from '@/api/monitor/job'
 import { listJobLog, delJobLog, cleanJobLog } from '@/api/monitor/jobLog'
 import { parseTime } from '@/utils/ruoyi'
@@ -217,7 +222,7 @@ import { oneOf } from '@zeronejs/utils'
 import { useRoute } from 'vue-router'
 
 const { proxy } = getCurrentInstance()
-const { sys_common_status, sys_job_group } = proxy!.useDict('sys_common_status', 'sys_job_group')
+const { sys_common_status, sys_job_group } = proxy.useDict('sys_common_status', 'sys_job_group')
 
 const jobLogList = ref<any[]>([])
 const open = ref(false)
@@ -226,7 +231,7 @@ const showSearch = ref(true)
 const ids = ref<number[]>([])
 const multiple = ref(true)
 const total = ref(0)
-const dateRange = ref<any>([])
+const dateRange = ref<[Date | null, Date | null]>([null, null])
 const route = useRoute()
 
 const data = reactive<{
@@ -248,7 +253,7 @@ const { queryParams, form } = toRefs(data)
 /** 查询调度日志列表 */
 function getList() {
   loading.value = true
-  listJobLog(proxy!.addDateRange(queryParams.value, dateRange.value)).then((response) => {
+  listJobLog(proxy.addDateRange(queryParams.value, dateRange.value)).then((response) => {
     jobLogList.value = response.rows
     total.value = response.total
     loading.value = false
@@ -257,7 +262,7 @@ function getList() {
 // 返回按钮
 function handleClose() {
   const obj = { path: '/monitor/job' }
-  proxy!.$tab.closeOpenPage(obj)
+  proxy.$tab.closeOpenPage(obj)
 }
 /** 搜索按钮操作 */
 function handleQuery() {
@@ -266,7 +271,7 @@ function handleQuery() {
 }
 /** 重置按钮操作 */
 function resetQuery() {
-  dateRange.value = []
+  dateRange.value = [null, null]
   proxy.resetForm('queryRef')
   handleQuery()
 }
@@ -283,7 +288,7 @@ function handleView(row) {
 /** 删除按钮操作 */
 function handleDelete(row) {
   proxy.$modal
-    .confirm('是否确认删除调度日志编号为"' + ids.value + '"的数据项?')
+    .confirm('是否确认删除调度日志编号为"' + ids.value + '"的数据项？')
     .then(function () {
       return delJobLog(ids.value)
     })
@@ -296,7 +301,7 @@ function handleDelete(row) {
 /** 清空按钮操作 */
 function handleClean() {
   proxy.$modal
-    .confirm('是否确认清空所有调度日志数据项?')
+    .confirm('是否确认清空所有调度日志数据项？')
     .then(function () {
       return cleanJobLog()
     })
@@ -308,7 +313,7 @@ function handleClean() {
 }
 /** 导出按钮操作 */
 function handleExport() {
-  proxy!.download(
+  proxy.download(
     'monitor/jobLog/export',
     {
       ...queryParams.value,

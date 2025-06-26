@@ -26,7 +26,7 @@ const size = computed(() => appStore.size)
 const { proxy } = getCurrentInstance()
 
 function handleSetSize(size) {
-  proxy!.$modal.loading('正在设置布局大小，请稍候...')
+  proxy.$modal.loading('正在设置布局大小，请稍候...')
   appStore.setSize(size)
   setTimeout(() => {
     window.location.reload()

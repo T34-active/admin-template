@@ -7,7 +7,7 @@
         :data-path="tag.path"
         :class="isActive(tag) ? 'active' : ''"
         :to="{ path: tag.path, query: tag.query, fullPath: tag.fullPath } as any"
-        class="tags-view-item"
+        class="tags-view-item inline-flex items-center rounded-md gap-x-0.5 shadow-md"
         :style="activeStyle(tag)"
         @click.middle="!isAffix(tag) ? closeSelectedTag(tag) : ''"
         @contextmenu.prevent="openMenu(tag, $event)"
@@ -18,28 +18,36 @@
         </span>
       </router-link>
     </scroll-pane>
-    <ul v-show="visible" :style="{ left: left + 'px', top: top + 'px' }" class="contextmenu">
-      <li @click="refreshSelectedTag(selectedTag)">
+    <ul
+      v-show="visible"
+      :style="{ left: left + 'px', top: top + 'px' }"
+      class="contextmenu flex flex-col shadow-2xl"
+    >
+      <li @click="refreshSelectedTag(selectedTag)" class="flex items-center">
         <refresh-right style="width: 1em; height: 1em" />
         刷新页面
       </li>
-      <li v-if="!isAffix(selectedTag)" @click="closeSelectedTag(selectedTag)">
+      <li
+        v-if="!isAffix(selectedTag)"
+        @click="closeSelectedTag(selectedTag)"
+        class="flex items-center"
+      >
         <close style="width: 1em; height: 1em" />
         关闭当前
       </li>
-      <li @click="closeOthersTags">
+      <li @click="closeOthersTags" class="flex items-center">
         <circle-close style="width: 1em; height: 1em" />
         关闭其他
       </li>
-      <li v-if="!isFirstView()" @click="closeLeftTags">
+      <li v-if="!isFirstView()" @click="closeLeftTags" class="flex items-center">
         <back style="width: 1em; height: 1em" />
         关闭左侧
       </li>
-      <li v-if="!isLastView()" @click="closeRightTags">
+      <li v-if="!isLastView()" @click="closeRightTags" class="flex items-center">
         <right style="width: 1em; height: 1em" />
         关闭右侧
       </li>
-      <li @click="closeAllTags(selectedTag)">
+      <li @click="closeAllTags(selectedTag)" class="flex items-center">
         <circle-close style="width: 1em; height: 1em" />
         全部关闭
       </li>
@@ -172,27 +180,27 @@ function moveToCurrentTag() {
   })
 }
 function refreshSelectedTag(view: any) {
-  proxy!.$tab.refreshPage(view)
+  proxy.$tab.refreshPage(view)
   if (route.meta.link) {
     useTagsViewStore().delIframeView(route)
   }
 }
 function closeSelectedTag(view: any) {
-  proxy!.$tab.closePage(view).then(({ visitedViews }) => {
+  proxy.$tab.closePage(view).then(({ visitedViews }) => {
     if (isActive(view)) {
       toLastView(visitedViews, view)
     }
   })
 }
 function closeRightTags() {
-  proxy!.$tab.closeRightPage(selectedTag.value).then((visitedViews: any) => {
+  proxy.$tab.closeRightPage(selectedTag.value).then((visitedViews: any) => {
     if (!visitedViews.find((i: any) => i.fullPath === route.fullPath)) {
       toLastView(visitedViews)
     }
   })
 }
 function closeLeftTags() {
-  proxy!.$tab.closeLeftPage(selectedTag.value).then((visitedViews: any) => {
+  proxy.$tab.closeLeftPage(selectedTag.value).then((visitedViews: any) => {
     if (!visitedViews.find((i: any) => i.fullPath === route.fullPath)) {
       toLastView(visitedViews)
     }
@@ -202,12 +210,12 @@ function closeOthersTags() {
   router.push(selectedTag.value).catch((e) => {
     console.log(e)
   })
-  proxy!.$tab.closeOtherPage(selectedTag.value).then(() => {
+  proxy.$tab.closeOtherPage(selectedTag.value).then(() => {
     moveToCurrentTag()
   })
 }
 function closeAllTags(view: any) {
-  proxy!.$tab.closeAllPage().then(({ visitedViews }: any) => {
+  proxy.$tab.closeAllPage().then(({ visitedViews }: any) => {
     if (affixTags.value.some((tag) => tag.path === route.path)) {
       return
     }
@@ -265,7 +273,6 @@ function handleScroll() {
     0 0 3px 0 rgba(0, 0, 0, 0.04);
   .tags-view-wrapper {
     .tags-view-item {
-      display: inline-block;
       position: relative;
       cursor: pointer;
       height: 26px;
@@ -311,7 +318,6 @@ function handleScroll() {
     font-size: 12px;
     font-weight: 400;
     color: #333;
-    box-shadow: 2px 2px 3px 0 rgba(0, 0, 0, 0.3);
     li {
       margin: 0;
       padding: 7px 16px;

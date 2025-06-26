@@ -7,7 +7,7 @@ interface DictItem {
 /**
  * 使用 dayjs 格式化时间
  * @param time 输入时间，可以是时间戳、字符串或 Date 对象
- * @param pattern 格式化模板，默认 'YYYY-MM-DD HH:mm:ss'
+ * @param pattern 格式化模板，默认 'YYYY-MM-DD'
  * @returns 格式化后的时间字符串或 null
  */
 export function parseTime(
@@ -47,6 +47,8 @@ export function addDateRange(
 ) {
   const [begin, end] = dateRange
   const result = { ...params }
+  // 删除 dateRange 字段，避免传递给后端
+  delete result.dateRange
   result.params =
     typeof result.params === 'object' && result.params !== null && !Array.isArray(result.params)
       ? { ...result.params }

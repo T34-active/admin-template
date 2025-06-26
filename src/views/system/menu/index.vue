@@ -1,34 +1,62 @@
 <script setup lang="ts">
-/* eslint-disable camelcase */
 import { addMenu, delMenu, getMenu, listMenu, updateMenu } from '@/api/system/menu'
 import SvgIcon from '@/components/SvgIcon/index.vue'
 import IconSelect from '@/components/IconSelect/index.vue'
-import { ClickOutside as vClickOutside, type FormRules } from 'element-plus'
+import { ClickOutside as vClickOutside, type FormInstance, type FormRules } from 'element-plus'
 import { parseTime } from '@/utils/ruoyi'
 import { createRules } from '@/utils'
+import QueryForm, { type QueryItemConfig } from '@/components/QueryForm/index.vue'
 
 const { proxy } = getCurrentInstance()
 
-const { sys_show_hide, sys_normal_disable } = proxy!.useDict('sys_show_hide', 'sys_normal_disable')
-
-const menuList = ref<any[]>([])
+const { sys_show_hide, sys_normal_disable } = proxy.useDict('sys_show_hide', 'sys_normal_disable')
+const menuRef = ref<FormInstance>(null)
+const menuList = ref([])
 const open = ref(false)
 const loading = ref(true)
 const showSearch = ref(true)
 const title = ref('')
-const menuOptions = ref<any[]>([])
+const menuOptions = ref([])
 const isExpandAll = ref(false)
 const refreshTable = ref(true)
 const showChooseIcon = ref(false)
 const iconSelectRef = ref<any>(null)
 
-const data = reactive<{
-  form: any
-  queryParams: T
-  rules: FormRules
-}>({
-  form: {},
+const items = ref<QueryItemConfig[]>([
+  {
+    label: '菜单名称',
+    prop: 'menuName',
+    type: 'input',
+    placeholder: '请输入菜单名称',
+  },
+
+  {
+    label: '状态',
+    prop: 'status',
+    type: 'radio',
+    dict: sys_normal_disable,
+  },
+])
+
+const data = reactive({
+  form: {
+    menuId: undefined,
+    parentId: 0,
+    menuName: undefined,
+    icon: undefined,
+    menuType: 'M',
+    orderNum: undefined,
+    isFrame: '1',
+    isCache: '0',
+    visible: '0',
+    status: '0',
+    path: undefined,
+    query: undefined,
+    component: undefined,
+    perms: undefined,
+  },
   queryParams: {
+    status: undefined,
     menuName: undefined,
     visible: undefined,
   },
@@ -36,7 +64,7 @@ const data = reactive<{
     menuName: createRules('菜单名称不能为空'),
     orderNum: createRules('菜单顺序不能为空'),
     path: createRules('路由地址不能为空'),
-  },
+  } as FormRules,
 })
 
 const { queryParams, form, rules } = toRefs(data)
@@ -45,7 +73,7 @@ const { queryParams, form, rules } = toRefs(data)
 async function getList() {
   loading.value = true
   const response = await listMenu(queryParams.value)
-  menuList.value = proxy!.handleTree(response.data, 'menuId')
+  menuList.value = proxy.handleTree(response.data, 'menuId')
   loading.value = false
 }
 
@@ -54,7 +82,7 @@ async function getTreeSelect() {
   menuOptions.value = []
   const response = await listMenu()
   const menu: any = { menuId: 0, menuName: '主类目', children: [] }
-  menu.children = proxy!.handleTree(response.data, 'menuId')
+  menu.children = proxy.handleTree(response.data, 'menuId')
   menuOptions.value.push(menu)
 }
 
@@ -77,6 +105,10 @@ function reset() {
     isCache: '0',
     visible: '0',
     status: '0',
+    path: undefined,
+    query: undefined,
+    component: undefined,
+    perms: undefined,
   }
   proxy.resetForm('menuRef')
 }
@@ -137,7 +169,6 @@ function toggleExpandAll() {
 
 /** 修改按钮操作 */
 async function handleUpdate(row) {
-  console.log(row)
   reset()
   await getTreeSelect()
   const response = await getMenu(row.menuId)
@@ -147,29 +178,24 @@ async function handleUpdate(row) {
 }
 
 /** 提交按钮 */
-function submitForm() {
-  proxy.$refs.menuRef.validate((valid) => {
-    if (!valid) return
-    if (form.value.menuId !== undefined) {
-      updateMenu(form.value).then((response) => {
-        proxy.$modal.msgSuccess('修改成功')
-        open.value = false
-        getList()
-      })
-    } else {
-      addMenu(form.value).then((response) => {
-        proxy.$modal.msgSuccess('新增成功')
-        open.value = false
-        getList()
-      })
-    }
-  })
+async function submitForm() {
+  const valid = menuRef.value.validate()
+  if (!valid) return
+  if (form.value.menuId !== undefined) {
+    await updateMenu(form.value)
+    proxy.$modal.msgSuccess('修改成功')
+  } else {
+    await addMenu(form.value)
+    proxy.$modal.msgSuccess('新增成功')
+  }
+  await getList()
+  open.value = false
 }
 
 /** 删除按钮操作 */
 async function handleDelete(row) {
   try {
-    await proxy.$modal.confirm(`是否确认删除名称为"${row.menuName}"的数据项?`)
+    await proxy.$modal.confirm(`是否确认删除名称为"${row.menuName}"的数据项？`)
     await delMenu(row.menuId)
     await getList()
     proxy.$modal.msgSuccess('删除成功')
@@ -184,56 +210,37 @@ onMounted(async () => {
 </script>
 <template>
   <div class="app-container">
-    <el-form v-show="showSearch" ref="queryRef" :model="queryParams">
-      <el-row :gutter="20">
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4">
-          <el-form-item label="菜单名称" prop="menuName">
-            <el-input
-              v-model="queryParams.menuName"
-              placeholder="请输入菜单名称"
-              clearable
-              @keyup.enter="handleQuery"
-            />
-          </el-form-item>
-        </el-col>
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4">
-          <el-form-item label="状态" prop="status">
-            <el-select v-model="queryParams.status" placeholder="菜单状态" clearable>
-              <el-option
-                v-for="dict in sys_normal_disable"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
-          </el-form-item>
-        </el-col>
-      </el-row>
-    </el-form>
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['system:menu:add']"
-          type="primary"
-          plain
-          icon="Plus"
-          @click="handleAdd"
-        >
-          新增
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="info" plain icon="Sort" @click="toggleExpandAll">展开/折叠</el-button>
-      </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" />
-    </el-row>
-
+    <CollapsePanel v-model="showSearch">
+      <div class="p-4">
+        <el-form v-show="showSearch" ref="queryRef" :model="queryParams" label-width="auto">
+          <el-row :gutter="20">
+            <QueryForm :model="queryParams" :items="items" />
+          </el-row>
+        </el-form>
+        <el-row :gutter="10">
+          <el-col :span="1.5">
+            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              v-hasPermi="['system:menu:add']"
+              type="primary"
+              plain
+              icon="Plus"
+              @click="handleAdd"
+            >
+              新增
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button type="info" plain icon="Sort" @click="toggleExpandAll">展开/折叠</el-button>
+          </el-col>
+        </el-row>
+      </div>
+    </CollapsePanel>
     <el-table
       v-if="refreshTable"
       v-loading="loading"
@@ -300,7 +307,13 @@ onMounted(async () => {
       </el-table-column>
     </el-table>
     <!-- 添加或修改菜单对话框 -->
-    <el-dialog v-model="open" :title="title" width="680px" append-to-body>
+    <el-dialog
+      v-model="open"
+      :title="title"
+      width="680px"
+      append-to-body
+      :close-on-click-modal="false"
+    >
       <el-form ref="menuRef" :model="form" :rules="rules" label-width="auto">
         <el-row>
           <el-col :span="24">

@@ -57,7 +57,7 @@
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
+    <el-row :gutter="10">
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['monitor:logininfor:remove']"
@@ -149,29 +149,30 @@
         width="180"
       >
         <template #default="scope">
-          <span>{{ parseTime(scope.row.loginTime) }}</span>
+          <span>{{ scope.row.loginTime }}</span>
         </template>
       </el-table-column>
     </el-table>
-
-    <pagination
-      v-show="total > 0"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      :total="total"
-      @pagination="getList"
-    />
+    <BottomFixed>
+      <div class="flex justify-end items-center p-4">
+        <pagination
+          v-model:page="queryParams.pageNum"
+          v-model:limit="queryParams.pageSize"
+          :total="total"
+          @pagination="getList"
+        />
+      </div>
+    </BottomFixed>
   </div>
 </template>
 
-<script setup name="Logininfor" lang="ts">
-/* eslint-disable camelcase */
+<script setup lang="ts">
 import { list, delLogininfor, cleanLogininfor, unlockLogininfor } from '@/api/monitor/logininfor'
 import { parseTime } from '@/utils/ruoyi'
-import { Sort } from 'element-plus'
+import type { Sort } from 'element-plus'
 
 const { proxy } = getCurrentInstance()
-const { sys_common_status } = proxy!.useDict('sys_common_status')
+const { sys_common_status } = proxy.useDict('sys_common_status')
 
 const logininforList = ref<any[]>([])
 const loading = ref(true)
@@ -181,7 +182,7 @@ const single = ref(true)
 const multiple = ref(true)
 const selectName = ref<any>('')
 const total = ref(0)
-const dateRange = ref<any>([])
+const dateRange = ref<[Date | null, Date | null]>([null, null])
 const defaultSort = ref<Sort>({ prop: 'loginTime', order: 'descending' })
 
 // 查询参数
@@ -198,7 +199,7 @@ const queryParams = ref({
 /** 查询登录日志列表 */
 function getList() {
   loading.value = true
-  list(proxy!.addDateRange(queryParams.value, dateRange.value)).then((response) => {
+  list(proxy.addDateRange(queryParams.value, dateRange.value)).then((response) => {
     logininforList.value = response.rows
     total.value = response.total
     loading.value = false
@@ -211,7 +212,7 @@ function handleQuery() {
 }
 /** 重置按钮操作 */
 function resetQuery() {
-  dateRange.value = []
+  dateRange.value = [null, null]
   proxy.resetForm('queryRef')
   queryParams.value.pageNum = 1
   ;(proxy!.$refs.logininforRef as any).sort(defaultSort.value.prop, defaultSort.value.order)
@@ -233,7 +234,7 @@ function handleSortChange(column: any, prop: any, order: any) {
 function handleDelete(row) {
   const infoIds = row.infoId || ids.value
   proxy.$modal
-    .confirm('是否确认删除访问编号为"' + infoIds + '"的数据项?')
+    .confirm('是否确认删除访问编号为"' + infoIds + '"的数据项？')
     .then(function () {
       return delLogininfor(infoIds)
     })
@@ -246,7 +247,7 @@ function handleDelete(row) {
 /** 清空按钮操作 */
 function handleClean() {
   proxy.$modal
-    .confirm('是否确认清空所有登录日志数据项?')
+    .confirm('是否确认清空所有登录日志数据项？')
     .then(function () {
       return cleanLogininfor()
     })
@@ -260,7 +261,7 @@ function handleClean() {
 function handleUnlock() {
   const username = selectName.value
   proxy.$modal
-    .confirm('是否确认解锁用户"' + username + '"数据项?')
+    .confirm('是否确认解锁用户"' + username + '"数据项？')
     .then(function () {
       return unlockLogininfor(username)
     })
@@ -271,7 +272,7 @@ function handleUnlock() {
 }
 /** 导出按钮操作 */
 function handleExport() {
-  proxy!.download(
+  proxy.download(
     'monitor/logininfor/export',
     {
       ...queryParams.value,

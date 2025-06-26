@@ -22,21 +22,38 @@
       </el-icon>
     </el-upload>
     <!-- 上传提示 -->
-    <div v-if="showTip" class="el-upload__tip">
-      请上传
-      <template v-if="fileSize">
-        大小不超过
-        <b style="color: #f56c6c">{{ fileSize }}MB</b>
+    <template v-if="isShowTip">
+      <div v-if="!$slots.tip && tip === ''" class="el-upload__tip">
+        请上传
+        <template v-if="fileSize">
+          大小不超过
+          <b class="text-danger">{{ fileSize }}MB</b>
+        </template>
+        <template v-if="fileType">
+          格式为
+          <b class="text-danger">{{ fileType.join('/') }}</b>
+        </template>
+        的文件
+      </div>
+      <template v-else-if="$slots.tip">
+        <slot name="tip" />
       </template>
-      <template v-if="fileType">
-        格式为
-        <b style="color: #f56c6c">{{ fileType.join('/') }}</b>
-      </template>
-      的文件
-    </div>
-
-    <el-dialog v-model="dialogVisible" title="预览" width="800px" append-to-body>
-      <img :src="dialogImageUrl" style="display: block; max-width: 100%; margin: 0 auto" />
+      <div v-else class="text-secondaryText">
+        {{ tip }}
+      </div>
+    </template>
+    <el-dialog
+      v-model="dialogVisible"
+      title="预览"
+      width="800px"
+      append-to-body
+      :close-on-click-modal="false"
+    >
+      <img
+        :src="dialogImageUrl"
+        alt="预览图"
+        style="display: block; max-width: 100%; margin: 0 auto"
+      />
     </el-dialog>
   </div>
 </template>
@@ -66,19 +83,23 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  // 自定义tip
+  tip: {
+    type: String,
+    default: '',
+  },
 })
 
 const { proxy } = getCurrentInstance()
 const emit = defineEmits(['update:modelValue'])
 const number = ref(0)
-const uploadList = ref<any[]>([])
+const uploadList = ref([])
 const dialogImageUrl = ref('')
 const dialogVisible = ref(false)
-const baseUrl = import.meta.env.VITE_APP_BASE_URL
+const baseUrl = ''
 const uploadImgUrl = ref(import.meta.env.VITE_APP_BASE_URL + '/common/upload') // 上传的图片服务器地址
 const headers = ref({ Authorization: 'Bearer ' + getToken() })
-const fileList = ref<any[]>([])
-const showTip = computed(() => props.isShowTip && (props.fileType || props.fileSize))
+const fileList = ref([])
 
 watch(
   () => props.modelValue,
@@ -122,34 +143,34 @@ function handleBeforeUpload(file: any) {
     isImg = file.type.indexOf('image') > -1
   }
   if (!isImg) {
-    proxy!.$modal.msgError(`文件格式不正确, 请上传${props.fileType.join('/')}图片格式文件!`)
+    proxy.$modal.msgError(`文件格式不正确, 请上传${props.fileType.join('/')}图片格式文件！`)
     return false
   }
   if (props.fileSize) {
     const isLt = file.size / 1024 / 1024 < props.fileSize
     if (!isLt) {
-      proxy!.$modal.msgError(`上传头像图片大小不能超过 ${props.fileSize} MB!`)
+      proxy.$modal.msgError(`上传头像图片大小不能超过 ${props.fileSize} MB！`)
       return false
     }
   }
-  proxy!.$modal.loading('正在上传图片，请稍候...')
+  proxy.$modal.loading('正在上传图片，请稍候...')
   number.value++
 }
 
 // 文件个数超出
 function handleExceed() {
-  proxy!.$modal.msgError(`上传文件数量不能超过 ${props.limit} 个!`)
+  proxy.$modal.msgError(`上传文件数量不能超过 ${props.limit} 个！`)
 }
 
 // 上传成功回调
 function handleUploadSuccess(res: any, file: any) {
   if (res.code === 200) {
-    uploadList.value.push({ name: res.fileName, url: res.fileName })
+    uploadList.value.push({ name: res.fileName, url: res.url })
     uploadedSuccessfully()
   } else {
     number.value--
-    proxy!.$modal.closeLoading()
-    proxy!.$modal.msgError(res.msg)
+    proxy.$modal.closeLoading()
+    proxy.$modal.msgError(res.msg)
     ;(proxy!.$refs.imageUpload as any).handleRemove(file)
     uploadedSuccessfully()
   }
@@ -172,14 +193,14 @@ function uploadedSuccessfully() {
     uploadList.value = []
     number.value = 0
     emit('update:modelValue', listToString(fileList.value))
-    proxy!.$modal.closeLoading()
+    proxy.$modal.closeLoading()
   }
 }
 
 // 上传失败
 function handleUploadError() {
-  proxy!.$modal.msgError('上传图片失败')
-  proxy!.$modal.closeLoading()
+  proxy.$modal.msgError('上传图片失败')
+  proxy.$modal.closeLoading()
 }
 
 // 预览

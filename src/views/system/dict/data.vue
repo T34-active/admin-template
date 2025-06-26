@@ -1,19 +1,19 @@
 <script setup lang="ts">
-/* eslint-disable camelcase */
 import useDictStore from '@/store/modules/dict'
 import { optionselect, getType } from '@/api/system/dict/type'
 import { listData, getData, delData, addData, updateData } from '@/api/system/dict/data'
-import { parseTime } from '@/utils/ruoyi'
 
 import { useRoute } from 'vue-router'
-import type { FormInstance } from 'element-plus'
+import type { FormInstance, FormRules } from 'element-plus'
 import { createRules } from '@/utils'
 
-const { proxy } = getCurrentInstance()
-// eslint-disable-next-line camelcase
-const { sys_normal_disable } = proxy!.useDict('sys_normal_disable')
+import { listClassOptions } from '@/utils/column'
+import QueryForm, { type QueryItemConfig } from '@/components/QueryForm/index.vue'
 
-const dataList = ref<any[]>([])
+const { proxy } = getCurrentInstance()
+const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
+
+const dataList = ref([])
 const dataRef = ref<FormInstance>(null)
 const open = ref(false)
 const loading = ref(true)
@@ -24,32 +24,60 @@ const multiple = ref(true)
 const total = ref(0)
 const title = ref('')
 const defaultDictType = ref('')
-const typeOptions = ref<any[]>([])
+const typeOptions = ref([])
 const route = useRoute()
-// 数据标签回显样式
-const listClassOptions = ref([
-  { value: 'default', label: '默认' },
-  { value: 'primary', label: '主要' },
-  { value: 'success', label: '成功' },
-  { value: 'info', label: '信息' },
-  { value: 'warning', label: '警告' },
-  { value: 'danger', label: '危险' },
+
+const items = ref<QueryItemConfig[]>([
+  // {
+  //   label: '字典名称',
+  //   prop: 'dictType',
+  //   type: 'select',
+  //   placeholder: '请选择字典名称',
+  //   dict: typeOptions.value.map((item) => ({
+  //     label: item.dictName,
+  //     value: item.dictType,
+  //   })),
+  // },
+  {
+    label: '字典标签',
+    prop: 'dictLabel',
+    type: 'input',
+    placeholder: '请输入字典标签',
+  },
+  {
+    label: '数据状态',
+    prop: 'status',
+    type: 'select',
+    placeholder: '请选择数据状态',
+    dict: sys_normal_disable,
+  },
 ])
 
 const data = reactive({
-  form: {},
+  form: {
+    dictCode: undefined,
+    dictLabel: undefined,
+    dictValue: undefined,
+    cssClass: undefined,
+    listClass: 'default',
+    dictSort: 0,
+    status: '0',
+    remark: undefined,
+    dictType: undefined,
+  },
   queryParams: {
     pageNum: 1,
     pageSize: 10,
     dictName: undefined,
     dictType: undefined,
     status: undefined,
+    dictLabel: undefined,
   },
   rules: {
     dictLabel: createRules('数据标签不能为空'),
     dictValue: createRules('数据键值不能为空'),
     dictSort: createRules('数据顺序不能为空'),
-  },
+  } as FormRules,
 })
 
 const { queryParams, form, rules } = toRefs(data)
@@ -91,18 +119,19 @@ function reset() {
     dictSort: 0,
     status: '0',
     remark: undefined,
+    dictType: undefined,
   }
   proxy.resetForm('dataRef')
 }
 /** 搜索按钮操作 */
-function handleQuery() {
+async function handleQuery() {
   queryParams.value.pageNum = 1
-  getList()
+  await getList()
 }
 /** 返回按钮操作 */
 function handleClose() {
   const obj = { path: '/system/dict' }
-  proxy!.$tab.closeOpenPage(obj)
+  proxy.$tab.closeOpenPage(obj)
 }
 /** 重置按钮操作 */
 function resetQuery() {
@@ -145,12 +174,11 @@ async function submitForm() {
     useDictStore().removeDict(queryParams.value.dictType)
     proxy.$modal.msgSuccess(successMsg)
     open.value = false
-    getList()
+    await getList()
   } catch (error) {
     console.error('提交失败：', error)
   }
 }
-
 /** 删除按钮操作 */
 function handleDelete(row) {
   const dictCodes = row.dictCode || ids.value
@@ -169,8 +197,8 @@ function handleDelete(row) {
     })
 }
 /** 导出按钮操作 */
-function handleExport() {
-  proxy!.download(
+async function handleExport() {
+  await proxy.download(
     'system/dict/data/export',
     {
       ...queryParams.value,
@@ -178,7 +206,6 @@ function handleExport() {
     `dict_data_${new Date().getTime()}.xlsx`,
   )
 }
-
 onMounted(async () => {
   await getTypes(route.params && route.params.dictId)
   await getTypeList()
@@ -186,108 +213,88 @@ onMounted(async () => {
 </script>
 <template>
   <div class="app-container">
-    <el-form v-show="showSearch" ref="queryRef" :model="queryParams">
-      <el-row>
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4">
-          <el-form-item label="字典名称" prop="dictType">
-            <el-select v-model="queryParams.dictType" clearable>
-              <el-option
-                v-for="item in typeOptions"
-                :key="item.dictId"
-                :label="item.dictName"
-                :value="item.dictType"
-              />
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4">
-          <el-form-item label="字典标签" prop="dictLabel">
-            <el-input
-              v-model="queryParams.dictLabel"
-              placeholder="请输入字典标签"
-              clearable
-              @keyup.enter="handleQuery"
-            />
-          </el-form-item>
-        </el-col>
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4">
-          <el-form-item label="状态" prop="status">
-            <el-select v-model="queryParams.status" placeholder="数据状态" clearable>
-              <el-option
-                v-for="dict in sys_normal_disable"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
-          </el-form-item>
-        </el-col>
-      </el-row>
-    </el-form>
-
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['system:dict:add']"
-          type="primary"
-          plain
-          icon="Plus"
-          @click="handleAdd"
-        >
-          新增
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['system:dict:edit']"
-          type="success"
-          plain
-          icon="Edit"
-          :disabled="single"
-          @click="handleUpdate"
-        >
-          修改
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['system:dict:remove']"
-          type="danger"
-          plain
-          icon="Delete"
-          :disabled="multiple"
-          @click="handleDelete"
-        >
-          删除
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['system:dict:export']"
-          type="warning"
-          plain
-          icon="Download"
-          @click="handleExport"
-        >
-          导出
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="warning" plain icon="Close" @click="handleClose">关闭</el-button>
-      </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" />
-    </el-row>
-
+    <collapsePanel v-model="showSearch">
+      <div class="p-4">
+        <el-form ref="queryRef" :model="queryParams" label-width="auto">
+          <el-row :gutter="10">
+            <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="8">
+              <el-form-item label="字典名称" prop="dictType">
+                <el-select v-model="queryParams.dictType" clearable filterable>
+                  <el-option
+                    v-for="item in typeOptions"
+                    :key="item.dictId"
+                    :label="item.dictName"
+                    :value="item.dictType"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <QueryForm :model="queryParams" :items="items" />
+          </el-row>
+        </el-form>
+        <el-row :gutter="10">
+          <el-col :span="1.5">
+            <el-button
+              v-hasPermi="['system:dict:add']"
+              type="primary"
+              plain
+              icon="Plus"
+              @click="handleAdd"
+            >
+              新增
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              v-hasPermi="['system:dict:edit']"
+              type="success"
+              plain
+              icon="Edit"
+              :disabled="single"
+              @click="handleUpdate"
+            >
+              修改
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              v-hasPermi="['system:dict:remove']"
+              type="danger"
+              plain
+              icon="Delete"
+              :disabled="multiple"
+              @click="handleDelete"
+            >
+              删除
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              v-hasPermi="['system:dict:export']"
+              type="warning"
+              plain
+              icon="Download"
+              @click="handleExport"
+            >
+              导出
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button type="warning" plain icon="Close" @click="handleClose">关闭</el-button>
+          </el-col>
+        </el-row>
+      </div>
+    </collapsePanel>
     <el-table v-loading="loading" :data="dataList" @selectionChange="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="字典编码" align="center" prop="dictCode" />
-      <el-table-column label="字典标签" align="center" prop="dictLabel">
+      <el-table-column label="字典编码" align="center" prop="dictCode" min-width="100" />
+      <el-table-column label="字典标签" align="center" prop="dictLabel" min-width="100">
         <template #default="scope">
           <span v-if="scope.row.listClass === '' || scope.row.listClass === 'default'">
             {{ scope.row.dictLabel }}
@@ -297,19 +304,21 @@ onMounted(async () => {
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="字典键值" align="center" prop="dictValue" />
-      <el-table-column label="字典排序" align="center" prop="dictSort" />
-      <el-table-column label="状态" align="center" prop="status">
+      <el-table-column label="字典键值" align="center" prop="dictValue" min-width="100" />
+      <el-table-column label="字典排序" align="center" prop="dictSort" min-width="100" />
+      <el-table-column label="状态" align="center" prop="status" min-width="55">
         <template #default="scope">
           <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center" prop="remark" :show-overflow-tooltip="true" />
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
-        <template #default="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
-        </template>
-      </el-table-column>
+      <el-table-column
+        label="备注"
+        align="center"
+        prop="remark"
+        :show-overflow-tooltip="true"
+        min-width="150"
+      />
+      <el-table-column label="创建时间" align="center" prop="createTime" min-width="180" />
       <el-table-column
         label="操作"
         align="center"
@@ -339,17 +348,25 @@ onMounted(async () => {
         </template>
       </el-table-column>
     </el-table>
-
-    <pagination
-      v-show="total > 0"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      :total="total"
-      @pagination="getList"
-    />
+    <BottomFixed>
+      <div class="flex items-center justify-end p-4">
+        <pagination
+          v-model:page="queryParams.pageNum"
+          v-model:limit="queryParams.pageSize"
+          :total="total"
+          @pagination="getList"
+        />
+      </div>
+    </BottomFixed>
 
     <!-- 添加或修改参数配置对话框 -->
-    <el-dialog v-model="open" :title="title" width="500px" append-to-body>
+    <el-dialog
+      v-model="open"
+      :title="title"
+      width="500px"
+      append-to-body
+      :close-on-click-modal="false"
+    >
       <el-form ref="dataRef" :model="form" :rules="rules" label-width="auto">
         <el-form-item label="字典类型">
           <el-input v-model="form.dictType" :disabled="true" clearable />

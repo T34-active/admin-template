@@ -1,5 +1,4 @@
 <script setup lang="ts">
-/* eslint-disable camelcase */
 import {
   listConfig,
   getConfig,
@@ -13,7 +12,7 @@ import { createRules } from '@/utils'
 import type { FormRules } from 'element-plus'
 
 const { proxy } = getCurrentInstance()
-const { sys_yes_no } = proxy!.useDict('sys_yes_no')
+const { sys_yes_no } = proxy.useDict('sys_yes_no')
 
 const configList = ref<any[]>([])
 const open = ref(false)
@@ -24,14 +23,17 @@ const single = ref(true)
 const multiple = ref(true)
 const total = ref(0)
 const title = ref('')
-const dateRange = ref<any>([])
+const dateRange = ref<[Date | null, Date | null]>([null, null])
 
-const data = reactive<{
-  form: any
-  queryParams: any
-  rules: FormRules
-}>({
-  form: {},
+const data = reactive({
+  form: {
+    configId: undefined,
+    configName: undefined,
+    configKey: undefined,
+    configValue: undefined,
+    configType: 'Y',
+    remark: undefined,
+  },
   queryParams: {
     pageNum: 1,
     pageSize: 10,
@@ -43,7 +45,7 @@ const data = reactive<{
     configName: createRules('参数名称不能为空'),
     configKey: createRules('参数键名不能为空'),
     configValue: createRules('参数键值不能为空'),
-  },
+  } as FormRules,
 })
 
 const { queryParams, form, rules } = toRefs(data)
@@ -80,7 +82,7 @@ function handleQuery() {
 }
 /** 重置按钮操作 */
 function resetQuery() {
-  dateRange.value = []
+  dateRange.value = [null, null]
   proxy?.resetForm('queryRef')
   handleQuery()
 }
@@ -164,7 +166,7 @@ onMounted(async () => {
 <template>
   <div class="app-container">
     <el-form v-show="showSearch" ref="queryRef" :model="queryParams" label-width="auto">
-      <el-row>
+      <el-row :gutter="20">
         <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4">
           <el-form-item label="参数名称" prop="configName">
             <el-input
@@ -212,7 +214,7 @@ onMounted(async () => {
       </el-row>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
+    <el-row :gutter="10">
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['system:config:add']"
@@ -339,17 +341,25 @@ onMounted(async () => {
         </template>
       </el-table-column>
     </el-table>
-
-    <pagination
-      v-show="total > 0"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      :total="total"
-      @pagination="getList"
-    />
+    <BottomFixed>
+      <div class="flex items-center justify-end p-4">
+        <pagination
+          v-model:page="queryParams.pageNum"
+          v-model:limit="queryParams.pageSize"
+          :total="total"
+          @pagination="getList"
+        />
+      </div>
+    </BottomFixed>
 
     <!-- 添加或修改参数配置对话框 -->
-    <el-dialog v-model="open" :title="title" width="500px" append-to-body>
+    <el-dialog
+      v-model="open"
+      :title="title"
+      width="500px"
+      append-to-body
+      :close-on-click-modal="false"
+    >
       <el-form ref="configRef" :model="form" :rules="rules" label-width="auto">
         <el-form-item label="参数名称" prop="configName">
           <el-input v-model="form.configName" placeholder="请输入参数名称" />

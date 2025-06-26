@@ -45,7 +45,7 @@ const classObj = computed(() => ({
   mobile: device.value === 'mobile',
 }))
 
-const { width, height } = useWindowSize()
+const { width } = useWindowSize()
 const WIDTH = 992 // refer to Bootstrap's responsive design
 
 watchEffect(() => {

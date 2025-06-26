@@ -12,40 +12,44 @@
       :on-success="handleUploadSuccess"
       :show-file-list="false"
       :headers="headers"
-      class="upload-file-uploader"
     >
       <!-- 上传按钮 -->
       <el-button type="primary">选取文件</el-button>
     </el-upload>
     <!-- 上传提示 -->
-    <div v-if="showTip" class="el-upload__tip">
-      请上传
-      <template v-if="fileSize">
-        大小不超过
-        <b style="color: #f56c6c">{{ fileSize }}MB</b>
+    <template v-if="isShowTip">
+      <div v-if="!$slots.tip && tip === ''" class="el-upload__tip">
+        请上传
+        <template v-if="fileSize">
+          大小不超过
+          <b class="text-danger">{{ fileSize }}MB</b>
+        </template>
+        <template v-if="fileType">
+          格式为
+          <b class="text-danger">{{ fileType.join('/') }}</b>
+        </template>
+        的文件
+      </div>
+      <template v-else-if="$slots.tip">
+        <slot name="tip" />
       </template>
-      <template v-if="fileType">
-        格式为
-        <b style="color: #f56c6c">{{ fileType.join('/') }}</b>
-      </template>
-      的文件
-    </div>
+      <div v-else class="text-secondaryText">
+        {{ tip }}
+      </div>
+    </template>
     <!-- 文件列表 -->
     <transition-group
-      class="upload-file-list el-upload-list el-upload-list--text"
+      class="flex flex-col rounded-xl"
       name="el-fade-in-linear"
       tag="ul"
+      :class="fileList.length > 0 ? 'border' : ''"
     >
-      <li
-        v-for="(file, index) in fileList"
-        :key="file.uid"
-        class="el-upload-list__item ele-upload-list__item-content"
-      >
-        <el-link :href="`${baseUrl}${file.url}`" underline="always" target="_blank">
+      <li v-for="(file, index) in fileList" :key="file.uid" class="p-1 flex items-center gap-x-2">
+        <el-link :href="`${baseUrl}${file.url}`" target="_blank">
           <span class="el-icon-document">{{ getFileName(file.name) }}</span>
         </el-link>
         <div class="ele-upload-list__item-content-action">
-          <el-link underline="always" type="danger" @click="handleDelete(index)">删除</el-link>
+          <el-link type="danger" @click="handleDelete(index)">删除</el-link>
         </div>
       </li>
     </transition-group>
@@ -70,12 +74,17 @@ const props = defineProps({
   // 文件类型, 例如['png', 'jpg', 'jpeg']
   fileType: {
     type: Array as () => Array<any>,
-    default: () => ['doc', 'xls', 'ppt', 'txt', 'pdf'],
+    default: () => ['doc', 'xls', 'xlsx', 'ppt', 'txt', 'pdf'],
   },
   // 是否显示提示
   isShowTip: {
     type: Boolean,
     default: true,
+  },
+  // 自定义tip
+  tip: {
+    type: String,
+    default: '',
   },
 })
 
@@ -87,7 +96,7 @@ const baseUrl = import.meta.env.VITE_APP_BASE_URL
 const uploadFileUrl = ref(import.meta.env.VITE_APP_BASE_URL + '/common/upload') // 上传文件服务器地址
 const headers = ref({ Authorization: 'Bearer ' + getToken() })
 const fileList = ref<any[]>([])
-const showTip = computed(() => props.isShowTip && (props.fileType || props.fileSize))
+// const showTip = computed(() => props.isShowTip && (props.fileType || props.fileSize))
 
 watch(
   () => props.modelValue,
@@ -120,7 +129,7 @@ function handleBeforeUpload(file: any) {
     const fileExt = fileName[fileName.length - 1]
     const isTypeOk = props.fileType.indexOf(fileExt) >= 0
     if (!isTypeOk) {
-      proxy!.$modal.msgError(`文件格式不正确, 请上传${props.fileType.join('/')}格式文件!`)
+      proxy.$modal.msgError(`文件格式不正确, 请上传${props.fileType.join('/')}格式文件！`)
       return false
     }
   }
@@ -128,41 +137,41 @@ function handleBeforeUpload(file: any) {
   if (props.fileSize) {
     const isLt = file.size / 1024 / 1024 < props.fileSize
     if (!isLt) {
-      proxy!.$modal.msgError(`上传文件大小不能超过 ${props.fileSize} MB!`)
+      proxy.$modal.msgError(`上传文件大小不能超过 ${props.fileSize} MB！`)
       return false
     }
   }
-  proxy!.$modal.loading('正在上传文件，请稍候...')
+  proxy.$modal.loading('正在上传文件，请稍候...')
   number.value++
   return true
 }
 
 // 文件个数超出
 function handleExceed() {
-  proxy!.$modal.msgError(`上传文件数量不能超过 ${props.limit} 个!`)
+  proxy.$modal.msgError(`上传文件数量不能超过 ${props.limit} 个！`)
 }
 
 // 上传失败
 function handleUploadError(err) {
-  proxy!.$modal.msgError('上传文件失败')
+  proxy.$modal.msgError('上传文件失败')
 }
 
 // 上传成功回调
 function handleUploadSuccess(res: any, file: any) {
   if (res.code === 200) {
-    uploadList.value.push({ name: res.fileName, url: res.fileName })
+    uploadList.value.push({ name: res.fileName, url: res.url })
     uploadedSuccessfully()
   } else {
     number.value--
-    proxy!.$modal.closeLoading()
-    proxy!.$modal.msgError(res.msg)
-    ;(proxy!.$refs.fileUpload as any).handleRemove(file)
+    proxy.$modal.closeLoading()
+    proxy.$modal.msgError(res.msg)
+    proxy.$refs.fileUpload.handleRemove(file)
     uploadedSuccessfully()
   }
 }
 
 // 删除文件
-function handleDelete(index: any) {
+function handleDelete(index: number) {
   fileList.value.splice(index, 1)
   emit('update:modelValue', listToString(fileList.value))
 }
@@ -174,7 +183,7 @@ function uploadedSuccessfully() {
     uploadList.value = []
     number.value = 0
     emit('update:modelValue', listToString(fileList.value))
-    proxy!.$modal.closeLoading()
+    proxy.$modal.closeLoading()
   }
 }
 
@@ -196,27 +205,6 @@ function listToString(list: any, separator?: any) {
       strs += list[i].url + separator
     }
   }
-  return strs !== '' ? strs.substr(0, strs.length - 1) : ''
+  return strs !== '' ? strs.slice(0, -separator.length) : ''
 }
 </script>
-
-<style scoped lang="scss">
-.upload-file-uploader {
-  margin-bottom: 5px;
-}
-.upload-file-list .el-upload-list__item {
-  border: 1px solid #e4e7ed;
-  line-height: 2;
-  margin-bottom: 10px;
-  position: relative;
-}
-.upload-file-list .ele-upload-list__item-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: inherit;
-}
-.ele-upload-list__item-content-action .el-link {
-  margin-right: 10px;
-}
-</style>

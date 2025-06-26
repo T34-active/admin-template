@@ -1,5 +1,4 @@
 <script setup lang="ts">
-/* eslint-disable camelcase */
 import {
   listDept,
   getDept,
@@ -13,22 +12,19 @@ import type { FormRules } from 'element-plus'
 import { createRules } from '@/utils'
 
 const { proxy } = getCurrentInstance()
-const { sys_normal_disable } = proxy!.useDict('sys_normal_disable')
 
-const deptList = ref<any[]>([])
+const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
+
+const deptList = ref([])
 const open = ref(false)
 const loading = ref(true)
 const showSearch = ref(true)
 const title = ref('')
-const deptOptions = ref<any[]>([])
+const deptOptions = ref([])
 const isExpandAll = ref(true)
 const refreshTable = ref(true)
 
-const data = reactive<{
-  form: any
-  queryParams: any
-  rules: FormRules
-}>({
+const data = reactive({
   form: {},
   queryParams: {
     deptName: undefined,
@@ -42,7 +38,7 @@ const data = reactive<{
     phone: [
       { pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: '请输入正确的手机号码', trigger: 'blur' },
     ],
-  },
+  } as FormRules,
 })
 
 const { queryParams, form, rules } = toRefs(data)
@@ -51,7 +47,7 @@ const { queryParams, form, rules } = toRefs(data)
 async function getList() {
   loading.value = true
   const response = await listDept(queryParams.value)
-  deptList.value = proxy!.handleTree(response.data, 'deptId')
+  deptList.value = proxy.handleTree(response.data, 'deptId')
   loading.value = false
 }
 /** 取消按钮 */
@@ -86,7 +82,7 @@ function resetQuery() {
 async function handleAdd(row) {
   reset()
   const response = await listDept({})
-  deptOptions.value = proxy!.handleTree(response.data, 'deptId')
+  deptOptions.value = proxy.handleTree(response.data, 'deptId')
   if (row !== undefined) {
     form.value.parentId = row.deptId
   }
@@ -106,7 +102,7 @@ async function handleUpdate(department: any) {
   reset()
   // 获取排除当前部门及其子部门后的部门列表，用于构建树结构
   const excludeChildResponse = await listDeptExcludeChild(department.deptId)
-  deptOptions.value = proxy!.handleTree(excludeChildResponse.data, 'deptId')
+  deptOptions.value = proxy.handleTree(excludeChildResponse.data, 'deptId')
   // 获取当前部门的详细信息
   const departmentDetailResponse = await getDept(department.deptId)
   form.value = departmentDetailResponse.data
@@ -137,7 +133,7 @@ function submitForm() {
 /** 删除按钮操作 */
 function handleDelete(row) {
   proxy.$modal
-    .confirm('是否确认删除名称为"' + row.deptName + '"的数据项?')
+    .confirm('是否确认删除名称为"' + row.deptName + '"的数据项？')
     .then(function () {
       return delDept(row.deptId)
     })
@@ -155,8 +151,8 @@ onMounted(async () => {
 </script>
 <template>
   <div class="app-container">
-    <el-form v-show="showSearch" ref="queryRef" :model="queryParams">
-      <el-row>
+    <el-form v-show="showSearch" ref="queryRef" :model="queryParams" label-width="auto">
+      <el-row :gutter="20">
         <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4">
           <el-form-item label="部门名称" prop="deptName">
             <el-input
@@ -181,7 +177,7 @@ onMounted(async () => {
         </el-col>
       </el-row>
     </el-form>
-    <el-row :gutter="10" class="mb8">
+    <el-row :gutter="10">
       <el-col :span="1.5">
         <el-button
           v-hasPermi="['system:dept:add']"
@@ -260,7 +256,13 @@ onMounted(async () => {
     </el-table>
 
     <!-- 添加或修改部门对话框 -->
-    <el-dialog v-model="open" :title="title" width="600px" append-to-body>
+    <el-dialog
+      v-model="open"
+      :title="title"
+      width="600px"
+      append-to-body
+      :close-on-click-modal="false"
+    >
       <el-form ref="deptRef" :model="form" :rules="rules" label-width="auto">
         <el-row>
           <el-col v-if="form.parentId !== 0" :span="24">

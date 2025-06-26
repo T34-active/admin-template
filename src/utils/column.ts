@@ -6,16 +6,7 @@ export const dataScopeOptions = ref([
   { value: '4', label: '本部门及以下数据权限' },
   { value: '5', label: '仅本人数据权限' },
 ])
-/** 列显隐信息 */
-export const columns = ref([
-  { key: 0, label: `用户编号`, visible: true },
-  { key: 1, label: `用户名称`, visible: true },
-  { key: 2, label: `用户昵称`, visible: true },
-  { key: 3, label: `部门`, visible: true },
-  { key: 4, label: `手机号码`, visible: true },
-  { key: 5, label: `状态`, visible: true },
-  { key: 6, label: `创建时间`, visible: true },
-])
+
 export const sizeOptions = ref([
   { label: '较大', value: 'large' },
   { label: '默认', value: 'default' },
@@ -53,4 +44,14 @@ export const htmlTypeOptions = ref([
   { label: '图片上传', value: 'imageUpload' },
   { label: '文件上传', value: 'fileUpload' },
   { label: '富文本控件', value: 'editor' },
+])
+
+/** 数据标签回显样式 */
+export const listClassOptions = ref([
+  { value: 'default', label: '默认' },
+  { value: 'primary', label: '主要' },
+  { value: 'success', label: '成功' },
+  { value: 'info', label: '信息' },
+  { value: 'warning', label: '警告' },
+  { value: 'danger', label: '危险' },
 ])

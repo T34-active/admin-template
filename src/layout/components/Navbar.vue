@@ -1,29 +1,40 @@
 <template>
-  <div class="navbar">
-    <hamburger
-      id="hamburger-container"
-      :is-active="appStore.sidebar.opened"
-      class="hamburger-container"
-      @toggleClick="toggleSideBar"
-    />
-    <breadcrumb
-      id="breadcrumb-container"
-      class="breadcrumb-container"
-      v-if="!settingsStore.topNav"
-    />
+  <div class="navbar flex justify-between items-center">
+    <div class="flex items-center">
+      <hamburger
+        id="hamburger-container"
+        :is-active="appStore.sidebar.opened"
+        class="hamburger-container"
+        @toggleClick="toggleSideBar"
+      />
+      <breadcrumb id="breadcrumb-container" v-if="!settingsStore.topNav" />
+    </div>
     <top-nav id="topmenu-container" class="topmenu-container" v-if="settingsStore.topNav" />
     <div class="right-menu">
       <template v-if="appStore.device !== 'mobile'">
-        <header-search id="header-search" class="right-menu-item" />
-        <screenfull id="screenfull" class="right-menu-item hover-effect" />
+        <header-search
+          id="header-search"
+          class="right-menu-item inline-flex justify-center items-center"
+        />
+        <screenfull
+          id="screenfull"
+          class="right-menu-item inline-flex justify-center items-center hover-effect"
+        />
         <el-tooltip content="布局大小" effect="dark" placement="bottom">
-          <size-select id="size-select" class="right-menu-item hover-effect" />
+          <size-select
+            id="size-select"
+            class="right-menu-item inline-flex justify-center items-center hover-effect"
+          />
         </el-tooltip>
       </template>
-      <div class="avatar-container">
-        <el-dropdown @command="handleCommand" class="right-menu-item hover-effect" trigger="click">
+      <div class="avatar-container flex items-center justify-center pr-8">
+        <el-dropdown
+          @command="handleCommand"
+          class="right-menu-item justify-center items-center hover-effect"
+          trigger="click"
+        >
           <div class="avatar-wrapper">
-            <img :src="userStore.avatar" class="user-avatar" />
+            <img :src="userStore.avatar" class="user-avatar" :alt="userStore.avatar" />
             <el-icon><caret-bottom /></el-icon>
           </div>
           <template #dropdown>
@@ -65,7 +76,7 @@ function toggleSideBar() {
   appStore.toggleSideBar()
 }
 
-function handleCommand(command: any) {
+function handleCommand(command) {
   switch (command) {
     case 'setLayout':
       setLayout()
@@ -130,7 +141,6 @@ function setLayout() {
   }
 
   .right-menu {
-    float: right;
     height: 100%;
     line-height: 50px;
     display: flex;
@@ -140,7 +150,6 @@ function setLayout() {
     }
 
     .right-menu-item {
-      display: inline-block;
       padding: 0 8px;
       height: 100%;
       font-size: 18px;
@@ -158,8 +167,6 @@ function setLayout() {
     }
 
     .avatar-container {
-      margin-right: 40px;
-
       .avatar-wrapper {
         margin-top: 5px;
         position: relative;
