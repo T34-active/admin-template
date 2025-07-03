@@ -10,6 +10,7 @@ import {
 import { parseTime } from '@/utils/ruoyi'
 import type { FormRules } from 'element-plus'
 import { createRules } from '@/utils'
+import QueryForm, { type QueryItemConfig } from '@/components/QueryForm/index.vue'
 
 const { proxy } = getCurrentInstance()
 
@@ -24,8 +25,33 @@ const deptOptions = ref([])
 const isExpandAll = ref(true)
 const refreshTable = ref(true)
 
+const items = ref<QueryItemConfig[]>([
+  {
+    label: '部门名称',
+    prop: 'deptName',
+    type: 'input',
+    placeholder: '请输入部门名称',
+  },
+
+  {
+    label: '状态',
+    prop: 'status',
+    type: 'radio',
+    dict: sys_normal_disable,
+  },
+])
+
 const data = reactive({
-  form: {},
+  form: {
+    deptId: undefined,
+    parentId: undefined,
+    deptName: undefined,
+    orderNum: 0,
+    leader: undefined,
+    phone: undefined,
+    email: undefined,
+    status: '0',
+  },
   queryParams: {
     deptName: undefined,
     status: undefined,
@@ -36,7 +62,7 @@ const data = reactive({
     orderNum: createRules('显示排序不能为空'),
     email: [{ type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }],
     phone: [
-      { pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: '请输入正确的手机号码', trigger: 'blur' },
+      { pattern: /^1[3|456789][0-9]\d{8}$/, message: '请输入正确的手机号码', trigger: 'blur' },
     ],
   } as FormRules,
 })
@@ -112,23 +138,18 @@ async function handleUpdate(department: any) {
 }
 
 /** 提交按钮 */
-function submitForm() {
-  proxy.$refs.deptRef.validate((valid) => {
-    if (!valid) return
-    if (form.value.deptId !== undefined) {
-      updateDept(form.value).then((response) => {
-        proxy.$modal.msgSuccess('修改成功')
-        open.value = false
-        getList()
-      })
-    } else {
-      addDept(form.value).then((response) => {
-        proxy.$modal.msgSuccess('新增成功')
-        open.value = false
-        getList()
-      })
-    }
-  })
+async function submitForm() {
+  const valid = await proxy.$refs.deptRef.validate()
+  if (!valid) return
+  if (form.value.deptId !== undefined) {
+    await updateDept(form.value)
+    proxy.$modal.msgSuccess('修改成功')
+  } else {
+    await addDept(form.value)
+    proxy.$modal.msgSuccess('新增成功')
+  }
+  open.value = false
+  await getList()
 }
 /** 删除按钮操作 */
 function handleDelete(row) {
@@ -151,56 +172,37 @@ onMounted(async () => {
 </script>
 <template>
   <div class="app-container">
-    <el-form v-show="showSearch" ref="queryRef" :model="queryParams" label-width="auto">
-      <el-row :gutter="20">
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4">
-          <el-form-item label="部门名称" prop="deptName">
-            <el-input
-              v-model="queryParams.deptName"
-              placeholder="请输入部门名称"
-              clearable
-              @keyup.enter="handleQuery"
-            />
-          </el-form-item>
-        </el-col>
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4">
-          <el-form-item label="状态" prop="status">
-            <el-select v-model="queryParams.status" placeholder="部门状态" clearable>
-              <el-option
-                v-for="dict in sys_normal_disable"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
-          </el-form-item>
-        </el-col>
-      </el-row>
-    </el-form>
-    <el-row :gutter="10">
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['system:dept:add']"
-          type="primary"
-          plain
-          icon="Plus"
-          @click="handleAdd"
-        >
-          新增
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="info" plain icon="Sort" @click="toggleExpandAll">展开/折叠</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-      </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" />
-    </el-row>
-
+    <CollapsePanel v-model="showSearch">
+      <div class="p-4">
+        <el-form ref="queryRef" :model="queryParams" label-width="auto">
+          <el-row :gutter="20">
+            <QueryForm :model="queryParams" :items="items" />
+          </el-row>
+        </el-form>
+        <el-row :gutter="10">
+          <el-col :span="1.5">
+            <el-button
+              plain
+              v-hasPermi="['system:dept:add']"
+              type="primary"
+              icon="Plus"
+              @click="handleAdd"
+            >
+              新增
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button type="info" plain icon="Sort" @click="toggleExpandAll">展开/折叠</el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+          </el-col>
+        </el-row>
+      </div>
+    </CollapsePanel>
     <el-table
       v-if="refreshTable"
       v-loading="loading"
@@ -216,12 +218,18 @@ onMounted(async () => {
           <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="200">
+      <el-table-column label="创建时间" align="center" prop="createTime" min-width="200">
         <template #default="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column
+        label="操作"
+        align="center"
+        class-name="small-padding fixed-width"
+        fixed="right"
+        min-width="250"
+      >
         <template #default="scope">
           <el-button
             v-hasPermi="['system:dept:edit']"

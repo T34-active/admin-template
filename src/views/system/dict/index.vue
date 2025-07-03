@@ -185,7 +185,7 @@ const { proxy } = getCurrentInstance()
 
 const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
 
-const typeList = ref<any[]>([])
+const typeList = ref([])
 const open = ref(false)
 const loading = ref(true)
 const showSearch = ref(true)
@@ -310,23 +310,18 @@ function handleUpdate(row) {
   })
 }
 /** 提交按钮 */
-function submitForm() {
-  proxy.$refs.dictRef.validate((valid) => {
-    if (!valid) return
-    if (form.value.dictId !== undefined) {
-      updateType(form.value).then((response) => {
-        proxy.$modal.msgSuccess('修改成功')
-        open.value = false
-        getList()
-      })
-    } else {
-      addType(form.value).then((response) => {
-        proxy.$modal.msgSuccess('新增成功')
-        open.value = false
-        getList()
-      })
-    }
-  })
+async function submitForm() {
+  const valid = await proxy.$refs.dictRef.validate()
+  if (!valid) return
+  if (form.value.dictId !== undefined) {
+    await updateType(form.value)
+    proxy.$modal.msgSuccess('修改成功')
+  } else {
+    await addType(form.value)
+    proxy.$modal.msgSuccess('新增成功')
+  }
+  open.value = false
+  await getList()
 }
 /** 删除按钮操作 */
 function handleDelete(row) {

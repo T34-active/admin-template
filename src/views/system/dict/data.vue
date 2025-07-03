@@ -153,14 +153,13 @@ function handleSelectionChange(selection) {
   multiple.value = !selection.length
 }
 /** 修改按钮操作 */
-function handleUpdate(row) {
+async function handleUpdate(row) {
   reset()
   const dictCode = row.dictCode || ids.value
-  getData(dictCode).then((response) => {
-    form.value = response.data
-    open.value = true
-    title.value = '修改字典数据'
-  })
+  const response = await getData(dictCode)
+  form.value = response.data
+  open.value = true
+  title.value = '修改字典数据'
 }
 /** 提交按钮 */
 async function submitForm() {
@@ -292,9 +291,9 @@ onMounted(async () => {
       </div>
     </collapsePanel>
     <el-table v-loading="loading" :data="dataList" @selectionChange="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="字典编码" align="center" prop="dictCode" min-width="100" />
-      <el-table-column label="字典标签" align="center" prop="dictLabel" min-width="100">
+      <el-table-column type="selection" width="55" />
+      <el-table-column label="字典编码" prop="dictCode" min-width="100" />
+      <el-table-column label="字典标签" prop="dictLabel" min-width="100">
         <template #default="scope">
           <span v-if="scope.row.listClass === '' || scope.row.listClass === 'default'">
             {{ scope.row.dictLabel }}
@@ -304,24 +303,17 @@ onMounted(async () => {
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="字典键值" align="center" prop="dictValue" min-width="100" />
-      <el-table-column label="字典排序" align="center" prop="dictSort" min-width="100" />
-      <el-table-column label="状态" align="center" prop="status" min-width="55">
+      <el-table-column label="字典键值" prop="dictValue" min-width="100" />
+      <el-table-column label="字典排序" prop="dictSort" min-width="100" />
+      <el-table-column label="状态" prop="status" min-width="55">
         <template #default="scope">
           <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
         </template>
       </el-table-column>
-      <el-table-column
-        label="备注"
-        align="center"
-        prop="remark"
-        :show-overflow-tooltip="true"
-        min-width="150"
-      />
-      <el-table-column label="创建时间" align="center" prop="createTime" min-width="180" />
+      <el-table-column label="备注" prop="remark" :show-overflow-tooltip="true" min-width="150" />
+      <el-table-column label="创建时间" prop="createTime" min-width="180" />
       <el-table-column
         label="操作"
-        align="center"
         min-width="150"
         class-name="small-padding fixed-width"
         fixed="right"

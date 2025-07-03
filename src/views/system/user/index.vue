@@ -11,7 +11,6 @@ import {
   deptTreeSelect,
 } from '@/api/system/user'
 
-import { useRouter } from 'vue-router'
 import { ElTree, type FormInstance, type FormRules } from 'element-plus'
 import { createRules } from '@/utils'
 
@@ -150,7 +149,7 @@ async function getList() {
   total.value = response.total
 }
 /** 节点单击事件 */
-function handleNodeClick(data) {
+function handleNodeClick(data): Promise<any> {
   queryParams.value.deptId = data.id
   handleQuery()
 }
@@ -215,22 +214,20 @@ function handleAuthRole(row) {
 }
 /** 重置密码按钮操作 */
 function handleResetPwd(row) {
-  proxy
-    .$prompt('请输入"' + row.userName + '"的新密码', '提示', {
+  proxy.$modal
+    .prompt('请输入"' + row.userName + '"的新密码', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       closeOnClickModal: false,
       inputPattern: /^.{5,20}$/,
       inputErrorMessage: '用户密码长度必须介于 5 和 20 之间',
     })
-    .then(({ value }: any) => {
+    .then(({ value }) => {
       resetUserPwd(row.userId, value).then((response) => {
         proxy.$modal.msgSuccess('修改成功，新密码是：' + value)
       })
     })
-    .catch((e) => {
-      console.log(e)
-    })
+    .catch(() => {})
 }
 /** 选择条数 */
 function handleSelectionChange(selection) {

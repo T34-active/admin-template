@@ -12,7 +12,6 @@ import {
 import { roleMenuTreeSelect, treeselect as menuTreeselect } from '@/api/system/menu'
 import { parseTime } from '@/utils/ruoyi'
 
-import { useRouter } from 'vue-router'
 import { createRules } from '@/utils'
 import type { FormInstance } from 'element-plus'
 import { dataScopeOptions } from '@/utils/column'

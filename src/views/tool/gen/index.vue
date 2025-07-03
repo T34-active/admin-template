@@ -3,7 +3,6 @@ import { listTable, previewTable, delTable, genCode, synchDb } from '@/api/tool/
 import router from '@/router'
 import importTable from './importTable.vue'
 import createTable from './createTable.vue'
-import QueryForm from '@/components/QueryForm/index.vue'
 import { disabledFutureDate } from '@/utils'
 
 const route = useRoute()
@@ -109,20 +108,6 @@ function resetQuery() {
   handleQuery()
 }
 
-/** 预览按钮 */
-function handlePreview(row) {
-  previewTable(row.tableId).then((response) => {
-    preview.value.data = response.data
-    preview.value.open = true
-    preview.value.activeName = 'domain.java'
-  })
-}
-
-/** 复制代码成功 */
-function copyTextSuccess() {
-  proxy.$modal.msgSuccess('复制成功')
-}
-
 // 多选框选中数据
 function handleSelectionChange(selection) {
   ids.value = selection.map((item) => item.tableId)
@@ -154,24 +139,13 @@ function handleDelete(row) {
     })
     .catch(() => {})
 }
-
-function getTabName(path: string): string {
-  const start = path.lastIndexOf('/') + 1
-  const end = path.indexOf('.vm')
-  if (start === -1 || end === -1 || end <= start) return path
-  return path.substring(start, end)
+function handlePreview(row) {
+  const obj = {
+    path: '/tool/gen-detail/index/' + row.tableId,
+    query: { tableComment: row.tableComment },
+  }
+  proxy.$tab.closeOpenPage(obj)
 }
-
-function getLangClass(fileName: string): string {
-  // 去掉 .vm 后缀再处理
-  const pureName = fileName.replace(/\.vm$/, '').toLowerCase()
-  if (pureName.endsWith('.java')) return 'language-java'
-  if (pureName.endsWith('.xml')) return 'language-xml'
-  if (pureName.endsWith('.sql')) return 'language-java'
-  if (pureName.endsWith('.js') || pureName.endsWith('.vue')) return 'language-javascript'
-  return 'language-plaintext'
-}
-
 onMounted(async () => {
   await getList()
 })
@@ -295,30 +269,26 @@ onMounted(async () => {
       </el-table-column>
       <el-table-column
         label="表名称"
-        align="center"
         prop="tableName"
         :show-overflow-tooltip="true"
         min-width="160"
       />
       <el-table-column
         label="表描述"
-        align="center"
         prop="tableComment"
         :show-overflow-tooltip="true"
         min-width="160"
       />
       <el-table-column
         label="实体"
-        align="center"
         prop="className"
         :show-overflow-tooltip="true"
         min-width="160"
       />
-      <el-table-column label="创建时间" align="center" prop="createTime" min-width="160" />
-      <el-table-column label="更新时间" align="center" prop="updateTime" min-width="160" />
+      <el-table-column label="创建时间" prop="createTime" min-width="160" />
+      <el-table-column label="更新时间" prop="updateTime" min-width="160" />
       <el-table-column
         label="操作"
-        align="center"
         min-width="200"
         fixed="right"
         class-name="small-padding fixed-width"
@@ -388,38 +358,6 @@ onMounted(async () => {
       </div>
     </BottomFixed>
 
-    <!-- 预览界面 -->
-    <el-dialog
-      :title="preview.title"
-      v-model="preview.open"
-      width="80%"
-      top="5vh"
-      append-to-body
-      class="scrollbar"
-    >
-      <el-tabs v-model="preview.activeName">
-        <el-tab-pane
-          v-for="(value, key) in preview.data"
-          :key="key"
-          :label="getTabName(key)"
-          :name="getTabName(key)"
-        >
-          <!-- 输出当前语言 class 供调试 -->
-          <div class="text-xs text-gray-400 mb-1">{{ getLangClass(key) }}</div>
-          <div class="flex justify-end items-center mb-2 lan">
-            <el-link underline="always" v-copyText="value" v-copyText:callback="copyTextSuccess">
-              <span class="inline-flex items-center gap-x-1">
-                <el-icon><DocumentCopy /></el-icon>
-                复制
-              </span>
-            </el-link>
-          </div>
-          <div v-highlight>
-            <pre><code :class="getLangClass(key)">{{ value }}</code></pre>
-          </div>
-        </el-tab-pane>
-      </el-tabs>
-    </el-dialog>
     <import-table ref="importRef" @ok="handleQuery" />
     <create-table ref="createRef" @ok="handleQuery" />
   </div>

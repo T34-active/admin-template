@@ -10,11 +10,12 @@ import {
 import { parseTime } from '@/utils/ruoyi'
 import { createRules } from '@/utils'
 import type { FormRules } from 'element-plus'
+import QueryForm, { type QueryItemConfig } from '@/components/QueryForm/index.vue'
 
 const { proxy } = getCurrentInstance()
 const { sys_yes_no } = proxy.useDict('sys_yes_no')
 
-const configList = ref<any[]>([])
+const configList = ref([])
 const open = ref(false)
 const loading = ref(true)
 const showSearch = ref(true)
@@ -23,7 +24,34 @@ const single = ref(true)
 const multiple = ref(true)
 const total = ref(0)
 const title = ref('')
-const dateRange = ref<[Date | null, Date | null]>([null, null])
+
+const items = ref<QueryItemConfig[]>([
+  {
+    label: '参数名称',
+    prop: 'configName',
+    type: 'input',
+    placeholder: '请输入参数名称',
+  },
+  {
+    label: '参数键名',
+    prop: 'configKey',
+    type: 'input',
+    placeholder: '请输入参数键名',
+  },
+  {
+    label: '系统内置',
+    prop: 'configType',
+    type: 'radio',
+    dict: sys_yes_no,
+  },
+  {
+    label: '创建时间',
+    prop: 'dateRange',
+    type: 'daterange',
+    startPlaceholder: '开始时间',
+    endPlaceholder: '结束时间',
+  },
+])
 
 const data = reactive({
   form: {
@@ -40,6 +68,7 @@ const data = reactive({
     configName: undefined,
     configKey: undefined,
     configType: undefined,
+    dateRange: [undefined, undefined] as [Date | string | undefined, Date | string | undefined],
   },
   rules: {
     configName: createRules('参数名称不能为空'),
@@ -53,7 +82,11 @@ const { queryParams, form, rules } = toRefs(data)
 /** 查询参数列表 */
 async function getList() {
   loading.value = true
-  const response = await listConfig(proxy?.addDateRange(queryParams.value, dateRange.value))
+  const safeRange: [Date | string | undefined, Date | string | undefined] =
+    Array.isArray(queryParams.value.dateRange) && queryParams.value.dateRange.length === 2
+      ? [queryParams.value.dateRange[0], queryParams.value.dateRange[1]]
+      : [undefined, undefined]
+  const response = await listConfig(proxy.addDateRange(queryParams.value, safeRange))
   configList.value = response.rows
   total.value = response.total
   loading.value = false
@@ -82,7 +115,7 @@ function handleQuery() {
 }
 /** 重置按钮操作 */
 function resetQuery() {
-  dateRange.value = [null, null]
+  queryParams.value.dateRange = [null, null]
   proxy?.resetForm('queryRef')
   handleQuery()
 }
@@ -99,33 +132,27 @@ function handleAdd() {
   title.value = '添加参数'
 }
 /** 修改按钮操作 */
-function handleUpdate(row) {
+async function handleUpdate(row) {
   reset()
   const configId = row.configId || ids.value
-  getConfig(configId).then((response) => {
-    form.value = response.data
-    open.value = true
-    title.value = '修改参数'
-  })
+  const response = getConfig(configId)
+  form.value = response.data
+  open.value = true
+  title.value = '修改参数'
 }
 /** 提交按钮 */
-function submitForm() {
-  proxy.$refs.configRef.validate((valid) => {
-    if (!valid) return
-    if (form.value.configId) {
-      updateConfig(form.value).then((response) => {
-        proxy?.$modal.msgSuccess('修改成功')
-        open.value = false
-        getList()
-      })
-    } else {
-      addConfig(form.value).then((response) => {
-        proxy?.$modal.msgSuccess('新增成功')
-        open.value = false
-        getList()
-      })
-    }
-  })
+async function submitForm() {
+  const valid = await proxy.$refs.configRef.validate()
+  if (!valid) return
+  if (form.value.configId) {
+    await updateConfig(form.value)
+    proxy?.$modal.msgSuccess('修改成功')
+  } else {
+    await addConfig(form.value)
+    proxy?.$modal.msgSuccess('新增成功')
+  }
+  open.value = false
+  await getList()
 }
 /** 删除按钮操作 */
 function handleDelete(row) {
@@ -165,160 +192,98 @@ onMounted(async () => {
 </script>
 <template>
   <div class="app-container">
-    <el-form v-show="showSearch" ref="queryRef" :model="queryParams" label-width="auto">
-      <el-row :gutter="20">
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4">
-          <el-form-item label="参数名称" prop="configName">
-            <el-input
-              v-model="queryParams.configName"
-              placeholder="请输入参数名称"
-              clearable
-              @keyup.enter="handleQuery"
-            />
-          </el-form-item>
-        </el-col>
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4">
-          <el-form-item label="参数键名" prop="configKey">
-            <el-input
-              v-model="queryParams.configKey"
-              placeholder="请输入参数键名"
-              clearable
-              @keyup.enter="handleQuery"
-            />
-          </el-form-item>
-        </el-col>
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4">
-          <el-form-item label="系统内置" prop="configType">
-            <el-select v-model="queryParams.configType" placeholder="系统内置" clearable>
-              <el-option
-                v-for="dict in sys_yes_no"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4">
-          <el-form-item label="创建时间">
-            <el-date-picker
-              v-model="dateRange"
-              value-format="YYYY-MM-DD"
-              type="daterange"
-              range-separator="-"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-            />
-          </el-form-item>
-        </el-col>
-      </el-row>
-    </el-form>
-
-    <el-row :gutter="10">
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['system:config:add']"
-          type="primary"
-          plain
-          icon="Plus"
-          @click="handleAdd"
-        >
-          新增
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['system:config:edit']"
-          type="success"
-          plain
-          icon="Edit"
-          :disabled="single"
-          @click="handleUpdate"
-        >
-          修改
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['system:config:remove']"
-          type="danger"
-          plain
-          icon="Delete"
-          :disabled="multiple"
-          @click="handleDelete"
-        >
-          删除
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['system:config:export']"
-          type="warning"
-          plain
-          icon="Download"
-          @click="handleExport"
-        >
-          导出
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['system:config:remove']"
-          type="danger"
-          plain
-          icon="Refresh"
-          @click="handleRefreshCache"
-        >
-          刷新缓存
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-      </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" />
-    </el-row>
-
+    <CollapsePanel v-model="showSearch">
+      <div class="p-4">
+        <el-form ref="queryRef" :model="queryParams" label-width="auto">
+          <el-row :gutter="20">
+            <QueryForm :model="queryParams" :items="items" />
+          </el-row>
+        </el-form>
+        <el-row :gutter="10">
+          <el-col :span="1.5">
+            <el-button
+              plain
+              v-hasPermi="['system:config:add']"
+              type="primary"
+              icon="Plus"
+              @click="handleAdd"
+            >
+              新增
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              v-hasPermi="['system:config:edit']"
+              type="success"
+              icon="Edit"
+              :disabled="single"
+              @click="handleUpdate"
+            >
+              修改
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              v-hasPermi="['system:config:remove']"
+              type="danger"
+              icon="Delete"
+              :disabled="multiple"
+              @click="handleDelete"
+            >
+              删除
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              v-hasPermi="['system:config:export']"
+              type="warning"
+              icon="Download"
+              @click="handleExport"
+            >
+              导出
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              plain
+              v-hasPermi="['system:config:remove']"
+              type="danger"
+              icon="Refresh"
+              @click="handleRefreshCache"
+            >
+              刷新缓存
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+          </el-col>
+        </el-row>
+      </div>
+    </CollapsePanel>
     <el-table v-loading="loading" :data="configList" @selectionChange="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="参数主键" align="center" prop="configId" />
-      <el-table-column
-        label="参数名称"
-        align="center"
-        prop="configName"
-        :show-overflow-tooltip="true"
-      />
-      <el-table-column
-        label="参数键名"
-        align="center"
-        prop="configKey"
-        :show-overflow-tooltip="true"
-      />
-      <el-table-column
-        label="参数键值"
-        align="center"
-        prop="configValue"
-        :show-overflow-tooltip="true"
-      />
-      <el-table-column label="系统内置" align="center" prop="configType">
+      <el-table-column type="selection" width="55" />
+      <el-table-column label="参数主键" prop="configId" />
+      <el-table-column label="参数名称" prop="configName" :show-overflow-tooltip="true" />
+      <el-table-column label="参数键名" prop="configKey" :show-overflow-tooltip="true" />
+      <el-table-column label="参数键值" prop="configValue" :show-overflow-tooltip="true" />
+      <el-table-column label="系统内置" prop="configType">
         <template #default="scope">
           <dict-tag :options="sys_yes_no" :value="scope.row.configType" />
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center" prop="remark" :show-overflow-tooltip="true" />
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
+      <el-table-column label="备注" prop="remark" :show-overflow-tooltip="true" />
+      <el-table-column label="创建时间" prop="createTime" width="180">
         <template #default="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        label="操作"
-        align="center"
-        width="150"
-        class-name="small-padding fixed-width"
-      >
+      <el-table-column label="操作" width="150" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button
             v-hasPermi="['system:config:edit']"
@@ -362,13 +327,13 @@ onMounted(async () => {
     >
       <el-form ref="configRef" :model="form" :rules="rules" label-width="auto">
         <el-form-item label="参数名称" prop="configName">
-          <el-input v-model="form.configName" placeholder="请输入参数名称" />
+          <el-input v-model="form.configName" placeholder="请输入参数名称" clearable />
         </el-form-item>
         <el-form-item label="参数键名" prop="configKey">
-          <el-input v-model="form.configKey" placeholder="请输入参数键名" />
+          <el-input v-model="form.configKey" placeholder="请输入参数键名" clearable />
         </el-form-item>
         <el-form-item label="参数键值" prop="configValue">
-          <el-input v-model="form.configValue" placeholder="请输入参数键值" />
+          <el-input v-model="form.configValue" placeholder="请输入参数键值" clearable />
         </el-form-item>
         <el-form-item label="系统内置" prop="configType">
           <el-radio-group v-model="form.configType">
@@ -378,7 +343,7 @@ onMounted(async () => {
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" :rows="2" />
         </el-form-item>
       </el-form>
       <template #footer>

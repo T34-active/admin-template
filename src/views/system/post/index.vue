@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { listPost, addPost, delPost, getPost, updatePost } from '@/api/system/post'
-import { parseTime } from '@/utils/ruoyi'
 import { createRules } from '@/utils'
 import type { FormInstance, FormRules } from 'element-plus'
+import QueryForm, { type QueryItemConfig } from '@/components/QueryForm/index.vue'
 
 const { proxy } = getCurrentInstance()
 
 const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
 
-const postList = ref<any[]>([])
+const postList = ref([])
 const postRef = ref<FormInstance>(null)
 const open = ref(false)
 const loading = ref(true)
@@ -18,6 +18,37 @@ const single = ref(true)
 const multiple = ref(true)
 const total = ref(0)
 const title = ref('')
+
+const items = ref<QueryItemConfig[]>([
+  // {
+  //   label: '字典名称',
+  //   prop: 'dictType',
+  //   type: 'select',
+  //   placeholder: '请选择字典名称',
+  //   dict: typeOptions.value.map((item) => ({
+  //     label: item.dictName,
+  //     value: item.dictType,
+  //   })),
+  // },
+  {
+    label: '岗位编码',
+    prop: 'postName',
+    type: 'input',
+    placeholder: '请输入岗位编码',
+  },
+  {
+    label: '岗位名称',
+    prop: 'dictLabel',
+    type: 'input',
+    placeholder: '请输入岗位名称',
+  },
+  {
+    label: '状态',
+    prop: 'status',
+    type: 'radio',
+    dict: sys_normal_disable,
+  },
+])
 
 const data = reactive({
   form: {
@@ -149,98 +180,69 @@ onMounted(async () => {
 </script>
 <template>
   <div class="app-container">
-    <el-form v-show="showSearch" ref="queryRef" :model="queryParams" label-width="auto">
-      <el-row :gutter="20">
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4">
-          <el-form-item label="岗位编码" prop="postCode">
-            <el-input
-              v-model="queryParams.postCode"
-              placeholder="请输入岗位编码"
-              clearable
-              @keyup.enter="handleQuery"
-            />
-          </el-form-item>
-        </el-col>
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4">
-          <el-form-item label="岗位名称" prop="postName">
-            <el-input
-              v-model="queryParams.postName"
-              placeholder="请输入岗位名称"
-              clearable
-              @keyup.enter="handleQuery"
-            />
-          </el-form-item>
-        </el-col>
-        <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4">
-          <el-form-item label="状态" prop="status">
-            <el-select v-model="queryParams.status" placeholder="菜单状态" clearable>
-              <el-option
-                v-for="dict in sys_normal_disable"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
-          </el-form-item>
-        </el-col>
-      </el-row>
-    </el-form>
-
-    <el-row :gutter="10">
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['system:post:add']"
-          type="primary"
-          plain
-          icon="Plus"
-          @click="handleAdd"
-        >
-          新增
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['system:post:edit']"
-          type="success"
-          plain
-          icon="Edit"
-          :disabled="single"
-          @click="handleUpdate"
-        >
-          修改
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['system:post:remove']"
-          type="danger"
-          plain
-          icon="Delete"
-          :disabled="multiple"
-          @click="handleDelete"
-        >
-          删除
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['system:post:export']"
-          type="warning"
-          plain
-          icon="Download"
-          @click="handleExport"
-        >
-          导出
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-      </el-col>
-    </el-row>
-
+    <collapsePanel v-model="showSearch">
+      <div class="p-4">
+        <el-form ref="queryRef" :model="queryParams" label-width="auto">
+          <el-row :gutter="20">
+            <QueryForm :model="queryParams" :items="items" />
+          </el-row>
+        </el-form>
+        <el-row :gutter="10">
+          <el-col :span="1.5">
+            <el-button
+              v-hasPermi="['system:post:add']"
+              type="primary"
+              plain
+              icon="Plus"
+              @click="handleAdd"
+            >
+              新增
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              v-hasPermi="['system:post:edit']"
+              type="success"
+              plain
+              icon="Edit"
+              :disabled="single"
+              @click="handleUpdate"
+            >
+              修改
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              v-hasPermi="['system:post:remove']"
+              type="danger"
+              plain
+              icon="Delete"
+              :disabled="multiple"
+              @click="handleDelete"
+            >
+              删除
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              v-hasPermi="['system:post:export']"
+              type="warning"
+              plain
+              icon="Download"
+              @click="handleExport"
+            >
+              导出
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+          </el-col>
+        </el-row>
+      </div>
+    </collapsePanel>
     <el-table v-loading="loading" :data="postList" @selectionChange="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="岗位编号" align="center" prop="postId" />
@@ -252,12 +254,14 @@ onMounted(async () => {
           <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180">
-        <template #default="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="创建时间" align="center" prop="createTime" width="180" />
+      <el-table-column
+        label="操作"
+        align="center"
+        class-name="small-padding fixed-width"
+        fixed="right"
+        min-width="150"
+      >
         <template #default="scope">
           <el-button
             v-hasPermi="['system:post:edit']"
@@ -281,13 +285,16 @@ onMounted(async () => {
       </el-table-column>
     </el-table>
 
-    <pagination
-      v-show="total > 0"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      :total="total"
-      @pagination="getList"
-    />
+    <BottomFixed>
+      <div class="flex items-center justify-end p-4">
+        <pagination
+          v-model:page="queryParams.pageNum"
+          v-model:limit="queryParams.pageSize"
+          :total="total"
+          @pagination="getList"
+        />
+      </div>
+    </BottomFixed>
 
     <!-- 添加或修改岗位对话框 -->
     <el-dialog
@@ -299,10 +306,10 @@ onMounted(async () => {
     >
       <el-form ref="postRef" :model="form" :rules="rules" label-width="auto">
         <el-form-item label="岗位名称" prop="postName">
-          <el-input v-model="form.postName" placeholder="请输入岗位名称" />
+          <el-input v-model="form.postName" placeholder="请输入岗位名称" clearable />
         </el-form-item>
         <el-form-item label="岗位编码" prop="postCode">
-          <el-input v-model="form.postCode" placeholder="请输入编码名称" />
+          <el-input v-model="form.postCode" placeholder="请输入编码名称" clearable />
         </el-form-item>
         <el-form-item label="岗位顺序" prop="postSort">
           <el-input-number v-model="form.postSort" controls-position="right" :min="0" />

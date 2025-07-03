@@ -1,28 +1,16 @@
 <template>
   <div class="app-container">
-    <el-form
-      v-show="showSearch"
-      ref="queryRef"
-      :model="queryParams"
-      :inline="true"
-      label-width="auto"
-    >
+    <el-form v-show="showSearch" ref="queryRef" :model="queryParams" label-width="auto">
       <el-form-item label="任务名称" prop="jobName">
         <el-input
           v-model="queryParams.jobName"
           placeholder="请输入任务名称"
           clearable
-          style="width: 240px"
           @keyup.enter="handleQuery"
         />
       </el-form-item>
       <el-form-item label="任务组名" prop="jobGroup">
-        <el-select
-          v-model="queryParams.jobGroup"
-          placeholder="请选择任务组名"
-          clearable
-          style="width: 240px"
-        >
+        <el-select v-model="queryParams.jobGroup" placeholder="请选择任务组名" clearable>
           <el-option
             v-for="dict in sys_job_group"
             :key="dict.value"
@@ -32,12 +20,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="执行状态" prop="status">
-        <el-select
-          v-model="queryParams.status"
-          placeholder="请选择执行状态"
-          clearable
-          style="width: 240px"
-        >
+        <el-select v-model="queryParams.status" placeholder="请选择执行状态" clearable>
           <el-option
             v-for="dict in sys_common_status"
             :key="dict.value"
@@ -46,7 +29,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="执行时间" style="width: 308px">
+      <el-form-item label="执行时间">
         <el-date-picker
           v-model="dateRange"
           value-format="YYYY-MM-DD"
@@ -67,7 +50,6 @@
         <el-button
           v-hasPermi="['monitor:job:remove']"
           type="danger"
-          plain
           icon="Delete"
           :disabled="multiple"
           @click="handleDelete"
@@ -99,8 +81,10 @@
       </el-col>
       <el-col :span="1.5">
         <el-button type="warning" plain icon="Close" @click="handleClose">关闭</el-button>
+        <el-button plain type="warning" icon="Close" @click="handleClose"
+          >关闭</el-button
+        >
       </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" />
     </el-row>
 
     <el-table v-loading="loading" :data="jobLogList" @selectionChange="handleSelectionChange">
@@ -139,12 +123,13 @@
           <dict-tag :options="sys_common_status" :value="scope.row.status" />
         </template>
       </el-table-column>
-      <el-table-column label="执行时间" align="center" prop="createTime" width="180">
-        <template #default="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="执行时间" align="center" prop="createTime" width="180" />
+      <el-table-column
+        label="操作"
+        align="center"
+        class-name="small-padding fixed-width"
+        fixed="right"
+      >
         <template #default="scope">
           <el-button
             v-hasPermi="['monitor:job:query']"
@@ -158,14 +143,16 @@
         </template>
       </el-table-column>
     </el-table>
-
-    <pagination
-      v-show="total > 0"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      :total="total"
-      @pagination="getList"
-    />
+    <BottomFixed>
+      <div class="flex items-center justify-end p-4">
+        <pagination
+          v-model:page="queryParams.pageNum"
+          v-model:limit="queryParams.pageSize"
+          :total="total"
+          @pagination="getList"
+        />
+      </div>
+    </BottomFixed>
 
     <!-- 调度日志详细 -->
     <el-dialog
@@ -178,27 +165,27 @@
       <el-form :model="form" label-width="auto">
         <el-row>
           <el-col :span="12">
-            <el-form-item label="日志序号：">{{ form.jobLogId }}</el-form-item>
-            <el-form-item label="任务名称：">{{ form.jobName }}</el-form-item>
+            <el-form-item label="日志序号">{{ form.jobLogId }}</el-form-item>
+            <el-form-item label="任务名称">{{ form.jobName }}</el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="任务分组：">{{ form.jobGroup }}</el-form-item>
-            <el-form-item label="执行时间：">{{ form.createTime }}</el-form-item>
+            <el-form-item label="任务分组">{{ form.jobGroup }}</el-form-item>
+            <el-form-item label="执行时间">{{ form.createTime }}</el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="调用方法：">{{ form.invokeTarget }}</el-form-item>
+            <el-form-item label="调用方法">{{ form.invokeTarget }}</el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="日志信息：">{{ form.jobMessage }}</el-form-item>
+            <el-form-item label="日志信息">{{ form.jobMessage }}</el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="执行状态：">
+            <el-form-item label="执行状态">
               <div v-if="form.status === 0">正常</div>
               <div v-else-if="form.status === 1">失败</div>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item v-if="form.status === 1" label="异常信息：">
+            <el-form-item v-if="form.status === 1" label="异常信息">
               {{ form.exceptionInfo }}
             </el-form-item>
           </el-col>
@@ -213,10 +200,9 @@
   </div>
 </template>
 
-<script setup name="JobLog" lang="ts">
+<script setup lang="ts">
 import { getJob } from '@/api/monitor/job'
 import { listJobLog, delJobLog, cleanJobLog } from '@/api/monitor/jobLog'
-import { parseTime } from '@/utils/ruoyi'
 import { oneOf } from '@zeronejs/utils'
 
 import { useRoute } from 'vue-router'
@@ -224,7 +210,7 @@ import { useRoute } from 'vue-router'
 const { proxy } = getCurrentInstance()
 const { sys_common_status, sys_job_group } = proxy.useDict('sys_common_status', 'sys_job_group')
 
-const jobLogList = ref<any[]>([])
+const jobLogList = ref([])
 const open = ref(false)
 const loading = ref(true)
 const showSearch = ref(true)
@@ -234,14 +220,22 @@ const total = ref(0)
 const dateRange = ref<[Date | null, Date | null]>([null, null])
 const route = useRoute()
 
-const data = reactive<{
-  form: any
-  queryParams: any
-}>({
-  form: {},
+const data = reactive({
+  form: {
+    jobLogId: null,
+    jobName: null,
+    jobGroup: null,
+    createTime: null,
+    invokeTarget: null,
+    jobMessage: null,
+    status: null,
+    exceptionInfo: null,
+  },
   queryParams: {
     pageNum: 1,
     pageSize: 10,
+    jobName: undefined,
+    jobGroup: undefined,
     dictName: undefined,
     dictType: undefined,
     status: undefined,
@@ -251,13 +245,12 @@ const data = reactive<{
 const { queryParams, form } = toRefs(data)
 
 /** 查询调度日志列表 */
-function getList() {
+async function getList() {
   loading.value = true
-  listJobLog(proxy.addDateRange(queryParams.value, dateRange.value)).then((response) => {
-    jobLogList.value = response.rows
-    total.value = response.total
-    loading.value = false
-  })
+  const response = await listJobLog(proxy.addDateRange(queryParams.value, dateRange.value))
+  jobLogList.value = response.rows
+  total.value = response.total
+  loading.value = false
 }
 // 返回按钮
 function handleClose() {
@@ -296,7 +289,6 @@ function handleDelete(row) {
       getList()
       proxy.$modal.msgSuccess('删除成功')
     })
-  //   .catch(() => {});
 }
 /** 清空按钮操作 */
 function handleClean() {
@@ -309,7 +301,6 @@ function handleClean() {
       getList()
       proxy.$modal.msgSuccess('清空成功')
     })
-  //   .catch(() => {});
 }
 /** 导出按钮操作 */
 function handleExport() {
@@ -322,18 +313,13 @@ function handleExport() {
   )
 }
 
-;(() => {
+onMounted(async () => {
   const jobId = oneOf(route.params.jobId)
   if (jobId !== undefined && jobId !== '0') {
-    getJob(jobId).then((response) => {
-      queryParams.value.jobName = response.data.jobName
-      queryParams.value.jobGroup = response.data.jobGroup
-      getList()
-    })
-  } else {
-    getList()
+    const response = await getJob(jobId)
+    queryParams.value.jobName = response.data.jobName
+    queryParams.value.jobGroup = response.data.jobGroup
   }
-})()
-
-getList()
+  await getList()
+})
 </script>
