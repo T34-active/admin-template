@@ -91,7 +91,7 @@ import { parseTime } from '@/utils/ruoyi'
 
 const { proxy } = getCurrentInstance()
 
-const onlineList = ref<any[]>([])
+const onlineList = ref([])
 const loading = ref(true)
 const total = ref(0)
 const pageNum = ref(1)

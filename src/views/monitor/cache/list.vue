@@ -161,9 +161,9 @@ import {
 
 const { proxy } = getCurrentInstance()
 
-const cacheNames = ref<any[]>([])
-const cacheKeys = ref<any[]>([])
-const cacheForm = ref<any>({})
+const cacheNames = ref([])
+const cacheKeys = ref([])
+const cacheForm = ref({})
 const loading = ref(true)
 const subLoading = ref(false)
 const nowCacheName = ref('')

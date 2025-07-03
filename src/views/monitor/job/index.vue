@@ -44,7 +44,6 @@
         <el-button
           v-hasPermi="['monitor:job:add']"
           type="primary"
-          plain
           icon="Plus"
           @click="handleAdd"
         >
@@ -55,7 +54,6 @@
         <el-button
           v-hasPermi="['monitor:job:edit']"
           type="success"
-          plain
           icon="Edit"
           :disabled="single"
           @click="handleUpdate"
@@ -90,7 +88,6 @@
         <el-button
           v-hasPermi="['monitor:job:query']"
           type="info"
-          plain
           icon="Operation"
           @click="handleJobLog"
         >
@@ -103,7 +100,6 @@
       <el-col :span="1.5">
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
       </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" />
     </el-row>
 
     <el-table v-loading="loading" :data="jobList" @selectionChange="handleSelectionChange">
@@ -380,13 +376,12 @@ import {
 } from '@/api/monitor/job'
 import { parseTime } from '@/utils/ruoyi'
 
-import { useRouter } from 'vue-router'
 import Crontab from '@/components/Crontab/index.vue'
 const router = useRouter()
 const { proxy } = getCurrentInstance()
 const { sys_job_group, sys_job_status } = proxy.useDict('sys_job_group', 'sys_job_status')
 
-const jobList = ref<any[]>([])
+const jobList = ref([])
 const open = ref(false)
 const loading = ref(true)
 const showSearch = ref(true)

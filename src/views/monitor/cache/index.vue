@@ -147,7 +147,7 @@
 import { getCache } from '@/api/monitor/cache'
 import * as echarts from 'echarts'
 
-const cache = ref<any>([])
+const cache = ref([])
 const commandstats = ref(null)
 const usedmemory = ref(null)
 const { proxy } = getCurrentInstance()

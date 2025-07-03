@@ -20,7 +20,7 @@ const menuOptions = ref([])
 const isExpandAll = ref(false)
 const refreshTable = ref(true)
 const showChooseIcon = ref(false)
-const iconSelectRef = ref<any>(null)
+const iconSelectRef = ref(null)
 
 const items = ref<QueryItemConfig[]>([
   {

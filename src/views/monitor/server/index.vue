@@ -270,18 +270,17 @@
 
 <script setup lang="ts">
 import { getServer } from '@/api/monitor/server'
-import { ref, getCurrentInstance, ComponentInternalInstance } from 'vue'
 
-const server = ref<any>([])
+const server = ref([])
 const { proxy } = getCurrentInstance()
 
-function getList() {
+async function getList() {
   proxy.$modal.loading('正在加载服务监控数据，请稍候！')
-  getServer().then((response) => {
-    server.value = response.data
-    proxy.$modal.closeLoading()
-  })
+  const response = await getServer()
+  server.value = response.data
+  proxy.$modal.closeLoading()
 }
-
-getList()
+onMounted(() => {
+  getList()
+})
 </script>
