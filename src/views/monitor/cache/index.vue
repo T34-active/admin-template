@@ -4,8 +4,10 @@
       <el-col :span="24" class="card-box">
         <el-card>
           <template #header>
-            <Monitor style="width: 1em; height: 1em; vertical-align: middle" />
-            <span style="vertical-align: middle">基本信息</span>
+            <div class="flex items-center gap-x-2">
+              <Monitor style="width: 1em; height: 1em; vertical-align: middle" />
+              <span style="vertical-align: middle">基本信息</span>
+            </div>
           </template>
           <div class="el-table el-table--enable-row-hover el-table--medium">
             <table cellspacing="0" style="width: 100%">
@@ -119,8 +121,10 @@
       <el-col :span="12" class="card-box">
         <el-card>
           <template #header>
-            <PieChart style="width: 1em; height: 1em; vertical-align: middle" />
-            <span style="vertical-align: middle">命令统计</span>
+            <div class="flex items-center gap-x-2">
+              <PieChart style="width: 1em; height: 1em; vertical-align: middle" />
+              <span style="vertical-align: middle">命令统计</span>
+            </div>
           </template>
           <div class="el-table el-table--enable-row-hover el-table--medium">
             <div ref="commandstats" style="height: 420px" />
@@ -131,8 +135,10 @@
       <el-col :span="12" class="card-box">
         <el-card>
           <template #header>
-            <Odometer style="width: 1em; height: 1em; vertical-align: middle" />
-            <span style="vertical-align: middle">内存信息</span>
+            <div class="flex items-center gap-x-2">
+              <Odometer style="width: 1em; height: 1em; vertical-align: middle" />
+              <span style="vertical-align: middle">内存信息</span>
+            </div>
           </template>
           <div class="el-table el-table--enable-row-hover el-table--medium">
             <div ref="usedmemory" style="height: 420px" />
@@ -147,62 +153,60 @@
 import { getCache } from '@/api/monitor/cache'
 import * as echarts from 'echarts'
 
-const cache = ref([])
+const cache = ref({})
 const commandstats = ref(null)
 const usedmemory = ref(null)
 const { proxy } = getCurrentInstance()
 
-function getList() {
+async function getList() {
   proxy.$modal.loading('正在加载缓存监控数据，请稍候！')
-  getCache().then((response) => {
-    proxy.$modal.closeLoading()
-    cache.value = response.data
-
-    const commandstatsIntance = echarts.init(commandstats.value!, 'macarons')
-    commandstatsIntance.setOption({
-      tooltip: {
-        trigger: 'item',
-        formatter: '{a} <br/>{b} : {c} ({d}%)',
+  const response = await getCache()
+  proxy.$modal.closeLoading()
+  cache.value = response.data
+  const commandstatsIntance = echarts.init(commandstats.value!, 'macarons')
+  commandstatsIntance.setOption({
+    tooltip: {
+      trigger: 'item',
+      formatter: '{a} <br/>{b} : {c} ({d}%)',
+    },
+    series: [
+      {
+        name: '命令',
+        type: 'pie',
+        roseType: 'radius',
+        radius: [15, 95],
+        center: ['50%', '38%'],
+        data: response.data.commandStats,
+        animationEasing: 'cubicInOut',
+        animationDuration: 1000,
       },
-      series: [
-        {
-          name: '命令',
-          type: 'pie',
-          roseType: 'radius',
-          radius: [15, 95],
-          center: ['50%', '38%'],
-          data: response.data.commandStats,
-          animationEasing: 'cubicInOut',
-          animationDuration: 1000,
+    ],
+  })
+  const usedmemoryInstance = echarts.init(usedmemory.value!, 'macarons')
+  usedmemoryInstance.setOption({
+    tooltip: {
+      formatter: '{b} <br/>{a} : ' + cache.value.info.used_memory_human,
+    },
+    series: [
+      {
+        name: '峰值',
+        type: 'gauge',
+        min: 0,
+        max: 1000,
+        detail: {
+          formatter: cache.value.info.used_memory_human,
         },
-      ],
-    })
-
-    const usedmemoryInstance = echarts.init(usedmemory.value!, 'macarons')
-    usedmemoryInstance.setOption({
-      tooltip: {
-        formatter: '{b} <br/>{a} : ' + cache.value.info.used_memory_human,
-      },
-      series: [
-        {
-          name: '峰值',
-          type: 'gauge',
-          min: 0,
-          max: 1000,
-          detail: {
-            formatter: cache.value.info.used_memory_human,
+        data: [
+          {
+            value: parseFloat(cache.value.info.used_memory_human),
+            name: '内存消耗',
           },
-          data: [
-            {
-              value: parseFloat(cache.value.info.used_memory_human),
-              name: '内存消耗',
-            },
-          ],
-        },
-      ],
-    })
+        ],
+      },
+    ],
   })
 }
-
-getList()
+onMounted(async () => {
+  await getList()
+})
 </script>

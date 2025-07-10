@@ -104,6 +104,7 @@ service.interceptors.response.use(
             isRelogin.show = false
           })
       }
+      // eslint-disable-next-line prefer-promise-reject-errors
       return Promise.reject('无效的会话，或者会话已过期，请重新登录。')
     } else if (code === 500) {
       ElMessage.error(msg)
@@ -113,6 +114,7 @@ service.interceptors.response.use(
       return Promise.reject(new Error(msg))
     } else if (code !== 200) {
       ElNotification.error({ title: msg })
+      // eslint-disable-next-line prefer-promise-reject-errors
       return Promise.reject('error')
     } else {
       return res.data

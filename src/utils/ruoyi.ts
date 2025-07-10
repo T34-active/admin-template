@@ -96,23 +96,6 @@ export function selectDictLabels(
   return result.join(separator)
 }
 
-// 字符串格式化(%s )
-// export function sprintf(str: string) {
-//   // eslint-disable-next-line prefer-rest-params
-//   const args = arguments
-//   let flag = true
-//   let i = 1
-//   str = str.replace(/%s/g, function () {
-//     const arg = args[i++]
-//     if (typeof arg === 'undefined') {
-//       flag = false
-//       return ''
-//     }
-//     return arg
-//   })
-//   return flag ? str : ''
-// }
-
 // 转换字符串，undefined,null等转化为""
 export function parseStrEmpty(str: string) {
   if (!str || str === 'undefined' || str === 'null') {
@@ -120,22 +103,6 @@ export function parseStrEmpty(str: string) {
   }
   return str
 }
-
-// // 数据合并
-// export function mergeRecursive(source, target) {
-//     for (var p in target) {
-//         try {
-//             if (target[p].constructor===Object) {
-//                 source[p] = mergeRecursive(source[p], target[p]);
-//             } else {
-//                 source[p] = target[p];
-//             }
-//         } catch (e) {
-//             source[p] = target[p];
-//         }
-//     }
-//     return source;
-// }
 
 /**
  * 构造树型结构数据

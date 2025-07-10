@@ -1,135 +1,77 @@
 <template>
   <div class="app-container">
-    <el-form v-show="showSearch" ref="queryRef" :model="queryParams" label-width="auto">
-      <el-form-item label="任务名称" prop="jobName">
-        <el-input
-          v-model="queryParams.jobName"
-          placeholder="请输入任务名称"
-          clearable
-          @keyup.enter="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="任务组名" prop="jobGroup">
-        <el-select v-model="queryParams.jobGroup" placeholder="请选择任务组名" clearable>
-          <el-option
-            v-for="dict in sys_job_group"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="执行状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择执行状态" clearable>
-          <el-option
-            v-for="dict in sys_common_status"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="执行时间">
-        <el-date-picker
-          v-model="dateRange"
-          value-format="YYYY-MM-DD"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-        />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-        <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
-
-    <el-row :gutter="10">
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['monitor:job:remove']"
-          type="danger"
-          icon="Delete"
-          :disabled="multiple"
-          @click="handleDelete"
-        >
-          删除
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['monitor:job:remove']"
-          type="danger"
-          plain
-          icon="Delete"
-          @click="handleClean"
-        >
-          清空
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          v-hasPermi="['monitor:job:export']"
-          type="warning"
-          plain
-          icon="Download"
-          @click="handleExport"
-        >
-          导出
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="warning" plain icon="Close" @click="handleClose">关闭</el-button>
-        <el-button plain type="warning" icon="Close" @click="handleClose"
-          >关闭</el-button
-        >
-      </el-col>
-    </el-row>
+    <collapsePanel v-model="showSearch">
+      <div class="p-4">
+        <el-form ref="queryRef" :model="queryParams" label-width="auto">
+          <el-row :gutter="10">
+            <QueryForm :model="queryParams" :items="items" />
+          </el-row>
+        </el-form>
+        <el-row :gutter="10">
+          <el-col :span="1.5">
+            <el-button
+              v-hasPermi="['monitor:job:remove']"
+              type="danger"
+              icon="Delete"
+              :disabled="multiple"
+              @click="handleDelete"
+            >
+              删除
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              v-hasPermi="['monitor:job:remove']"
+              type="danger"
+              plain
+              icon="Delete"
+              @click="handleClean"
+            >
+              清空
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              v-hasPermi="['monitor:job:export']"
+              type="warning"
+              plain
+              icon="Download"
+              @click="handleExport"
+            >
+              导出
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button type="warning" plain icon="Close" @click="handleClose">关闭</el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+          </el-col>
+        </el-row>
+      </div>
+    </collapsePanel>
 
     <el-table v-loading="loading" :data="jobLogList" @selectionChange="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="日志编号" width="80" align="center" prop="jobLogId" />
-      <el-table-column
-        label="任务名称"
-        align="center"
-        prop="jobName"
-        :show-overflow-tooltip="true"
-      />
-      <el-table-column
-        label="任务组名"
-        align="center"
-        prop="jobGroup"
-        :show-overflow-tooltip="true"
-      >
+      <el-table-column type="selection" width="55" />
+      <el-table-column label="日志编号" width="80" prop="jobLogId" />
+      <el-table-column label="任务名称" prop="jobName" :show-overflow-tooltip="true" />
+      <el-table-column label="任务组名" prop="jobGroup" :show-overflow-tooltip="true">
         <template #default="scope">
           <dict-tag :options="sys_job_group" :value="scope.row.jobGroup" />
         </template>
       </el-table-column>
-      <el-table-column
-        label="调用目标字符串"
-        align="center"
-        prop="invokeTarget"
-        :show-overflow-tooltip="true"
-      />
-      <el-table-column
-        label="日志信息"
-        align="center"
-        prop="jobMessage"
-        :show-overflow-tooltip="true"
-      />
-      <el-table-column label="执行状态" align="center" prop="status">
+      <el-table-column label="调用目标字符串" prop="invokeTarget" :show-overflow-tooltip="true" />
+      <el-table-column label="日志信息" prop="jobMessage" :show-overflow-tooltip="true" />
+      <el-table-column label="执行状态" prop="status">
         <template #default="scope">
           <dict-tag :options="sys_common_status" :value="scope.row.status" />
         </template>
       </el-table-column>
-      <el-table-column label="执行时间" align="center" prop="createTime" width="180" />
-      <el-table-column
-        label="操作"
-        align="center"
-        class-name="small-padding fixed-width"
-        fixed="right"
-      >
+      <el-table-column label="执行时间" prop="createTime" width="180" />
+      <el-table-column label="操作" class-name="small-padding fixed-width" fixed="right">
         <template #default="scope">
           <el-button
             v-hasPermi="['monitor:job:query']"
@@ -206,6 +148,7 @@ import { listJobLog, delJobLog, cleanJobLog } from '@/api/monitor/jobLog'
 import { oneOf } from '@zeronejs/utils'
 
 import { useRoute } from 'vue-router'
+import QueryForm, { type QueryItemConfig } from '@/components/QueryForm/index.vue'
 
 const { proxy } = getCurrentInstance()
 const { sys_common_status, sys_job_group } = proxy.useDict('sys_common_status', 'sys_job_group')
@@ -239,15 +182,50 @@ const data = reactive({
     dictName: undefined,
     dictType: undefined,
     status: undefined,
+    dateRange: [undefined, undefined] as [Date | string | undefined, Date | string | undefined],
   },
 })
 
 const { queryParams, form } = toRefs(data)
 
+const items = ref<QueryItemConfig[]>([
+  {
+    label: '任务名称',
+    prop: 'jobName',
+    type: 'input',
+    placeholder: '请输入任务名称',
+  },
+  {
+    label: '任务组名',
+    prop: 'jobGroup',
+    type: 'select',
+    placeholder: '请选择任务组名',
+    dict: sys_job_group,
+  },
+  {
+    label: '执行状态',
+    prop: 'status',
+    type: 'radio',
+    placeholder: '请选择执行状态',
+    dict: sys_common_status,
+  },
+  {
+    label: '执行时间',
+    prop: 'dateRange',
+    type: 'daterange',
+    startPlaceholder: '开始时间',
+    endPlaceholder: '结束时间',
+  },
+])
+
 /** 查询调度日志列表 */
 async function getList() {
   loading.value = true
-  const response = await listJobLog(proxy.addDateRange(queryParams.value, dateRange.value))
+  const safeRange: [Date | string | undefined, Date | string | undefined] =
+    Array.isArray(queryParams.value.dateRange) && queryParams.value.dateRange.length === 2
+      ? [queryParams.value.dateRange[0], queryParams.value.dateRange[1]]
+      : [undefined, undefined]
+  const response = await listJobLog(proxy.addDateRange(queryParams.value, safeRange))
   jobLogList.value = response.rows
   total.value = response.total
   loading.value = false
@@ -264,7 +242,7 @@ function handleQuery() {
 }
 /** 重置按钮操作 */
 function resetQuery() {
-  dateRange.value = [null, null]
+  queryParams.value.dateRange = [null, null]
   proxy.resetForm('queryRef')
   handleQuery()
 }

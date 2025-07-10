@@ -1,58 +1,43 @@
 {
-    "compilerOptions": {
-        "target": "esnext",
-        "jsx": "preserve",
-        "lib": [
-            "esnext",
-            "dom",
-            "dom.iterable",
-            "scripthost"
-        ],
-        "experimentalDecorators": true,
-        "baseUrl": ".",
-        "module": "esnext",
-        "moduleResolution": "Bundler",
-        "useDefineForClassFields": true,
-        "allowImportingTsExtensions": true,
-        "strict": true,
-        "resolveJsonModule": true,
-        "isolatedModules": true,
-        "paths": {
-            "@/*": [
-                "src/*"
-            ],
-            "~root/*": [
-                "./*"
-            ]
-        },
-        "allowJs": true,
-        "strictNullChecks": false,
-        "noImplicitAny": false,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "importHelpers": true,
-        "sourceMap": true,
-        "allowSyntheticDefaultImports": true,
-        "esModuleInterop": true,
-        "verbatimModuleSyntax": true,
-        "skipLibCheck": true
+  "compilerOptions": {
+    "target": "esnext",
+    "jsx": "preserve",
+    "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
+    "experimentalDecorators": true,
+    "baseUrl": ".",
+    "module": "esnext",
+    "moduleResolution": "Bundler",
+    "useDefineForClassFields": true,
+    "allowImportingTsExtensions": true,
+    "strict": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "paths": {
+      "@/*": ["src/*"],
+      "~root/*": ["./*"]
     },
-    "include": [
-        "src/**/*.ts",
-        "src/**/*.d.ts",
-        "src/**/*.tsx",
-        "src/**/*.vue",
-        "test.ts"
-    ],
-    "references": [
-        {
-            "path": "./tsconfig.node.json"
-        }
-    ],
-    "ts-node": {
-        "compilerOptions": {
-            "module": "CommonJS",
-            "esModuleInterop": true
-        }
+    "allowJs": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "importHelpers": true,
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "test.ts"],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
     }
+  ],
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS",
+      "esModuleInterop": true
+    }
+  }
 }
