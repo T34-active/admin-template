@@ -1,18 +1,18 @@
 <template>
   <div class="app-container">
     <el-row :gutter="10">
-      <el-col :span="8">
-        <el-card style="height: calc(100vh - 125px)">
+      <el-col :xs="24" :span="8">
+        <el-card>
           <template #header>
-            <Collection style="width: 1em; height: 1em; vertical-align: middle" />
-            <span style="vertical-align: middle">缓存列表</span>
-            <el-button
-              style="float: right; padding: 3px 0"
-              link
-              type="primary"
-              icon="Refresh"
-              @click="refreshCacheNames()"
-            />
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-x-2">
+                <Collection style="width: 1em; height: 1em; vertical-align: middle" />
+                <span style="vertical-align: middle">缓存列表</span>
+              </div>
+              <div>
+                <el-button link type="primary" icon="Refresh" @click="refreshCacheNames()" />
+              </div>
+            </div>
           </template>
           <el-table
             v-loading="loading"
@@ -23,27 +23,14 @@
             @rowClick="getCacheKeys"
           >
             <el-table-column label="序号" width="60" type="index" />
-
             <el-table-column
               label="缓存名称"
-              align="center"
               prop="cacheName"
               :show-overflow-tooltip="true"
               :formatter="nameFormatter"
             />
-
-            <el-table-column
-              label="备注"
-              align="center"
-              prop="remark"
-              :show-overflow-tooltip="true"
-            />
-            <el-table-column
-              label="操作"
-              width="60"
-              align="center"
-              class-name="small-padding fixed-width"
-            >
+            <el-table-column label="备注" prop="remark" :show-overflow-tooltip="true" />
+            <el-table-column label="操作" width="60" class-name="small-padding fixed-width">
               <template #default="scope">
                 <el-button
                   link
@@ -56,19 +43,18 @@
           </el-table>
         </el-card>
       </el-col>
-
-      <el-col :span="8">
-        <el-card style="height: calc(100vh - 125px)">
+      <el-col :xs="24" :span="8">
+        <el-card>
           <template #header>
-            <Key style="width: 1em; height: 1em; vertical-align: middle" />
-            <span style="vertical-align: middle">键名列表</span>
-            <el-button
-              style="float: right; padding: 3px 0"
-              link
-              type="primary"
-              icon="Refresh"
-              @click="refreshCacheKeys()"
-            />
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-x-2">
+                <Key style="width: 1em; height: 1em; vertical-align: middle" />
+                <span style="vertical-align: middle">键名列表</span>
+              </div>
+              <div>
+                <el-button link type="primary" icon="Refresh" @click="refreshCacheKeys()" />
+              </div>
+            </div>
           </template>
           <el-table
             v-loading="subLoading"
@@ -81,16 +67,10 @@
             <el-table-column label="序号" width="60" type="index" />
             <el-table-column
               label="缓存键名"
-              align="center"
               :show-overflow-tooltip="true"
               :formatter="keyFormatter"
             />
-            <el-table-column
-              label="操作"
-              width="60"
-              align="center"
-              class-name="small-padding fixed-width"
-            >
+            <el-table-column label="操作" width="60" class-name="small-padding fixed-width">
               <template #default="scope">
                 <el-button
                   link
@@ -103,36 +83,35 @@
           </el-table>
         </el-card>
       </el-col>
-
-      <el-col :span="8">
-        <el-card :bordered="false" style="height: calc(100vh - 125px)">
+      <el-col :xs="24" :span="8">
+        <el-card :bordered="false">
           <template #header>
-            <Document style="width: 1em; height: 1em; vertical-align: middle" />
-            <span style="vertical-align: middle">缓存内容</span>
-            <el-button
-              style="float: right; padding: 3px 0"
-              link
-              type="primary"
-              icon="Refresh"
-              @click="handleClearCacheAll()"
-            >
-              清理全部
-            </el-button>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-x-2">
+                <Document style="width: 1em; height: 1em; vertical-align: middle" />
+                <span style="vertical-align: middle">缓存内容</span>
+              </div>
+              <div>
+                <el-button link type="primary" icon="Refresh" @click="handleClearCacheAll()">
+                  清理全部
+                </el-button>
+              </div>
+            </div>
           </template>
-          <el-form :model="cacheForm">
+          <el-form :model="cacheForm" label-width="auto">
             <el-row :gutter="32">
               <el-col :offset="1" :span="22">
-                <el-form-item label="缓存名称:" prop="cacheName">
+                <el-form-item label="缓存名称" prop="cacheName">
                   <el-input v-model="cacheForm.cacheName" :readOnly="true" />
                 </el-form-item>
               </el-col>
               <el-col :offset="1" :span="22">
-                <el-form-item label="缓存键名:" prop="cacheKey">
+                <el-form-item label="缓存键名" prop="cacheKey">
                   <el-input v-model="cacheForm.cacheKey" :readOnly="true" />
                 </el-form-item>
               </el-col>
               <el-col :offset="1" :span="22">
-                <el-form-item label="缓存内容:" prop="cacheValue">
+                <el-form-item label="缓存内容" prop="cacheValue">
                   <el-input
                     v-model="cacheForm.cacheValue"
                     type="textarea"
@@ -163,19 +142,22 @@ const { proxy } = getCurrentInstance()
 
 const cacheNames = ref([])
 const cacheKeys = ref([])
-const cacheForm = ref({})
+const cacheForm = ref({
+  cacheName: null,
+  cacheKey: null,
+  cacheValue: null,
+})
 const loading = ref(true)
 const subLoading = ref(false)
 const nowCacheName = ref('')
 const tableHeight = ref(window.innerHeight - 200)
 
 /** 查询缓存名称列表 */
-function getCacheNames() {
+async function getCacheNames() {
   loading.value = true
-  listCacheName().then((response) => {
-    cacheNames.value = response.data
-    loading.value = false
-  })
+  const response = await listCacheName()
+  cacheNames.value = response.data
+  loading.value = false
 }
 
 /** 刷新缓存名称列表 */
@@ -185,39 +167,36 @@ function refreshCacheNames() {
 }
 
 /** 清理指定名称缓存 */
-function handleClearCacheName(row) {
-  clearCacheName(row.cacheName).then((response) => {
-    proxy.$modal.msgSuccess('清理缓存名称[' + nowCacheName.value + ']成功')
-    getCacheKeys()
-  })
+async function handleClearCacheName(row) {
+  await clearCacheName(row.cacheName)
+  proxy.$modal.msgSuccess('清理缓存名称[' + nowCacheName.value + ']成功')
+  await getCacheKeys()
 }
 
 /** 查询缓存键名列表 */
-function getCacheKeys(row?: any) {
+async function getCacheKeys(row?: any) {
   const cacheName = row !== undefined ? row.cacheName : nowCacheName.value
   if (cacheName === '') {
     return
   }
   subLoading.value = true
-  listCacheKey(cacheName).then((response) => {
-    cacheKeys.value = response.data
-    subLoading.value = false
-    nowCacheName.value = cacheName
-  })
+  const response = await listCacheKey(cacheName)
+  cacheKeys.value = response.data
+  subLoading.value = false
+  nowCacheName.value = cacheName
 }
 
 /** 刷新缓存键名列表 */
-function refreshCacheKeys() {
-  getCacheKeys()
+async function refreshCacheKeys() {
+  await getCacheKeys()
   proxy.$modal.msgSuccess('刷新键名列表成功')
 }
 
 /** 清理指定键名缓存 */
-function handleClearCacheKey(cacheKey: any) {
-  clearCacheKey(cacheKey).then((response) => {
-    proxy.$modal.msgSuccess('清理缓存键名[' + cacheKey + ']成功')
-    getCacheKeys()
-  })
+async function handleClearCacheKey(cacheKey: any) {
+  await clearCacheKey(cacheKey)
+  proxy.$modal.msgSuccess('清理缓存键名[' + cacheKey + ']成功')
+  await getCacheKeys()
 }
 
 /** 列表前缀去除 */
@@ -231,18 +210,17 @@ function keyFormatter(cacheKey: any) {
 }
 
 /** 查询缓存内容详细 */
-function handleCacheValue(cacheKey: any) {
-  getCacheValue(nowCacheName.value, cacheKey).then((response) => {
-    cacheForm.value = response.data
-  })
+async function handleCacheValue(cacheKey: any) {
+  const response = await getCacheValue(nowCacheName.value, cacheKey)
+  cacheForm.value = response.data
 }
 
 /** 清理全部缓存 */
-function handleClearCacheAll() {
-  clearCacheAll().then((response) => {
-    proxy.$modal.msgSuccess('清理全部缓存成功')
-  })
+async function handleClearCacheAll() {
+  await clearCacheAll()
+  proxy.$modal.msgSuccess('清理全部缓存成功')
 }
-
-getCacheNames()
+onMounted(async () => {
+  await getCacheNames()
+})
 </script>

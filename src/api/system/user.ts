@@ -111,7 +111,7 @@ export function updateUserPwd(oldPassword, newPassword): Promise<any> {
   return request({
     url: '/system/user/profile/updatePwd',
     method: 'put',
-    params: data,
+    data,
   })
 }
 

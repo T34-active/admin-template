@@ -1,11 +1,13 @@
 <template>
   <div class="app-container">
-    <el-row>
+    <el-row :gutter="10">
       <el-col :span="12" class="card-box">
         <el-card>
           <template #header>
-            <Cpu style="width: 1em; height: 1em; vertical-align: middle" />
-            <span style="vertical-align: middle">CPU</span>
+            <div class="flex items-center gap-x-2">
+              <Cpu style="width: 1em; height: 1em; vertical-align: middle" />
+              <span style="vertical-align: middle">CPU</span>
+            </div>
           </template>
           <div class="el-table el-table--enable-row-hover el-table--medium">
             <table cellspacing="0" style="width: 100%">
@@ -45,12 +47,13 @@
           </div>
         </el-card>
       </el-col>
-
       <el-col :span="12" class="card-box">
         <el-card>
           <template #header>
-            <Tickets style="width: 1em; height: 1em; vertical-align: middle" />
-            <span style="vertical-align: middle">内存</span>
+            <div class="flex items-center gap-x-2">
+              <Tickets style="width: 1em; height: 1em; vertical-align: middle" />
+              <span style="vertical-align: middle">内存</span>
+            </div>
           </template>
           <div class="el-table el-table--enable-row-hover el-table--medium">
             <table cellspacing="0" style="width: 100%">
@@ -115,12 +118,13 @@
           </div>
         </el-card>
       </el-col>
-
       <el-col :span="24" class="card-box">
         <el-card>
           <template #header>
-            <Monitor style="width: 1em; height: 1em; vertical-align: middle" />
-            <span style="vertical-align: middle">服务器信息</span>
+            <div class="flex items-center gap-x-2">
+              <Monitor style="width: 1em; height: 1em; vertical-align: middle" />
+              <span style="vertical-align: middle">服务器信息</span>
+            </div>
           </template>
           <div class="el-table el-table--enable-row-hover el-table--medium">
             <table cellspacing="0" style="width: 100%">
@@ -152,12 +156,13 @@
           </div>
         </el-card>
       </el-col>
-
       <el-col :span="24" class="card-box">
         <el-card>
           <template #header>
-            <CoffeeCup style="width: 1em; height: 1em; vertical-align: middle" />
-            <span style="vertical-align: middle">Java虚拟机信息</span>
+            <div class="flex items-center gap-x-2">
+              <CoffeeCup style="width: 1em; height: 1em; vertical-align: middle" />
+              <span style="vertical-align: middle">Java虚拟机信息</span>
+            </div>
           </template>
           <div class="el-table el-table--enable-row-hover el-table--medium">
             <table cellspacing="0" style="width: 100%; table-layout: fixed">
@@ -211,57 +216,23 @@
           </div>
         </el-card>
       </el-col>
-
       <el-col :span="24" class="card-box">
         <el-card>
           <template #header>
-            <MessageBox style="width: 1em; height: 1em; vertical-align: middle" />
-            <span style="vertical-align: middle">磁盘状态</span>
+            <div class="flex items-center gap-x-2">
+              <MessageBox style="width: 1em; height: 1em; vertical-align: middle" />
+              <span style="vertical-align: middle">磁盘状态</span>
+            </div>
           </template>
-          <div class="el-table el-table--enable-row-hover el-table--medium">
-            <table cellspacing="0" style="width: 100%">
-              <thead>
-                <tr>
-                  <th class="el-table__cell el-table__cell is-leaf">
-                    <div class="cell">盘符路径</div>
-                  </th>
-                  <th class="el-table__cell is-leaf"><div class="cell">文件系统</div></th>
-                  <th class="el-table__cell is-leaf"><div class="cell">盘符类型</div></th>
-                  <th class="el-table__cell is-leaf"><div class="cell">总大小</div></th>
-                  <th class="el-table__cell is-leaf"><div class="cell">可用大小</div></th>
-                  <th class="el-table__cell is-leaf"><div class="cell">已用大小</div></th>
-                  <th class="el-table__cell is-leaf"><div class="cell">已用百分比</div></th>
-                </tr>
-              </thead>
-              <tbody v-if="server.sysFiles">
-                <tr v-for="(sysFile, index) in server.sysFiles" :key="index">
-                  <td class="el-table__cell is-leaf">
-                    <div class="cell">{{ sysFile.dirName }}</div>
-                  </td>
-                  <td class="el-table__cell is-leaf">
-                    <div class="cell">{{ sysFile.sysTypeName }}</div>
-                  </td>
-                  <td class="el-table__cell is-leaf">
-                    <div class="cell">{{ sysFile.typeName }}</div>
-                  </td>
-                  <td class="el-table__cell is-leaf">
-                    <div class="cell">{{ sysFile.total }}</div>
-                  </td>
-                  <td class="el-table__cell is-leaf">
-                    <div class="cell">{{ sysFile.free }}</div>
-                  </td>
-                  <td class="el-table__cell is-leaf">
-                    <div class="cell">{{ sysFile.used }}</div>
-                  </td>
-                  <td class="el-table__cell is-leaf">
-                    <div class="cell" :class="{ 'text-danger': sysFile.usage > 80 }">
-                      {{ sysFile.usage }}%
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <el-table :data="server.sysFiles">
+            <el-table-column label="盘符路径" min-width="180" prop="dirName" />
+            <el-table-column label="文件系统" min-width="180" prop="sysTypeName" />
+            <el-table-column label="盘符类型" min-width="180" prop="typeName" />
+            <el-table-column label="总大小" min-width="180" prop="total" />
+            <el-table-column label="可用大小" min-width="180" prop="free" />
+            <el-table-column label="已用大小" min-width="180" prop="used" />
+            <el-table-column label="已用百分比" min-width="180" prop="usage" />
+          </el-table>
         </el-card>
       </el-col>
     </el-row>
@@ -271,7 +242,43 @@
 <script setup lang="ts">
 import { getServer } from '@/api/monitor/server'
 
-const server = ref([])
+const server = ref({
+  cpu: {
+    cpuNum: null,
+    total: null,
+    sys: null,
+    used: null,
+    wait: null,
+    free: null,
+  },
+  mem: {
+    total: null,
+    used: null,
+    free: null,
+    usage: null,
+  },
+  jvm: {
+    total: null,
+    max: null,
+    free: null,
+    version: null,
+    home: null,
+    name: null,
+    startTime: null,
+    used: null,
+    usage: null,
+    runTime: null,
+    inputArgs: null,
+  },
+  sys: {
+    computerName: null,
+    computerIp: null,
+    userDir: null,
+    osName: null,
+    osArch: null,
+  },
+  sysFiles: [],
+})
 const { proxy } = getCurrentInstance()
 
 async function getList() {

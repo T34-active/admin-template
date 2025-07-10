@@ -8,7 +8,7 @@ import {
   listDeptExcludeChild,
 } from '@/api/system/dept'
 import { parseTime } from '@/utils/ruoyi'
-import type { FormRules } from 'element-plus'
+import type { FormInstance, FormRules } from 'element-plus'
 import { createRules } from '@/utils'
 import QueryForm, { type QueryItemConfig } from '@/components/QueryForm/index.vue'
 
@@ -24,7 +24,7 @@ const title = ref('')
 const deptOptions = ref([])
 const isExpandAll = ref(true)
 const refreshTable = ref(true)
-
+const deptRef = ref<FormInstance>(null)
 const items = ref<QueryItemConfig[]>([
   {
     label: '部门名称',
@@ -139,7 +139,7 @@ async function handleUpdate(department: any) {
 
 /** 提交按钮 */
 async function submitForm() {
-  const valid = await proxy.$refs.deptRef.validate()
+  const valid = await deptRef.value.validate()
   if (!valid) return
   if (form.value.deptId !== undefined) {
     await updateDept(form.value)

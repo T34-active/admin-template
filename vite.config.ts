@@ -7,6 +7,7 @@ export default defineConfig(({ mode, command }) => {
   const env = loadEnv(mode, process.cwd())
   const { VITE_APP_ENV, VITE_SERVER_BASEURL, VITE_APP_BASE_URL } = env
   console.log('环境变量 env -> ', env)
+  const buildHash = Math.random().toString(36).slice(2, 10) // 8位hash
   return {
     // 部署生产环境和开发环境下的URL。
     // 默认情况下，vite 会假设你的应用是被部署在一个域名的根路径上
@@ -57,6 +58,15 @@ export default defineConfig(({ mode, command }) => {
     define: {
       __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'false', // 禁用该功能标志
       // 你可以根据需要定义其他功能标志，参考 Vue 文档
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          entryFileNames: `assets/[name].${buildHash}.js`,
+          chunkFileNames: `assets/[name].${buildHash}.js`,
+          assetFileNames: `assets/[name].${buildHash}.[ext]`,
+        },
+      },
     },
   }
 })

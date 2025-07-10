@@ -180,7 +180,7 @@ export const dynamicRoutes: RouteRecordRaw[] = [
 const router = createRouter({
   history: createWebHistory(),
   routes: constantRoutes,
-  scrollBehavior(to, from, savedPosition) {
+  scrollBehavior(savedPosition) {
     if (savedPosition) {
       return savedPosition
     } else {

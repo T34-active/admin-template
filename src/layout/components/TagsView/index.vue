@@ -62,14 +62,12 @@ import useTagsViewStore from '@/store/modules/tagsView'
 import useSettingsStore from '@/store/modules/settings'
 import usePermissionStore from '@/store/modules/permission'
 
-import { useRoute, useRouter } from 'vue-router'
-
 const visible = ref(false)
 const top = ref(0)
 const left = ref(0)
-const selectedTag = ref<any>({})
-const affixTags = ref<any[]>([])
-const scrollPaneRef = ref<any>(null)
+const selectedTag = ref({})
+const affixTags = ref([])
+const scrollPaneRef = ref(null)
 
 const { proxy } = getCurrentInstance()
 const route = useRoute()

@@ -64,7 +64,7 @@ function handleClickOutside() {
   useAppStore().closeSideBar({ withoutAnimation: false })
 }
 
-const settingRef = ref<any>(null)
+const settingRef = ref(null)
 function setLayout() {
   settingRef.value?.openSetting()
 }
@@ -97,16 +97,11 @@ function setLayout() {
 }
 
 .fixed-header {
-  position: fixed;
+  position: sticky;
   top: 0;
   right: 0;
   z-index: 9;
-  width: calc(100% - #{$base-sidebar-width});
   transition: width 0.28s;
-}
-
-.hideSidebar .fixed-header {
-  width: calc(100% - 54px);
 }
 
 .sidebarHide .fixed-header {

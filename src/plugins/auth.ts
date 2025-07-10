@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import useUserStore from '@/store/modules/user'
 
 function authPermission(permission: any) {

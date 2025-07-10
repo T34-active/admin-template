@@ -75,29 +75,34 @@
       </div>
     </collapsePanel>
     <el-table v-loading="loading" :data="typeList" @selectionChange="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="字典编号" align="center" prop="dictId" />
+      <el-table-column type="selection" width="55" />
+      <el-table-column label="字典编号" prop="dictId" min-width="150" />
       <el-table-column
         label="字典名称"
-        align="center"
         prop="dictName"
         :show-overflow-tooltip="true"
+        min-width="150"
       />
-      <el-table-column label="字典类型" align="center" :show-overflow-tooltip="true">
+      <el-table-column label="字典类型" :show-overflow-tooltip="true" min-width="200">
         <template #default="scope">
           <router-link :to="'/system/dict-data/index/' + scope.row.dictId" class="link-type">
             <span>{{ scope.row.dictType }}</span>
           </router-link>
         </template>
       </el-table-column>
-      <el-table-column label="状态" align="center" prop="status">
+      <el-table-column label="状态" prop="status" min-width="75">
         <template #default="scope">
           <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center" prop="remark" :show-overflow-tooltip="true" />
-      <el-table-column label="创建时间" align="center" prop="createTime" min-width="180" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="创建时间" prop="createTime" min-width="200" />
+      <el-table-column label="备注" prop="remark" :show-overflow-tooltip="true" min-width="200" />
+      <el-table-column
+        label="操作"
+        class-name="small-padding fixed-width"
+        fixed="right"
+        min-width="150"
+      >
         <template #default="scope">
           <el-button
             v-hasPermi="['system:dict:edit']"
