@@ -3,14 +3,14 @@ import request from '@/utils/request'
 /**
  * 获取菜单列表。
  *
- * @param query - 查询参数，用于筛选菜单列表。
+ * @param params - 查询参数，用于筛选菜单列表。
  * @returns 包含菜单列表数据的 Promise。
  */
-export function listMenu(query): Promise<any> {
+export function listMenu(params = {}): Promise<any> {
   return request({
     url: '/system/menu/list',
     method: 'get',
-    params: query,
+    params,
   })
 }
 
