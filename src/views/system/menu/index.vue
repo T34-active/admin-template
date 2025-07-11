@@ -361,7 +361,6 @@ onMounted(async () => {
                         class="el-input__icon"
                         style="height: 32px; width: 16px"
                       />
-
                       <el-icon v-else style="height: 32px; width: 16px">
                         <search />
                       </el-icon>

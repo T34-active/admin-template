@@ -21,8 +21,8 @@ import elementIcons from '@/components/SvgIcon/svgicon'
 import './permission' // permission control
 
 // 注册全局组件
-import BottomFixed from '@/components/bottomFixed/index.vue'
-import collapsePanel from '@/components/collapsePanel/index.vue'
+import BottomFixed from '@/components/BottomFixed/index.vue'
+import collapsePanel from '@/components/CollapsePanel/index.vue'
 // 分页组件
 import Pagination from '@/components/Pagination/index.vue'
 // 字典标签组件
@@ -52,7 +52,7 @@ app.component('FileUpload', FileUpload)
 app.component('ImageUpload', ImageUpload)
 app.component('ImagePreview', ImagePreview)
 app.component('BottomFixed', BottomFixed)
-app.component('collapsePanel', collapsePanel)
+app.component('CollapsePanel', collapsePanel)
 // 全局方法挂载
 app.config.globalProperties.useDict = useDict
 app.config.globalProperties.download = download
