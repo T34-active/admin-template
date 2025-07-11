@@ -1,13 +1,15 @@
 <template>
   <div class="login min-h-screen bg-cover flex justify-center items-center">
-    <div class="container w-full flex items-center justify-end mx-auto">
+    <div
+      class="container w-full flex items-center lg:justify-end justify-center mx-auto duration-300 transition-all"
+    >
       <el-form
         ref="loginRef"
         :model="loginForm"
         :rules="loginRules"
-        class="login-form bg-white rounded-2xl pb-46px px-50px pt-42px"
+        class="login-form bg-white rounded-14 pb-46 px-50 pt-42"
       >
-        <img src="@/assets/logo/logo.png" :alt="title" class="mx-auto pb-6px" />
+        <img src="@/assets/logo/logo.png" :alt="title" class="mx-auto pb-6px size-100px" />
         <h3 class="text-primaryText text-center text-2xl font-medium pb-31px">
           {{ title }}
         </h3>
@@ -41,7 +43,7 @@
           </el-input>
         </el-form-item>
         <el-form-item v-if="captchaEnabled" prop="code">
-          <div class="flex-1 flex items-center justify-between">
+          <div class="flex-1 flex items-center justify-between gap-x-6">
             <div>
               <el-input
                 v-model="loginForm.code"
@@ -55,9 +57,12 @@
                 </template>
               </el-input>
             </div>
-            <div class="login-code">
-              <img :src="codeUrl" class="login-code-img" @click="getCode" :alt="codeUrl" />
-            </div>
+            <img
+              :src="codeUrl"
+              class="h-40 w-100 block bg-#D9EBFA"
+              @click="getCode"
+              :alt="codeUrl"
+            />
           </div>
         </el-form-item>
         <el-form-item style="width: 100%">
@@ -213,10 +218,5 @@ onMounted(async () => {
     cursor: pointer;
     vertical-align: middle;
   }
-}
-
-.login-code-img {
-  height: 40px;
-  padding-left: 12px;
 }
 </style>
