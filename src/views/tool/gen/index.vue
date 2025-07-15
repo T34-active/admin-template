@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { listTable, previewTable, delTable, genCode, synchDb } from '@/api/tool/gen'
+import { listTable, delTable, genCode, synchDb } from '@/api/tool/gen'
 import router from '@/router'
 import importTable from './importTable.vue'
 import createTable from './createTable.vue'
@@ -19,22 +19,12 @@ const tableNames = ref([])
 const dateRange = ref<[Date | null, Date | null]>([null, null])
 const uniqueId = ref('')
 
-const data = reactive({
-  queryParams: {
-    pageNum: 1,
-    pageSize: 10,
-    tableName: undefined,
-    tableComment: undefined,
-  },
-  preview: {
-    open: false,
-    title: '代码预览',
-    data: {},
-    activeName: 'domain.java',
-  },
+const queryParams = ref({
+  pageNum: 1,
+  pageSize: 50,
+  tableName: undefined,
+  tableComment: undefined,
 })
-
-const { queryParams, preview } = toRefs(data)
 
 onActivated(() => {
   const time = route.query.t
@@ -357,7 +347,6 @@ onMounted(async () => {
         />
       </div>
     </BottomFixed>
-
     <import-table ref="importRef" @ok="handleQuery" />
     <create-table ref="createRef" @ok="handleQuery" />
   </div>
