@@ -46,7 +46,7 @@
         <el-table-column prop="updateTime" label="更新时间" />
       </el-table>
     </el-row>
-    <div class="flex items-center justify-end p-4">
+    <div class="flex items-center justify-end p-16">
       <pagination
         v-show="total > 0"
         :total="total"

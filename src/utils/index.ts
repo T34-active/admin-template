@@ -9,7 +9,7 @@ import type { FormItemRule } from 'element-plus'
 export const createRules = (
   message: string,
   options?: {
-    validator?: (value: any) => boolean | Promise<boolean>
+    validator?: (value: any) => boolean | Promise<void>
     trigger?: FormItemRule['trigger']
     required?: boolean
   },
@@ -17,6 +17,7 @@ export const createRules = (
   const { validator, trigger = 'change', required = true } = options || {}
   const rule: FormItemRule = {
     trigger,
+    required,
     message,
   }
   if (validator) {
@@ -24,12 +25,14 @@ export const createRules = (
       const result = validator(value)
       if (typeof result === 'boolean') {
         result ? callback() : callback(new Error(message))
-      } else {
-        result.then(() => callback()).catch(() => callback(new Error(message)))
+      } else if (result && typeof result.then === 'function') {
+        result
+          .then(() => callback())
+          .catch((err) =>
+            callback(typeof err === 'string' ? new Error(err) : err || new Error(message)),
+          )
       }
     }
-  } else {
-    rule.required = required
   }
   return [rule]
 }
@@ -57,4 +60,9 @@ export function disabledFutureDate(date: Date) {
 export function formatToMoney(value: string): string {
   const match = value.match(/^\d*(\.?\d{0,2})?/)
   return match ? match[0] : ''
+}
+
+// 适用于简单的非空校验
+export const validatorIsEmpty = (val: any) => {
+  return val !== null && val !== undefined && String(val).trim().length > 0
 }

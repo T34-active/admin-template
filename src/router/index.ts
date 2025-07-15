@@ -175,6 +175,20 @@ export const dynamicRoutes: RouteRecordRaw[] = [
       },
     ],
   },
+  {
+    path: '/tool/gen-detail',
+    component: Layout,
+    hidden: true,
+    permissions: ['tool:gen:edit'],
+    children: [
+      {
+        path: 'index/:tableId(\\d+)',
+        component: () => import('@/views/tool/gen/genDetail.vue'),
+        name: 'GenDetail',
+        meta: { title: '查看代码', activeMenu: '/tool/gen-detail' },
+      },
+    ],
+  },
 ]
 
 const router = createRouter({

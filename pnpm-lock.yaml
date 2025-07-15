@@ -48,8 +48,8 @@ importers:
         specifier: ^6.1.0
         version: 6.1.0
       element-plus:
-        specifier: ^2.10.2
-        version: 2.10.2(vue@3.5.14(typescript@5.8.3))
+        specifier: ^2.10.4
+        version: 2.10.4(vue@3.5.14(typescript@5.8.3))
       file-saver:
         specifier: 2.0.5
         version: 2.0.5
@@ -1662,8 +1662,8 @@ packages:
   element-china-area-data@6.1.0:
     resolution: {integrity: sha512-IkpcjwQv2A/2AxFiSoaISZ+oMw1rZCPUSOg5sOCwT5jKc96TaawmKZeY81xfxXsO0QbKxU5LLc6AirhG52hUmg==}
 
-  element-plus@2.10.2:
-    resolution: {integrity: sha512-p2KiAa0jEGXrzdlTAfpiS7HQFAhla4gvx6H7RuDf+OO0uC3DGpolxvdHjFR8gt7+vaWyxQNcHa1sAdBkmjqlgA==}
+  element-plus@2.10.4:
+    resolution: {integrity: sha512-UD4elWHrCnp1xlPhbXmVcaKFLCRaRAY6WWRwemGfGW3ceIjXm9fSYc9RNH3AiOEA6Ds1p9ZvhCs76CR9J8Vd+A==}
     peerDependencies:
       vue: ^3.2.0
 
@@ -5132,7 +5132,7 @@ snapshots:
     dependencies:
       china-division: 2.7.0
 
-  element-plus@2.10.2(vue@3.5.14(typescript@5.8.3)):
+  element-plus@2.10.4(vue@3.5.14(typescript@5.8.3)):
     dependencies:
       '@ctrl/tinycolor': 3.6.1
       '@element-plus/icons-vue': 2.3.1(vue@3.5.14(typescript@5.8.3))

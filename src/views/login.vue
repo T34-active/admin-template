@@ -5,7 +5,7 @@
         ref="loginRef"
         :model="loginForm"
         :rules="loginRules"
-        class="login-form bg-white rounded-2xl pb-46 px-50 pt-42 min-w-400"
+        class="login-form rounded-2xl pb-46 px-50 pt-42 min-w-400 bg-white"
       >
         <img src="@/assets/logo/logo.png" :alt="title" class="mx-auto pb-6" />
         <h3 class="text-primaryText text-center text-2xl font-medium pb-31">
@@ -34,6 +34,7 @@
             placeholder="密码"
             @keyup.enter="handleLogin"
             clearable
+            show-password
           >
             <template #prefix>
               <svg-icon icon-class="password" class="el-input__icon input-icon" />

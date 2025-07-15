@@ -154,7 +154,7 @@ onMounted(async () => {
 <template>
   <div class="app-container">
     <collapsePanel v-model="showSearch">
-      <div class="p-4">
+      <div class="p-16">
         <el-form :model="queryParams" ref="queryRef" label-width="auto">
           <el-row :gutter="20">
             <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="8">
@@ -348,7 +348,7 @@ onMounted(async () => {
       </el-table-column>
     </el-table>
     <BottomFixed>
-      <div class="flex items-center justify-end p-4">
+      <div class="flex items-center justify-end p-16">
         <pagination
           :total="total"
           v-model:page="queryParams.pageNum"

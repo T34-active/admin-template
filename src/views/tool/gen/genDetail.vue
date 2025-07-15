@@ -22,6 +22,7 @@ function getLangClass(fileName: string): string {
   if (pureName.endsWith('.xml')) return 'language-xml'
   if (pureName.endsWith('.sql')) return 'language-java'
   if (pureName.endsWith('.js') || pureName.endsWith('.vue')) return 'language-javascript'
+  if (pureName.endsWith('.ts')) return 'language-typescript'
   return 'language-plaintext'
 }
 /** 复制代码成功 */
@@ -75,7 +76,7 @@ onMounted(async () => {
       </el-tab-pane>
     </el-tabs>
     <BottomFixed>
-      <div class="flex items-center justify-center p-4">
+      <div class="flex items-center justify-center p-16">
         <el-button @click="handleClose">返回</el-button>
       </div>
     </BottomFixed>
