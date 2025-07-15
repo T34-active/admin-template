@@ -151,7 +151,7 @@ getList()
 <template>
   <div class="app-container">
     <collapsePanel v-model="showSearch">
-      <div class="p-4">
+      <div class="p-16">
         <el-form ref="queryRef" :model="queryParams" label-width="auto">
           <el-row :gutter="10">
             <QueryForm :model="queryParams" :items="items" />
@@ -249,7 +249,7 @@ getList()
       </el-table-column>
     </el-table>
     <BottomFixed>
-      <div class="flex justify-end items-center p-4">
+      <div class="flex justify-end items-center p-16">
         <pagination
           v-model:page="queryParams.pageNum"
           v-model:limit="queryParams.pageSize"

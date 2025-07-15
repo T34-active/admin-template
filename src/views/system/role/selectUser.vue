@@ -4,7 +4,6 @@
     v-model="visible"
     title="选择用户"
     width="800px"
-    top="5vh"
     append-to-body
     :close-on-click-modal="false"
   >
@@ -63,7 +62,6 @@
       </el-table>
     </el-row>
     <pagination
-      v-show="total > 0"
       v-model:page="queryParams.pageNum"
       v-model:limit="queryParams.pageSize"
       :total="total"

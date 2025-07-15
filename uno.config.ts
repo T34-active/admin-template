@@ -1,4 +1,11 @@
-import { defineConfig, presetAttributify, presetIcons, presetMini, presetUno } from 'unocss'
+import {
+  defineConfig,
+  presetAttributify,
+  presetIcons,
+  presetMini,
+  presetUno,
+  transformerDirectives,
+} from 'unocss'
 import presetRemToPx from '@unocss/preset-rem-to-px'
 // 刚使用 unocss 的朋友，可以借助这个工具： https://to-unocss.netlify.app
 
@@ -17,13 +24,10 @@ export default defineConfig({
       baseFontSize: 4,
     }),
   ],
-  shortcuts: [
-    // shortcuts to multiple utilities
-    [
-      'btn',
-      'px-6 py-3 rounded-3 border-none inline-block bg-green-400 text-white cursor-pointer !outline-none hover:bg-green-600 disabled:cursor-default disabled:bg-gray-600 disabled:opacity-50',
-    ],
-    ['center', 'flex justify-center items-center'],
+  shortcuts: [['center', 'flex justify-center items-center']],
+  transformers: [
+    // 启用 @apply 功能
+    transformerDirectives(),
   ],
   theme: {
     colors: {

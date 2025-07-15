@@ -8,8 +8,8 @@
     :placeholder="item.placeholder"
     :start-placeholder="item.startPlaceholder"
     :end-placeholder="item.endPlaceholder"
-    :dict="item.dict"
-    v-model="model[item.prop]"
+    :dict="unref(item.dict)"
+    v-model="proxyModel[item.prop]"
   />
 </template>
 
@@ -47,6 +47,7 @@
  *   { label: '时间范围', prop: 'timeRange', type: 'daterange', startPlaceholder: '开始时间', endPlaceholder: '结束时间' }
  * ]
  */
+import { unref } from 'vue'
 import type { Ref } from 'vue'
 import QueryItem from '@/components/QueryItem/index.vue' // 引入通用查询项组件
 
@@ -72,7 +73,11 @@ const props = defineProps<{
   model: Record<string, any> // 表单绑定的数据对象（通过 v-model 传入）
   items: QueryItemConfig[] // 表单项配置数组（定义需要渲染哪些查询项）
 }>()
-
+// ✅ 新增 computed 代理
+const proxyModel = computed({
+  get: () => props.model,
+  set: (val) => emit('update:model', val),
+})
 // 声明自定义事件，用于向父组件通知更新
 const emit = defineEmits(['update:model', 'change'])
 </script>

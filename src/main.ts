@@ -12,6 +12,7 @@ import 'virtual:uno.css'
 import '@unocss/reset/tailwind.css'
 // element css
 import 'element-plus/dist/index.css'
+import 'element-plus/theme-chalk/dark/css-vars.css'
 import '@/assets/styles/index.scss' // global css
 // svg图标
 import 'virtual:svg-icons-register'

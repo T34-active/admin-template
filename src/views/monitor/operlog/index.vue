@@ -171,7 +171,7 @@ onMounted(async () => {
 <template>
   <div class="app-container">
     <collapsePanel v-model="showSearch">
-      <div class="p-4">
+      <div class="p-16">
         <el-form ref="queryRef" :model="queryParams" label-width="auto">
           <el-row :gutter="10">
             <QueryForm :model="queryParams" :items="items" />
@@ -230,38 +230,30 @@ onMounted(async () => {
       @sortChange="handleSortChange"
       border
     >
-      <el-table-column type="selection" width="50" align="center" />
-      <el-table-column label="日志编号" align="center" prop="operId" />
-      <el-table-column label="系统模块" align="center" prop="title" :show-overflow-tooltip="true" />
-      <el-table-column label="操作类型" align="center" prop="businessType">
+      <el-table-column type="selection" width="50" />
+      <el-table-column label="日志编号" prop="operId" />
+      <el-table-column label="系统模块" prop="title" :show-overflow-tooltip="true" />
+      <el-table-column label="操作类型" prop="businessType">
         <template #default="scope">
           <dict-tag :options="sys_oper_type" :value="scope.row.businessType" />
         </template>
       </el-table-column>
       <el-table-column
         label="操作人员"
-        align="center"
         width="110"
         prop="operName"
         :show-overflow-tooltip="true"
         sortable="custom"
         :sort-orders="['descending', 'ascending']"
       />
-      <el-table-column
-        label="主机"
-        align="center"
-        prop="operIp"
-        width="130"
-        :show-overflow-tooltip="true"
-      />
-      <el-table-column label="操作状态" align="center" prop="status">
+      <el-table-column label="主机" prop="operIp" width="130" :show-overflow-tooltip="true" />
+      <el-table-column label="操作状态" prop="status">
         <template #default="scope">
           <dict-tag :options="sys_common_status" :value="scope.row.status" />
         </template>
       </el-table-column>
       <el-table-column
         label="操作日期"
-        align="center"
         prop="operTime"
         sortable="custom"
         :sort-orders="['descending', 'ascending']"
@@ -269,7 +261,6 @@ onMounted(async () => {
       />
       <el-table-column
         label="消耗时间"
-        align="center"
         prop="costTime"
         width="110"
         :show-overflow-tooltip="true"
@@ -280,12 +271,7 @@ onMounted(async () => {
           <span>{{ scope.row.costTime }}毫秒</span>
         </template>
       </el-table-column>
-      <el-table-column
-        label="操作"
-        align="center"
-        class-name="small-padding fixed-width"
-        fixed="right"
-      >
+      <el-table-column label="操作" class-name="small-padding fixed-width" fixed="right">
         <template #default="scope">
           <el-button
             v-hasPermi="['monitor:operlog:query']"
@@ -300,7 +286,7 @@ onMounted(async () => {
       </el-table-column>
     </el-table>
     <BottomFixed>
-      <div class="flex items-center justify-end p-4">
+      <div class="flex items-center justify-end p-16">
         <pagination
           v-model:page="queryParams.pageNum"
           v-model:limit="queryParams.pageSize"

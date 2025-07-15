@@ -22,16 +22,6 @@ body {
     sans-serif;
 }
 
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  margin: 0;
-}
-
 html {
   height: 100%;
   box-sizing: border-box;
@@ -45,10 +35,6 @@ html {
 *:before,
 *:after {
   box-sizing: inherit;
-}
-
-.no-padding {
-  padding: 0px !important;
 }
 
 .padding-content {
@@ -70,34 +56,6 @@ a:hover {
 
 div:focus {
   outline: none;
-}
-
-.fr {
-  float: right;
-}
-
-.fl {
-  float: left;
-}
-
-.pr-5 {
-  padding-right: 5px;
-}
-
-.pl-5 {
-  padding-left: 5px;
-}
-
-.block {
-  display: block;
-}
-
-.pointer {
-  cursor: pointer;
-}
-
-.inlineBlock {
-  display: block;
 }
 
 .clearfix {
@@ -127,11 +85,11 @@ aside {
   -moz-osx-font-smoothing: grayscale;
 
   a {
-    color: #337ab7;
+    @apply text-primary;
     cursor: pointer;
 
     &:hover {
-      color: rgb(32, 160, 255);
+      @apply text-primary/80;
     }
   }
 }
@@ -148,11 +106,11 @@ aside {
 
 .link-type,
 .link-type:focus {
-  color: #337ab7;
+  @apply text-primary;
   cursor: pointer;
 
   &:hover {
-    color: rgb(32, 160, 255);
+    @apply text-primary/80;
   }
 }
 

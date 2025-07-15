@@ -1,15 +1,8 @@
 <template>
-  <div
-    class="sidebar-logo-container"
-    :class="{ collapse: collapse }"
-    :style="{
-      backgroundColor:
-        sideTheme === 'theme-dark' ? variables.menuBackground : variables.menuLightBackground,
-    }"
-  >
+  <div class="sidebar-logo-container" :class="{ collapse: collapse }">
     <transition name="sidebarLogoFade">
       <router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
-        <img v-if="logo" :src="logo" class="sidebar-logo rounded-50%" />
+        <img alt="" v-if="logo" :src="logo" class="sidebar-logo rounded-50%" />
         <h1
           v-else
           class="sidebar-title"
@@ -22,7 +15,7 @@
         </h1>
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link" to="/">
-        <img v-if="logo" :src="logo" class="sidebar-logo rounded-50%" />
+        <img alt="" v-if="logo" :src="logo" class="sidebar-logo rounded-full" />
         <h1
           class="sidebar-title"
           :style="{
@@ -38,10 +31,9 @@
 </template>
 
 <script setup lang="ts">
-import variables from '@/assets/styles/variables.module.scss'
-import logo from '@/assets/images/profile.jpg'
+import logo from '@/assets/logo/logo.png'
 import useSettingsStore from '@/store/modules/settings'
-// import collapse from 'element-plus/es/components/collapse';
+import variables from '@/assets/styles/variables.module.scss'
 
 defineProps({
   collapse: {
@@ -53,6 +45,22 @@ defineProps({
 const title = import.meta.env.VITE_APP_TITLE
 const settingsStore = useSettingsStore()
 const sideTheme = computed(() => settingsStore.sideTheme)
+
+// 获取Logo背景色
+const getLogoBackground = computed(() => {
+  if (settingsStore.isDark) {
+    return 'var(--sidebar-bg)'
+  }
+  return sideTheme.value === 'theme-dark' ? variables.menuBg : variables.menuLightBg
+})
+
+// 获取Logo文字颜色
+const getLogoTextColor = computed(() => {
+  if (settingsStore.isDark) {
+    return 'var(--sidebar-text)'
+  }
+  return sideTheme.value === 'theme-dark' ? '#fff' : variables.menuLightText
+})
 </script>
 
 <style lang="scss" scoped>
@@ -70,7 +78,7 @@ const sideTheme = computed(() => settingsStore.sideTheme)
   width: 100%;
   height: 50px;
   line-height: 50px;
-  background: #2b2f3a;
+  background: v-bind(getLogoBackground);
   text-align: center;
   overflow: hidden;
 
@@ -89,7 +97,7 @@ const sideTheme = computed(() => settingsStore.sideTheme)
     & .sidebar-title {
       display: inline-block;
       margin: 0;
-      color: #fff;
+      color: v-bind(getLogoTextColor);
       font-weight: 600;
       line-height: 50px;
       font-size: 14px;
@@ -105,7 +113,7 @@ const sideTheme = computed(() => settingsStore.sideTheme)
 
   &.collapse {
     .sidebar-logo {
-      margin-right: 0px;
+      margin-right: 0;
     }
   }
 }

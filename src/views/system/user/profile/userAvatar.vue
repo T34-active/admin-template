@@ -97,7 +97,7 @@ function closeDialog() {
 <template>
   <div>
     <div class="user-info-head" @click="editCropper()">
-      <img :src="options.img" title="点击上传头像" class="img-circle img-lg" alt="点击上传头像" />
+      <img :src="options.img" title="点击上传头像" class="rounded-full img-lg" alt="点击上传头像" />
     </div>
     <el-dialog
       v-model="open"

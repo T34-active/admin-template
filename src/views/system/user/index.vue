@@ -366,10 +366,10 @@ onMounted(async () => {
       <!--用户数据-->
       <el-col :span="20" :xs="24" :sm="18" :md="18" :lg="20" :xl="20">
         <CollapsePanel v-model="showSearch">
-          <div class="p-4">
+          <div class="p-16">
             <el-form ref="queryRef" :model="queryParams" label-width="auto">
               <el-row :gutter="20">
-                <QueryForm :model="queryParams" :items="items" />
+                <QueryForm :model="queryParams" :items="items" @change="handleQuery" />
               </el-row>
             </el-form>
             <el-row :gutter="10">
@@ -440,37 +440,28 @@ onMounted(async () => {
           </div>
         </CollapsePanel>
         <el-table v-loading="loading" :data="userList" @selectionChange="handleSelectionChange">
-          <el-table-column type="selection" width="50" align="center" />
-          <el-table-column key="userId" label="用户编号" align="center" prop="userId" />
+          <el-table-column type="selection" width="50" />
+          <el-table-column key="userId" label="用户编号" prop="userId" />
           <el-table-column
             key="userName"
             label="用户名称"
-            align="center"
             prop="userName"
             :show-overflow-tooltip="true"
           />
           <el-table-column
             key="nickName"
             label="用户昵称"
-            align="center"
             prop="nickName"
             :show-overflow-tooltip="true"
           />
           <el-table-column
             key="deptName"
             label="部门"
-            align="center"
             prop="dept.deptName"
             :show-overflow-tooltip="true"
           />
-          <el-table-column
-            key="phonenumber"
-            label="手机号码"
-            align="center"
-            prop="phonenumber"
-            width="120"
-          />
-          <el-table-column key="status" label="状态" align="center" min-width="80">
+          <el-table-column key="phonenumber" label="手机号码" prop="phonenumber" width="120" />
+          <el-table-column key="status" label="状态" min-width="80">
             <template #default="scope">
               <el-switch
                 v-model="scope.row.status"
@@ -480,10 +471,9 @@ onMounted(async () => {
               />
             </template>
           </el-table-column>
-          <el-table-column label="创建时间" align="center" prop="createTime" min-width="160" />
+          <el-table-column label="创建时间" prop="createTime" min-width="160" />
           <el-table-column
             label="操作"
-            align="center"
             min-width="150"
             class-name="small-padding fixed-width"
             fixed="right"
@@ -529,9 +519,8 @@ onMounted(async () => {
           </el-table-column>
         </el-table>
         <BottomFixed>
-          <div class="flex items-center justify-end p-4">
+          <div class="flex items-center justify-end p-16">
             <pagination
-              v-show="total > 0"
               :total="total"
               v-model:page="queryParams.pageNum"
               v-model:limit="queryParams.pageSize"

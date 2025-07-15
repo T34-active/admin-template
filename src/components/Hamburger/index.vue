@@ -1,8 +1,8 @@
 <template>
-  <div style="padding: 0 15px" @click="toggleClick">
+  <div class="p-16" @click="toggleClick">
     <svg
-      :class="{ 'is-active': isActive }"
-      class="hamburger"
+      :class="{ 'rotate-180': isActive }"
+      class="inline-block align-middle w-20px h-20px transition-all duration-450 dark:fill-white"
       viewBox="0 0 1024 1024"
       xmlns="http://www.w3.org/2000/svg"
       width="64"
@@ -28,16 +28,3 @@ const toggleClick = () => {
   emit('toggleClick')
 }
 </script>
-
-<style scoped>
-.hamburger {
-  display: inline-block;
-  vertical-align: middle;
-  width: 20px;
-  height: 20px;
-}
-
-.hamburger.is-active {
-  transform: rotate(180deg);
-}
-</style>

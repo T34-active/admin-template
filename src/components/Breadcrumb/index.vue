@@ -15,14 +15,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
 const router = useRouter()
 const levelList = ref<any[]>([])
 
-function getBreadcrumb() {
+async function getBreadcrumb() {
   // only show routes with meta.title
   let matched: any = route.matched.filter((item) => item.meta && item.meta.title)
   const first = matched[0]
@@ -30,11 +29,11 @@ function getBreadcrumb() {
   if (!isDashboard(first)) {
     matched = [{ path: '/index', meta: { title: '首页' } }].concat(matched)
   }
-
   levelList.value = matched.filter(
     (item: any) => item.meta && item.meta.title && item.meta.breadcrumb !== false,
   )
 }
+
 function isDashboard(route: any) {
   const name = route && route.name
   if (!name) {
@@ -42,6 +41,7 @@ function isDashboard(route: any) {
   }
   return name.trim() === 'Index'
 }
+
 function handleLink(item: any) {
   const { redirect, path } = item
   if (redirect) {
@@ -58,7 +58,9 @@ watchEffect(() => {
   }
   getBreadcrumb()
 })
-getBreadcrumb()
+onMounted(async () => {
+  await getBreadcrumb()
+})
 </script>
 
 <style lang="scss" scoped>

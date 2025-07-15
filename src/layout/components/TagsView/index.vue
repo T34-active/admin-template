@@ -1,13 +1,17 @@
 <template>
-  <div id="tags-view-container" class="tags-view-container">
-    <scroll-pane ref="scrollPaneRef" class="tags-view-wrapper" @scroll="handleScroll">
+  <div id="tags-view-container" class="tags-view-container w-full">
+    <scroll-pane
+      ref="scrollPaneRef"
+      class="tags-view-wrapper px-8 bg-white dark:bg-black"
+      @scroll="handleScroll"
+    >
       <router-link
         v-for="tag in visitedViews"
         :key="tag.path"
         :data-path="tag.path"
         :class="isActive(tag) ? 'active' : ''"
         :to="{ path: tag.path, query: tag.query, fullPath: tag.fullPath } as any"
-        class="tags-view-item inline-flex items-center rounded-md gap-x-0.5 shadow-md"
+        class="tags-view-item inline-flex items-center rounded-2xl gap-x-0.5 shadow-xl"
         :style="activeStyle(tag)"
         @click.middle="!isAffix(tag) ? closeSelectedTag(tag) : ''"
         @contextmenu.prevent="openMenu(tag, $event)"
@@ -23,32 +27,32 @@
       :style="{ left: left + 'px', top: top + 'px' }"
       class="contextmenu flex flex-col shadow-2xl"
     >
-      <li @click="refreshSelectedTag(selectedTag)" class="flex items-center">
-        <refresh-right style="width: 1em; height: 1em" />
+      <li @click="refreshSelectedTag(selectedTag)" class="flex items-center gap-x-2">
+        <refresh-right class="size-12" />
         刷新页面
       </li>
       <li
         v-if="!isAffix(selectedTag)"
         @click="closeSelectedTag(selectedTag)"
-        class="flex items-center"
+        class="flex items-center gap-x-2"
       >
-        <close style="width: 1em; height: 1em" />
+        <close class="size-12" />
         关闭当前
       </li>
-      <li @click="closeOthersTags" class="flex items-center">
-        <circle-close style="width: 1em; height: 1em" />
+      <li @click="closeOthersTags" class="flex items-center gap-x-2">
+        <circle-close class="size-12" />
         关闭其他
       </li>
-      <li v-if="!isFirstView()" @click="closeLeftTags" class="flex items-center">
-        <back style="width: 1em; height: 1em" />
+      <li v-if="!isFirstView()" @click="closeLeftTags" class="flex items-center gap-x-2">
+        <back class="size-12" />
         关闭左侧
       </li>
-      <li v-if="!isLastView()" @click="closeRightTags" class="flex items-center">
-        <right style="width: 1em; height: 1em" />
+      <li v-if="!isLastView()" @click="closeRightTags" class="flex items-center gap-x-2">
+        <right class="size-12" />
         关闭右侧
       </li>
-      <li @click="closeAllTags(selectedTag)" class="flex items-center">
-        <circle-close style="width: 1em; height: 1em" />
+      <li @click="closeAllTags(selectedTag)" class="flex items-center gap-x-2">
+        <circle-close class="size-12" />
         全部关闭
       </li>
     </ul>
@@ -65,7 +69,9 @@ import usePermissionStore from '@/store/modules/permission'
 const visible = ref(false)
 const top = ref(0)
 const left = ref(0)
-const selectedTag = ref({})
+const selectedTag = ref({
+  fullPath: null,
+})
 const affixTags = ref([])
 const scrollPaneRef = ref(null)
 
@@ -263,16 +269,12 @@ function handleScroll() {
 <style lang="scss" scoped>
 .tags-view-container {
   height: 34px;
-  width: 100%;
-  background: #fff;
   border-bottom: 1px solid #d8dce5;
   box-shadow:
     0 1px 3px 0 rgba(0, 0, 0, 0.12),
     0 0 3px 0 rgba(0, 0, 0, 0.04);
   .tags-view-wrapper {
     .tags-view-item {
-      position: relative;
-      cursor: pointer;
       height: 26px;
       line-height: 26px;
       border: 1px solid #d8dce5;
@@ -282,16 +284,9 @@ function handleScroll() {
       font-size: 12px;
       margin-left: 5px;
       margin-top: 4px;
-      &:first-of-type {
-        margin-left: 15px;
-      }
-      &:last-of-type {
-        margin-right: 15px;
-      }
       &.active {
-        background-color: #42b983;
+        @apply bg-primary border-primary;
         color: #fff;
-        border-color: #42b983;
         &::before {
           content: '';
           background: #fff;

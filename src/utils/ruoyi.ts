@@ -35,6 +35,37 @@ export function resetForm(refName) {
 }
 
 /**
+ * 向请求参数中添加日期范围（平级输出）
+ * @param params 原始参数对象
+ * @param dateRange 日期范围数组 [开始时间, 结束时间]
+ * @param propName 属性名（可选，默认为 beginTime/endTime）
+ */
+export function upDateAddDateRange(
+  params: Record<string, any>,
+  dateRange: [Date | string | undefined, Date | string | undefined] = [undefined, undefined],
+  propName?: string,
+) {
+  const [begin, end] = dateRange
+  const result = { ...params }
+  // 删除不需要的字段
+  delete result.dateRange
+  // 平铺 notParams 中的字段（如果存在）
+  if (result.notParams && typeof result.notParams === 'object') {
+    Object.assign(result, result.notParams)
+    delete result.notParams
+  }
+  // 设置平级的日期字段
+  if (!propName) {
+    result.beginTime = begin
+    result.endTime = end
+  } else {
+    result[`begin${propName}`] = begin
+    result[`end${propName}`] = end
+  }
+  return result
+}
+
+/**
  * 向请求参数中添加日期范围
  * @param params 原始参数对象
  * @param dateRange 日期范围数组，最多两个时间（开始和结束）
@@ -59,6 +90,39 @@ export function addDateRange(
   } else {
     result.params[`begin${propName}`] = begin
     result.params[`end${propName}`] = end
+  }
+  return result
+}
+
+/**
+ * 批量向请求参数中添加所有区间范围字段
+ * 约定所有区间字段格式为 [begin, end]
+ * 会自动识别如 createdAt, updatedAt, dateRange 等区间字段
+ * 并在 params 下生成对应的 beginXxx、endXxx 字段
+ */
+export function addAllDateRanges(
+  params: Record<string, any>,
+  propNameMap?: Record<string, string>,
+) {
+  const result = { ...params }
+  result.params =
+    typeof result.params === 'object' && result.params !== null && !Array.isArray(result.params)
+      ? { ...result.params }
+      : {}
+  // 默认需要处理的字段
+  const keys = Object.keys(result).filter(
+    (key) =>
+      Array.isArray(result[key]) &&
+      result[key].length === 2 &&
+      (result[key][0] !== undefined || result[key][1] !== undefined),
+  )
+  for (const key of keys) {
+    const [begin, end] = result[key]
+    // 支持传入 propNameMap 做映射，比如 { createdAt: 'CreatedAt', updatedAt: 'UpdatedAt' }
+    const finalKey = propNameMap?.[key] || key.charAt(0).toUpperCase() + key.slice(1)
+    result.params[`begin${finalKey}`] = begin
+    result.params[`end${finalKey}`] = end
+    delete result[key] // 删除原始区间字段，避免冗余
   }
   return result
 }

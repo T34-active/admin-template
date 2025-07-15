@@ -5,7 +5,7 @@
   <div
     ref="footerRef"
     :style="{ width: appStore.sidebar.opened ? 'calc(100% - 200px)' : '' }"
-    class="shadow-[0_-4px_10px_rgba(0,0,0,0.1)] fixed w-full bottom-0 right-0 bg-white z-990 transition-all duration-300"
+    class="shadow-[0_-4px_10px_rgba(0,0,0,0.1)] fixed w-full bottom-0 right-0 z-990 transition-all duration-300 bg-white dark:bg-black"
   >
     <slot />
   </div>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defaultTime, disabledFutureDate } from '@/utils/index'
+import { defaultTime, disabledFutureDate } from '@/utils'
 
 const props = defineProps({
   // v-model 绑定的值，可以是多种类型（字符串、数字、数组、对象、布尔）
@@ -54,16 +54,21 @@ const innerValue = computed({
   <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="8">
     <el-form-item :label="label" :prop="prop">
       <!-- 输入框类型 -->
-      <el-input v-if="type === 'input'" v-model="innerValue" :placeholder="placeholder" clearable />
+      <el-input
+        v-if="type === 'input'"
+        v-model="innerValue as string | number"
+        :placeholder="placeholder"
+        clearable
+      />
+
       <!-- 下拉选择类型 -->
       <el-select
         v-if="type === 'select'"
-        v-model="innerValue"
+        v-model="innerValue as string | number | Array<string | number>"
         :placeholder="placeholder"
         clearable
         filterable
       >
-        <!-- 通过 dict 数组渲染下拉选项 -->
         <el-option
           v-for="item in dict || []"
           :key="item.value"
@@ -71,10 +76,11 @@ const innerValue = computed({
           :value="item.value"
         />
       </el-select>
+
       <!-- 日期范围选择 -->
       <el-date-picker
         v-if="type === 'daterange'"
-        v-model="innerValue"
+        v-model="innerValue as [string, string]"
         type="daterange"
         value-format="YYYY-MM-DD"
         range-separator="-"
@@ -83,10 +89,11 @@ const innerValue = computed({
         :disabled-date="disabledFutureDate"
         clearable
       />
+
       <!-- 日期时间范围选择 -->
       <el-date-picker
         v-if="type === 'datetimerange'"
-        v-model="innerValue"
+        v-model="innerValue as [string, string]"
         type="datetimerange"
         :default-time="defaultTime()"
         value-format="YYYY-MM-DD HH:mm:ss"
@@ -94,9 +101,11 @@ const innerValue = computed({
         :start-placeholder="startPlaceholder"
         :end-placeholder="endPlaceholder"
         clearable
+        @change="handleChange"
       />
+
       <!-- 单选框 -->
-      <el-radio-group v-if="type === 'radio'" v-model="innerValue">
+      <el-radio-group v-if="type === 'radio'" v-model="innerValue as string | number | boolean">
         <el-radio v-for="dict in dict || []" :key="dict.value" :value="dict.value">
           {{ dict.label }}
         </el-radio>
