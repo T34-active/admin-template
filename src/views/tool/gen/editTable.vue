@@ -5,7 +5,7 @@
         <basic-info-form ref="basicInfo" :info="info" />
       </el-tab-pane>
       <el-tab-pane label="字段信息" name="columnInfo">
-        <el-table ref="dragTable" :data="columns" row-key="columnId" :max-height="tableHeight">
+        <el-table ref="dragTable" :data="columns" row-key="columnId">
           <el-table-column label="序号" type="index" min-width="55" />
           <el-table-column
             label="字段列名"
@@ -117,10 +117,16 @@
         <gen-info-form ref="genInfo" :info="info" :tables="tables" />
       </el-tab-pane>
     </el-tabs>
-    <div class="flex items-center justify-center mt-5">
-      <el-button plain type="primary" @click="submitForm()">提交</el-button>
-      <el-button plain @click="close()">返回</el-button>
-    </div>
+    <BottomFixed>
+      <div class="flex items-center justify-center p-16">
+        <el-popconfirm title="是否保存" placement="top-start" @confirm="submitForm">
+          <template #reference>
+            <el-button type="primary">提交</el-button>
+          </template>
+        </el-popconfirm>
+        <el-button plain @click="close()">返回</el-button>
+      </div>
+    </BottomFixed>
   </el-card>
 </template>
 
@@ -135,34 +141,44 @@ const route = useRoute()
 const { proxy } = getCurrentInstance()
 
 const activeName = ref('columnInfo')
-const tableHeight = ref(document.documentElement.scrollHeight - 245 + 'px')
 const tables = ref([])
 const columns = ref([])
 const dictOptions = ref([])
 const info = ref({})
 
 /** 提交按钮 */
-function submitForm() {
+async function submitForm() {
   const basicForm = proxy.$refs.basicInfo.$refs.basicInfoForm
   const genForm = proxy.$refs.genInfo.$refs.genInfoForm
-  Promise.all([basicForm, genForm].map(getFormPromise)).then((res) => {
-    const validateResult = res.every((item) => !!item)
-    if (!validateResult) return proxy.$modal.msgError('表单校验未通过，请重新检查提交内容')
-    const genTable = Object.assign({}, info.value)
-    genTable.columns = columns.value
-    genTable.params = {
-      treeCode: info.value.treeCode,
-      treeName: info.value.treeName,
-      treeParentCode: info.value.treeParentCode,
-      parentMenuId: info.value.parentMenuId,
+  try {
+    // 并行校验表单
+    const results = await Promise.all([basicForm, genForm].map(getFormPromise))
+    const validateResult = results.every(Boolean)
+    if (!validateResult) {
+      proxy.$modal.msgError('表单校验未通过，请重新检查提交内容')
+      return
     }
-    updateGenTable(genTable).then((res) => {
-      proxy.$modal.msgSuccess(res.msg)
-      if (res.code === 200) {
-        close()
-      }
-    })
-  })
+    const genTable = {
+      ...info.value,
+      columns: columns.value,
+      params: {
+        treeCode: info.value.treeCode,
+        treeName: info.value.treeName,
+        treeParentCode: info.value.treeParentCode,
+        parentMenuId: info.value.parentMenuId,
+      },
+    }
+
+    const res = await updateGenTable(genTable)
+    proxy.$modal.msgSuccess(res.msg)
+    if (res.code === 200) {
+      close()
+    }
+  } catch (err) {
+    // 捕获表单校验或接口异常
+    proxy.$modal.msgError('操作失败，请重试')
+    // 可选：console.error(err)
+  }
 }
 
 function getFormPromise(form) {

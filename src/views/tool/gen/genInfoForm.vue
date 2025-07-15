@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { listMenu } from '@/api/system/menu'
-import { createRules } from '@/utils'
+import { createRules, validatorIsEmpty } from '@/utils'
+import type { FormItemRule } from 'element-plus'
 
 const subColumns = ref([])
 const menuOptions = ref([])
@@ -17,13 +18,41 @@ const props = defineProps({
   },
 })
 
+// 生成包路径不能为 com.ruoyi.system
+const validatorIsPackageName = (val: string) => {
+  if (!validatorIsEmpty(val)) {
+    return Promise.reject('请输入生成包路径')
+  }
+  if (val === 'com.ruoyi.system') {
+    return Promise.reject('生成包路径不能为 com.ruoyi.system')
+  }
+  return Promise.resolve()
+}
+
+// 生成模块名不能为 system
+const validatorIsModuleName = (val: string) => {
+  if (!validatorIsEmpty(val)) {
+    return Promise.reject('请输入生成模块名')
+  }
+  if (val === 'system') {
+    return Promise.reject('生成模块名不能为 system')
+  }
+  return Promise.resolve()
+}
 // 表单校验
 const rules = ref({
   tplCategory: createRules('请选择生成模板'),
-  packageName: createRules('请输入生成包路径'),
-  moduleName: createRules('请输入生成模块名'),
+  packageName: createRules('请输入生成包路径', {
+    validator: validatorIsPackageName,
+    required: true,
+  }),
+  moduleName: createRules('请输入生成模块名', {
+    validator: validatorIsModuleName,
+    required: true,
+  }),
   businessName: createRules('请输入生成业务名'),
   functionName: createRules('请输入生成功能名'),
+  parentMenuId: createRules('请选择上级菜单'),
 })
 
 function subSelectChange(value) {
@@ -54,6 +83,7 @@ async function getMenuTreeSelect() {
 }
 
 onMounted(() => {
+  proxy.resetForm('genInfoForm')
   getMenuTreeSelect()
 })
 
@@ -75,7 +105,7 @@ watch(
 </script>
 <template>
   <el-form ref="genInfoForm" :model="info" :rules="rules" label-width="auto">
-    <el-row>
+    <el-row :gutter="20">
       <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
         <el-form-item prop="tplCategory">
           <template #label>生成模板</template>
@@ -91,7 +121,7 @@ watch(
         <el-form-item prop="tplWebType">
           <template #label>前端类型</template>
           <el-select v-model="info.tplWebType">
-            <el-option label="Vue2 Element UI 模版" value="element-ui" />
+            <!--            <el-option label="Vue2 Element UI 模版" value="element-ui" />-->
             <el-option label="Vue3 Element Plus 模版" value="element-plus" />
           </el-select>
         </el-form-item>
@@ -168,7 +198,7 @@ watch(
       </el-col>
 
       <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
-        <el-form-item>
+        <el-form-item prop="parentMenuId">
           <template #label>
             上级菜单
             <el-tooltip content="分配到指定菜单下，例如 系统管理" placement="top">
