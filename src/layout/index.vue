@@ -20,19 +20,15 @@
 </template>
 
 <script setup lang="ts">
-import { ElConfigProvider } from 'element-plus'
-import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import { useWindowSize } from '@vueuse/core'
 import Sidebar from './components/Sidebar/index.vue'
 import { AppMain, Navbar, Settings, TagsView } from './components'
-// import defaultSettings from '@/settings'
-
 import useAppStore from '@/store/modules/app'
 import useSettingsStore from '@/store/modules/settings'
-
+import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 const settingsStore = useSettingsStore()
 const theme = computed(() => settingsStore.theme)
-// const sideTheme = computed(() => settingsStore.sideTheme)
+const sideTheme = computed(() => settingsStore.sideTheme)
 const sidebar = computed(() => useAppStore().sidebar)
 const device = computed(() => useAppStore().device)
 const needTagsView = computed(() => settingsStore.tagsView)
@@ -45,13 +41,19 @@ const classObj = computed(() => ({
   mobile: device.value === 'mobile',
 }))
 
-const { width } = useWindowSize()
+const { width, height } = useWindowSize()
 const WIDTH = 992 // refer to Bootstrap's responsive design
 
+watch(
+  () => device.value,
+  () => {
+    if (device.value === 'mobile' && sidebar.value.opened) {
+      useAppStore().closeSideBar({ withoutAnimation: false })
+    }
+  },
+)
+
 watchEffect(() => {
-  if (device.value === 'mobile' && sidebar.value.opened) {
-    useAppStore().closeSideBar({ withoutAnimation: false })
-  }
   if (width.value - 1 < WIDTH) {
     useAppStore().toggleDevice('mobile')
     useAppStore().closeSideBar({ withoutAnimation: true })
@@ -66,16 +68,16 @@ function handleClickOutside() {
 
 const settingRef = ref(null)
 function setLayout() {
-  settingRef.value?.openSetting()
+  settingRef.value.openSetting()
 }
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/mixin.scss';
-@import '@/assets/styles/variables.module.scss';
+@use '@/assets/styles/mixin.scss' as mix;
+@use '@/assets/styles/variables.module.scss' as vars;
 
 .app-wrapper {
-  @include clearfix;
+  @include mix.clearfix;
   position: relative;
   height: 100%;
   width: 100%;
@@ -101,6 +103,7 @@ function setLayout() {
   top: 0;
   right: 0;
   z-index: 9;
+  //width: calc(100% - #{vars.$base-sidebar-width});
   transition: width 0.28s;
 }
 

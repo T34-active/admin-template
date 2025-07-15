@@ -173,7 +173,7 @@ onMounted(async () => {
 <template>
   <div class="app-container">
     <CollapsePanel v-model="showSearch">
-      <div class="p-4">
+      <div class="p-16">
         <el-form ref="queryRef" :model="queryParams" label-width="auto">
           <el-row :gutter="20">
             <QueryForm :model="queryParams" :items="items" />
@@ -218,14 +218,13 @@ onMounted(async () => {
           <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" min-width="200">
+      <el-table-column label="创建时间" prop="createTime" min-width="200">
         <template #default="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column
         label="操作"
-        align="center"
         class-name="small-padding fixed-width"
         fixed="right"
         min-width="250"

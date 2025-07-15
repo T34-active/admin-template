@@ -360,7 +360,7 @@ onMounted(async () => {
 <template>
   <div class="app-container">
     <CollapsePanel v-model="showSearch">
-      <div class="p-4">
+      <div class="p-16">
         <el-form ref="queryRef" :model="queryParams" label-width="auto">
           <el-row :gutter="20">
             <QueryForm :model="queryParams" :items="queryItem" />
@@ -424,12 +424,12 @@ onMounted(async () => {
     </CollapsePanel>
     <!-- 表格数据 -->
     <el-table v-loading="loading" :data="roleList" @selectionChange="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
+      <el-table-column type="selection" width="55" />
       <el-table-column label="角色编号" prop="roleId" width="120" />
       <el-table-column label="角色名称" prop="roleName" :show-overflow-tooltip="true" width="150" />
       <el-table-column label="权限字符" prop="roleKey" :show-overflow-tooltip="true" width="150" />
       <el-table-column label="显示顺序" prop="roleSort" width="100" />
-      <el-table-column label="状态" align="center" width="100">
+      <el-table-column label="状态" width="100">
         <template #default="scope">
           <el-switch
             v-model="scope.row.status"
@@ -439,14 +439,13 @@ onMounted(async () => {
           />
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" min-width="150">
+      <el-table-column label="创建时间" prop="createTime" min-width="150">
         <template #default="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column
         label="操作"
-        align="center"
         class-name="small-padding fixed-width"
         fixed="right"
         min-width="150"
@@ -492,7 +491,7 @@ onMounted(async () => {
       </el-table-column>
     </el-table>
     <BottomFixed>
-      <div class="flex items-center justify-end p-4">
+      <div class="flex items-center justify-end p-16">
         <pagination
           v-model:page="queryParams.pageNum"
           v-model:limit="queryParams.pageSize"

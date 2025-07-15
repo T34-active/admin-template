@@ -28,16 +28,13 @@ const typeOptions = ref([])
 const route = useRoute()
 
 const items = ref<QueryItemConfig[]>([
-  // {
-  //   label: '字典名称',
-  //   prop: 'dictType',
-  //   type: 'select',
-  //   placeholder: '请选择字典名称',
-  //   dict: typeOptions.value.map((item) => ({
-  //     label: item.dictName,
-  //     value: item.dictType,
-  //   })),
-  // },
+  {
+    label: '字典名称',
+    prop: 'dictType',
+    type: 'select',
+    placeholder: '请选择字典名称',
+    dict: typeOptions.value,
+  },
   {
     label: '字典标签',
     prop: 'dictLabel',
@@ -94,6 +91,12 @@ async function getTypes(dictId) {
 async function getTypeList() {
   const response = await optionselect()
   typeOptions.value = response.data
+  const data = response.data.map((item) => ({
+    label: item.dictName,
+    value: item.dictType,
+  }))
+  items.value[0].dict = data
+  console.log(items.value[0].dict)
 }
 /** 查询字典数据列表 */
 async function getList() {
@@ -206,28 +209,15 @@ async function handleExport() {
   )
 }
 onMounted(async () => {
-  await getTypes(route.params && route.params.dictId)
-  await getTypeList()
+  await Promise.all([getTypeList(), getTypes(route.params && route.params.dictId)])
 })
 </script>
 <template>
   <div class="app-container">
     <collapsePanel v-model="showSearch">
-      <div class="p-4">
+      <div class="p-16">
         <el-form ref="queryRef" :model="queryParams" label-width="auto">
           <el-row :gutter="10">
-            <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="8">
-              <el-form-item label="字典名称" prop="dictType">
-                <el-select v-model="queryParams.dictType" clearable filterable>
-                  <el-option
-                    v-for="item in typeOptions"
-                    :key="item.dictId"
-                    :label="item.dictName"
-                    :value="item.dictType"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
             <QueryForm :model="queryParams" :items="items" />
           </el-row>
         </el-form>
@@ -305,7 +295,7 @@ onMounted(async () => {
       </el-table-column>
       <el-table-column label="字典键值" prop="dictValue" min-width="100" />
       <el-table-column label="字典排序" prop="dictSort" min-width="100" />
-      <el-table-column label="状态" prop="status" min-width="55">
+      <el-table-column label="状态" prop="status" min-width="75">
         <template #default="scope">
           <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
         </template>
@@ -341,7 +331,7 @@ onMounted(async () => {
       </el-table-column>
     </el-table>
     <BottomFixed>
-      <div class="flex items-center justify-end p-4">
+      <div class="flex items-center justify-end p-16">
         <pagination
           v-model:page="queryParams.pageNum"
           v-model:limit="queryParams.pageSize"
@@ -361,7 +351,7 @@ onMounted(async () => {
     >
       <el-form ref="dataRef" :model="form" :rules="rules" label-width="auto">
         <el-form-item label="字典类型">
-          <el-input v-model="form.dictType" :disabled="true" clearable />
+          <el-tag>{{ form.dictType }}</el-tag>
         </el-form-item>
         <el-form-item label="数据标签" prop="dictLabel">
           <el-input v-model="form.dictLabel" placeholder="请输入数据标签" clearable />

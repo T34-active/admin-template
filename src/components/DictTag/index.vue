@@ -5,7 +5,6 @@
         <span
           v-if="item.elTagType === 'default' || item.elTagType === ''"
           :key="item.value"
-          :index="index"
           :class="item.elTagClass"
         >
           {{ item.label }}
@@ -26,8 +25,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-
 const props = defineProps({
   // 数据
   options: {

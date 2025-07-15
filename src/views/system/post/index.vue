@@ -20,16 +20,6 @@ const total = ref(0)
 const title = ref('')
 
 const items = ref<QueryItemConfig[]>([
-  // {
-  //   label: '字典名称',
-  //   prop: 'dictType',
-  //   type: 'select',
-  //   placeholder: '请选择字典名称',
-  //   dict: typeOptions.value.map((item) => ({
-  //     label: item.dictName,
-  //     value: item.dictType,
-  //   })),
-  // },
   {
     label: '岗位编码',
     prop: 'postName',
@@ -181,7 +171,7 @@ onMounted(async () => {
 <template>
   <div class="app-container">
     <collapsePanel v-model="showSearch">
-      <div class="p-4">
+      <div class="p-16">
         <el-form ref="queryRef" :model="queryParams" label-width="auto">
           <el-row :gutter="20">
             <QueryForm :model="queryParams" :items="items" />
@@ -244,20 +234,19 @@ onMounted(async () => {
       </div>
     </collapsePanel>
     <el-table v-loading="loading" :data="postList" @selectionChange="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="岗位编号" align="center" prop="postId" />
-      <el-table-column label="岗位编码" align="center" prop="postCode" />
-      <el-table-column label="岗位名称" align="center" prop="postName" />
-      <el-table-column label="岗位排序" align="center" prop="postSort" />
-      <el-table-column label="状态" align="center" prop="status">
+      <el-table-column type="selection" width="55" />
+      <el-table-column label="岗位编号" prop="postId" />
+      <el-table-column label="岗位编码" prop="postCode" />
+      <el-table-column label="岗位名称" prop="postName" />
+      <el-table-column label="岗位排序" prop="postSort" />
+      <el-table-column label="状态" prop="status">
         <template #default="scope">
           <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180" />
+      <el-table-column label="创建时间" prop="createTime" width="180" />
       <el-table-column
         label="操作"
-        align="center"
         class-name="small-padding fixed-width"
         fixed="right"
         min-width="150"
@@ -286,7 +275,7 @@ onMounted(async () => {
     </el-table>
 
     <BottomFixed>
-      <div class="flex items-center justify-end p-4">
+      <div class="flex items-center justify-end p-16">
         <pagination
           v-model:page="queryParams.pageNum"
           v-model:limit="queryParams.pageSize"

@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <CollapsePanel v-model="showUser" title="基本信息">
-      <div class="p-4">
+      <div class="p-16">
         <el-form :model="form" label-width="auto">
           <el-row>
             <el-col :span="8" :offset="2">
@@ -45,18 +45,13 @@
     </CollapsePanel>
 
     <BottomFixed>
-      <div class="flex items-center justify-between p-4">
+      <div class="flex items-center justify-between p-16">
         <div>
           <el-button type="primary" @click="submitForm()">提交</el-button>
           <el-button @click="close()">返回</el-button>
         </div>
         <div>
-          <pagination
-            v-show="total > 0"
-            v-model:page="pageNum"
-            v-model:limit="pageSize"
-            :total="total"
-          />
+          <pagination v-model:page="pageNum" v-model:limit="pageSize" :total="total" />
         </div>
       </div>
     </BottomFixed>

@@ -4,7 +4,6 @@ import { getRouters } from '@/api/menu'
 import Layout from '@/layout/index.vue'
 import ParentView from '@/components/ParentView/index.vue'
 import InnerLink from '@/layout/components/InnerLink/index.vue'
-import { defineStore } from 'pinia'
 import type { RouteRecordRaw } from 'vue-router'
 
 // 匹配views里面所有的.vue文件
@@ -25,17 +24,17 @@ const usePermissionStore = defineStore('permission', {
     sidebarRouters: [],
   }),
   actions: {
-    setRoutes(routes: RouteRecordRaw[]) {
+    setRoutes(routes) {
       this.addRoutes = routes
       this.routes = constantRoutes.concat(routes)
     },
-    setDefaultRoutes(routes: RouteRecordRaw[]) {
+    setDefaultRoutes(routes) {
       this.defaultRoutes = constantRoutes.concat(routes)
     },
-    setTopbarRoutes(routes: RouteRecordRaw[]) {
+    setTopbarRoutes(routes) {
       this.topbarRouters = routes
     },
-    setSidebarRouters(routes: RouteRecordRaw[]) {
+    setSidebarRouters(routes) {
       this.sidebarRouters = routes
     },
     generateRoutes(routes?: RouteRecordRaw[]) {
@@ -81,7 +80,7 @@ function filterAsyncRouter(asyncRouterMap: any[], lastRouter = false, type = fal
         route.component = loadView(route.component)
       }
     }
-    if (route.children !== null && route.children && route.children.length) {
+    if (route.children != null && route.children && route.children.length) {
       route.children = filterAsyncRouter(route.children, route, type)
     } else {
       delete route.children
@@ -91,33 +90,22 @@ function filterAsyncRouter(asyncRouterMap: any[], lastRouter = false, type = fal
   })
 }
 
-function filterChildren(childrenMap: any[], lastRouter: any = false) {
-  let children: any[] = []
-  childrenMap.forEach((el, index) => {
-    if (el.children && el.children.length) {
-      if (el.component === 'ParentView' && !lastRouter) {
-        el.children.forEach((c: any) => {
-          c.path = el.path + '/' + c.path
-          if (c.children && c.children.length) {
-            children = children.concat(filterChildren(c.children, c))
-            return
-          }
-          children.push(c)
-        })
-        return
-      }
+function filterChildren(childrenMap, lastRouter = false) {
+  let children = []
+  childrenMap.forEach((el) => {
+    el.path = lastRouter ? lastRouter.path + '/' + el.path : el.path
+    if (el.children && el.children.length && el.component === 'ParentView') {
+      children = children.concat(filterChildren(el.children, el))
+    } else {
+      children.push(el)
     }
-    if (lastRouter) {
-      el.path = lastRouter.path + '/' + el.path
-    }
-    children = children.concat(el)
   })
   return children
 }
 
 // 动态路由遍历，验证是否具备权限
-export function filterDynamicRoutes(routes: any[]) {
-  const res: any[] = []
+export function filterDynamicRoutes(routes) {
+  const res = []
   routes.forEach((route) => {
     if (route.permissions) {
       if (auth.hasPermiOr(route.permissions)) {
@@ -132,7 +120,7 @@ export function filterDynamicRoutes(routes: any[]) {
   return res
 }
 
-export const loadView = (view: any) => {
+export const loadView = (view) => {
   let res
   for (const path in modules) {
     const dir = path.split('views/')[1].split('.vue')[0]

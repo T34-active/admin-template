@@ -9,12 +9,12 @@ import {
 } from '@/api/system/config'
 import { parseTime } from '@/utils/ruoyi'
 import { createRules } from '@/utils'
-import type { FormRules } from 'element-plus'
+import type { FormInstance, FormRules } from 'element-plus'
 import QueryForm, { type QueryItemConfig } from '@/components/QueryForm/index.vue'
 
 const { proxy } = getCurrentInstance()
 const { sys_yes_no } = proxy.useDict('sys_yes_no')
-
+const configRef = ref<FormInstance>(null)
 const configList = ref([])
 const open = ref(false)
 const loading = ref(true)
@@ -135,14 +135,14 @@ function handleAdd() {
 async function handleUpdate(row) {
   reset()
   const configId = row.configId || ids.value
-  const response = getConfig(configId)
+  const response = await getConfig(configId)
   form.value = response.data
   open.value = true
   title.value = '修改参数'
 }
 /** 提交按钮 */
 async function submitForm() {
-  const valid = await proxy.$refs.configRef.validate()
+  const valid = await configRef.value.validate()
   if (!valid) return
   if (form.value.configId) {
     await updateConfig(form.value)
@@ -193,7 +193,7 @@ onMounted(async () => {
 <template>
   <div class="app-container">
     <CollapsePanel v-model="showSearch">
-      <div class="p-4">
+      <div class="p-16">
         <el-form ref="queryRef" :model="queryParams" label-width="auto">
           <el-row :gutter="20">
             <QueryForm :model="queryParams" :items="items" />
@@ -307,7 +307,7 @@ onMounted(async () => {
       </el-table-column>
     </el-table>
     <BottomFixed>
-      <div class="flex items-center justify-end p-4">
+      <div class="flex items-center justify-end p-16">
         <pagination
           v-model:page="queryParams.pageNum"
           v-model:limit="queryParams.pageSize"

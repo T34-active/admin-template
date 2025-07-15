@@ -6,11 +6,11 @@
           <template #header>
             <div class="flex items-center gap-x-2">
               <Monitor style="width: 1em; height: 1em; vertical-align: middle" />
-              <span style="vertical-align: middle">基本信息</span>
+              <span>基本信息</span>
             </div>
           </template>
           <div class="el-table el-table--enable-row-hover el-table--medium">
-            <table cellspacing="0" style="width: 100%">
+            <table cellspacing="0" class="w-full">
               <tbody>
                 <tr>
                   <td class="el-table__cell is-leaf">
@@ -153,7 +153,23 @@
 import { getCache } from '@/api/monitor/cache'
 import * as echarts from 'echarts'
 
-const cache = ref({})
+const cache = ref({
+  dbSize: null,
+  info: {
+    redis_version: null,
+    redis_mode: null,
+    tcp_port: null,
+    connected_clients: null,
+    uptime_in_days: null,
+    used_memory_human: null,
+    used_cpu_user_children: null,
+    maxmemory_human: null,
+    aof_enabled: null,
+    rdb_last_bgsave_status: null,
+    instantaneous_input_kbps: null,
+    instantaneous_output_kbps: null,
+  },
+})
 const commandstats = ref(null)
 const usedmemory = ref(null)
 const { proxy } = getCurrentInstance()
@@ -163,7 +179,7 @@ async function getList() {
   const response = await getCache()
   proxy.$modal.closeLoading()
   cache.value = response.data
-  const commandstatsIntance = echarts.init(commandstats.value!, 'macarons')
+  const commandstatsIntance = echarts.init(commandstats.value, 'macarons')
   commandstatsIntance.setOption({
     tooltip: {
       trigger: 'item',
@@ -182,7 +198,7 @@ async function getList() {
       },
     ],
   })
-  const usedmemoryInstance = echarts.init(usedmemory.value!, 'macarons')
+  const usedmemoryInstance = echarts.init(usedmemory.value, 'macarons')
   usedmemoryInstance.setOption({
     tooltip: {
       formatter: '{b} <br/>{a} : ' + cache.value.info.used_memory_human,

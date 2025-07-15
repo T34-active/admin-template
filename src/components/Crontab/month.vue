@@ -45,11 +45,8 @@
     </el-form-item>
   </el-form>
 </template>
-<!-- eslint-disable vue/no-side-effects-in-computed-properties -->
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-
 const emit = defineEmits(['update'])
 const props = defineProps({
   cron: {

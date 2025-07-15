@@ -1,13 +1,15 @@
 <template>
-  <div class="border rounded-md mb-4" :class="modelValue ? 'border' : 'border-b-none'">
+  <div class="border rounded-2xl mb-16" :class="modelValue ? 'border' : 'border-b-none'">
     <div
-      class="overflow-hidden p-4 border-b border-solid bg-baseBg text-primaryText cursor-pointer"
+      class="overflow-hidden p-16 border-b border-solid bg-baseBg text-primaryText cursor-pointer dark:bg-black"
       @click="$emit('update:modelValue', !modelValue)"
     >
-      <div class="flex items-center gap-x-4">
-        <el-icon size="16">
-          <ArrowDown v-if="modelValue" />
-          <ArrowRight v-else />
+      <div class="flex items-center gap-x-4 dark:text-white">
+        <el-icon
+          size="16"
+          :class="['transition-transform duration-200', modelValue ? 'rotate-0' : '-rotate-90']"
+        >
+          <ArrowDown />
         </el-icon>
         <span>{{ title }}</span>
       </div>
@@ -77,5 +79,6 @@ function afterLeave(el: Element) {
   const dom = el as HTMLElement
   dom.style.transition = ''
 }
+
 defineEmits(['update:modelValue'])
 </script>

@@ -1,176 +1,3 @@
-<template>
-  <div class="app-container">
-    <collapsePanel v-model="showSearch">
-      <div class="p-4">
-        <el-form ref="queryRef" :model="queryParams" label-width="auto">
-          <el-row :gutter="10">
-            <QueryForm :model="queryParams" :items="items" />
-          </el-row>
-        </el-form>
-        <el-row :gutter="10">
-          <el-col :span="1.5">
-            <el-button
-              v-hasPermi="['system:dict:add']"
-              type="primary"
-              plain
-              icon="Plus"
-              @click="handleAdd"
-            >
-              新增
-            </el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              v-hasPermi="['system:dict:edit']"
-              type="success"
-              plain
-              icon="Edit"
-              :disabled="single"
-              @click="handleUpdate"
-            >
-              修改
-            </el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              v-hasPermi="['system:dict:remove']"
-              type="danger"
-              plain
-              icon="Delete"
-              :disabled="multiple"
-              @click="handleDelete"
-            >
-              删除
-            </el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              v-hasPermi="['system:dict:export']"
-              type="warning"
-              plain
-              icon="Download"
-              @click="handleExport"
-            >
-              导出
-            </el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              v-hasPermi="['system:dict:remove']"
-              type="danger"
-              plain
-              icon="Refresh"
-              @click="handleRefreshCache"
-            >
-              刷新缓存
-            </el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
-          </el-col>
-        </el-row>
-      </div>
-    </collapsePanel>
-    <el-table v-loading="loading" :data="typeList" @selectionChange="handleSelectionChange">
-      <el-table-column type="selection" width="55" />
-      <el-table-column label="字典编号" prop="dictId" min-width="150" />
-      <el-table-column
-        label="字典名称"
-        prop="dictName"
-        :show-overflow-tooltip="true"
-        min-width="150"
-      />
-      <el-table-column label="字典类型" :show-overflow-tooltip="true" min-width="200">
-        <template #default="scope">
-          <router-link :to="'/system/dict-data/index/' + scope.row.dictId" class="link-type">
-            <span>{{ scope.row.dictType }}</span>
-          </router-link>
-        </template>
-      </el-table-column>
-      <el-table-column label="状态" prop="status" min-width="75">
-        <template #default="scope">
-          <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
-        </template>
-      </el-table-column>
-      <el-table-column label="创建时间" prop="createTime" min-width="200" />
-      <el-table-column label="备注" prop="remark" :show-overflow-tooltip="true" min-width="200" />
-      <el-table-column
-        label="操作"
-        class-name="small-padding fixed-width"
-        fixed="right"
-        min-width="150"
-      >
-        <template #default="scope">
-          <el-button
-            v-hasPermi="['system:dict:edit']"
-            link
-            type="primary"
-            icon="Edit"
-            @click="handleUpdate(scope.row)"
-          >
-            修改
-          </el-button>
-          <el-button
-            v-hasPermi="['system:dict:remove']"
-            link
-            type="primary"
-            icon="Delete"
-            @click="handleDelete(scope.row)"
-          >
-            删除
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <BottomFixed>
-      <div class="flex items-center justify-end p-4">
-        <pagination
-          v-model:page="queryParams.pageNum"
-          v-model:limit="queryParams.pageSize"
-          :total="total"
-          @pagination="getList"
-        />
-      </div>
-    </BottomFixed>
-    <!-- 添加或修改参数配置对话框 -->
-    <el-dialog
-      v-model="open"
-      :title="title"
-      width="500px"
-      append-to-body
-      :close-on-click-modal="false"
-    >
-      <el-form ref="dictRef" :model="form" :rules="rules" label-width="auto">
-        <el-form-item label="字典名称" prop="dictName">
-          <el-input v-model="form.dictName" placeholder="请输入字典名称" />
-        </el-form-item>
-        <el-form-item label="字典类型" prop="dictType">
-          <el-input v-model="form.dictType" placeholder="请输入字典类型" />
-        </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-radio-group v-model="form.status">
-            <el-radio v-for="dict in sys_normal_disable" :key="dict.value" :value="dict.value">
-              {{ dict.label }}
-            </el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确 定</el-button>
-          <el-button @click="cancel">取 消</el-button>
-        </div>
-      </template>
-    </el-dialog>
-  </div>
-</template>
-
 <script setup lang="ts">
 import useDictStore from '@/store/modules/dict'
 import {
@@ -366,3 +193,176 @@ onMounted(async () => {
   await getList()
 })
 </script>
+
+<template>
+  <div class="app-container">
+    <collapsePanel v-model="showSearch">
+      <div class="p-16">
+        <el-form ref="queryRef" :model="queryParams" label-width="auto">
+          <el-row :gutter="10">
+            <QueryForm :model="queryParams" :items="items" />
+          </el-row>
+        </el-form>
+        <el-row :gutter="10">
+          <el-col :span="1.5">
+            <el-button
+              v-hasPermi="['system:dict:add']"
+              type="primary"
+              plain
+              icon="Plus"
+              @click="handleAdd"
+            >
+              新增
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              v-hasPermi="['system:dict:edit']"
+              type="success"
+              plain
+              icon="Edit"
+              :disabled="single"
+              @click="handleUpdate"
+            >
+              修改
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              v-hasPermi="['system:dict:remove']"
+              type="danger"
+              plain
+              icon="Delete"
+              :disabled="multiple"
+              @click="handleDelete"
+            >
+              删除
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              v-hasPermi="['system:dict:export']"
+              type="warning"
+              plain
+              icon="Download"
+              @click="handleExport"
+            >
+              导出
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              v-hasPermi="['system:dict:remove']"
+              type="danger"
+              plain
+              icon="Refresh"
+              @click="handleRefreshCache"
+            >
+              刷新缓存
+            </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+          </el-col>
+        </el-row>
+      </div>
+    </collapsePanel>
+    <el-table v-loading="loading" :data="typeList" @selectionChange="handleSelectionChange">
+      <el-table-column type="selection" width="55" />
+      <el-table-column label="字典编号" prop="dictId" min-width="100" />
+      <el-table-column
+        label="字典名称"
+        prop="dictName"
+        :show-overflow-tooltip="true"
+        min-width="150"
+      />
+      <el-table-column label="字典类型" :show-overflow-tooltip="true" min-width="200">
+        <template #default="scope">
+          <router-link :to="'/system/dict-data/index/' + scope.row.dictId" class="link-type">
+            <span>{{ scope.row.dictType }}</span>
+          </router-link>
+        </template>
+      </el-table-column>
+      <el-table-column label="状态" prop="status" min-width="75">
+        <template #default="scope">
+          <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
+        </template>
+      </el-table-column>
+      <el-table-column label="创建时间" prop="createTime" min-width="200" />
+      <el-table-column label="备注" prop="remark" :show-overflow-tooltip="true" min-width="200" />
+      <el-table-column
+        label="操作"
+        class-name="small-padding fixed-width"
+        fixed="right"
+        min-width="150"
+      >
+        <template #default="scope">
+          <el-button
+            v-hasPermi="['system:dict:edit']"
+            link
+            type="primary"
+            icon="Edit"
+            @click="handleUpdate(scope.row)"
+          >
+            修改
+          </el-button>
+          <el-button
+            v-hasPermi="['system:dict:remove']"
+            link
+            type="primary"
+            icon="Delete"
+            @click="handleDelete(scope.row)"
+          >
+            删除
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <BottomFixed>
+      <div class="flex items-center justify-end p-16">
+        <pagination
+          v-model:page="queryParams.pageNum"
+          v-model:limit="queryParams.pageSize"
+          :total="total"
+          @pagination="getList"
+        />
+      </div>
+    </BottomFixed>
+    <!-- 添加或修改参数配置对话框 -->
+    <el-dialog
+      v-model="open"
+      :title="title"
+      width="500px"
+      append-to-body
+      :close-on-click-modal="false"
+    >
+      <el-form ref="dictRef" :model="form" :rules="rules" label-width="auto">
+        <el-form-item label="字典名称" prop="dictName">
+          <el-input v-model="form.dictName" placeholder="请输入字典名称" />
+        </el-form-item>
+        <el-form-item label="字典类型" prop="dictType">
+          <el-input v-model="form.dictType" placeholder="请输入字典类型" />
+        </el-form-item>
+        <el-form-item label="状态" prop="status">
+          <el-radio-group v-model="form.status">
+            <el-radio v-for="dict in sys_normal_disable" :key="dict.value" :value="dict.value">
+              {{ dict.label }}
+            </el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button type="primary" @click="submitForm">确 定</el-button>
+          <el-button @click="cancel">取 消</el-button>
+        </div>
+      </template>
+    </el-dialog>
+  </div>
+</template>
