@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { list, delLogininfor, cleanLogininfor, unlockLogininfor } from '@/api/monitor/logininfor'
 import type { Sort } from 'element-plus'
-import QueryForm, { type QueryItemConfig } from '@/components/QueryForm/index.vue'
+import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
 
 const { proxy } = getCurrentInstance()
 const { sys_common_status } = proxy.useDict('sys_common_status')
 
-const logininforList = ref([])
+const loginInForList = ref([])
 const loading = ref(true)
 const showSearch = ref(true)
 const ids = ref<number[]>([])
@@ -66,7 +66,7 @@ async function getList() {
       ? [queryParams.value.dateRange[0], queryParams.value.dateRange[1]]
       : [undefined, undefined]
   const response = await list(proxy.addDateRange(queryParams.value, safeRange))
-  logininforList.value = response.rows
+  loginInForList.value = response.rows
   total.value = response.total
   loading.value = false
 }
@@ -107,7 +107,6 @@ function handleDelete(row) {
       getList()
       proxy.$modal.msgSuccess('删除成功')
     })
-  //   .catch(() => {});
 }
 /** 清空按钮操作 */
 function handleClean() {
@@ -123,17 +122,11 @@ function handleClean() {
   //   .catch(() => {});
 }
 /** 解锁按钮操作 */
-function handleUnlock() {
+async function handleUnlock() {
   const username = selectName.value
-  proxy.$modal
-    .confirm('是否确认解锁用户"' + username + '"数据项？')
-    .then(function () {
-      return unlockLogininfor(username)
-    })
-    .then(() => {
-      proxy.$modal.msgSuccess('用户' + username + '解锁成功')
-    })
-  //   .catch(() => {});
+  await proxy.$modal.confirm(`是否确认解锁用户【${username}】数据项？`)
+  await unlockLogininfor(username)
+  proxy.$modal.msgSuccess(`用户【${username}】解锁成功`)
 }
 /** 导出按钮操作 */
 function handleExport() {
@@ -145,8 +138,9 @@ function handleExport() {
     `config_${new Date().getTime()}.xlsx`,
   )
 }
-
-getList()
+onMounted(async () => {
+  await getList()
+})
 </script>
 <template>
   <div class="app-container">
@@ -212,7 +206,7 @@ getList()
     <el-table
       ref="logininforRef"
       v-loading="loading"
-      :data="logininforList"
+      :data="loginInForList"
       :default-sort="defaultSort"
       @selectionChange="handleSelectionChange"
       @sortChange="handleSortChange"

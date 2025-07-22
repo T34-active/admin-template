@@ -24,6 +24,7 @@ import './permission' // permission control
 // 注册全局组件
 import BottomFixed from '@/components/BottomFixed/index.vue'
 import collapsePanel from '@/components/CollapsePanel/index.vue'
+import QueryForm from '@/components/QueryForm/index.vue'
 // 分页组件
 import Pagination from '@/components/Pagination/index.vue'
 // 字典标签组件
@@ -54,6 +55,7 @@ app.component('ImageUpload', ImageUpload)
 app.component('ImagePreview', ImagePreview)
 app.component('BottomFixed', BottomFixed)
 app.component('CollapsePanel', collapsePanel)
+app.component('QueryForm', QueryForm)
 // 全局方法挂载
 app.config.globalProperties.useDict = useDict
 app.config.globalProperties.download = download

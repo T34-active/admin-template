@@ -10,12 +10,10 @@ import {
   deptTreeSelect,
 } from '@/api/system/role'
 import { roleMenuTreeSelect, treeselect as menuTreeselect } from '@/api/system/menu'
-import { parseTime } from '@/utils/ruoyi'
-
 import { createRules } from '@/utils'
 import type { FormInstance } from 'element-plus'
 import { dataScopeOptions } from '@/utils/column'
-import QueryForm, { type QueryItemConfig } from '@/components/QueryForm/index.vue'
+import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
 
 const router = useRouter()
 const { proxy } = getCurrentInstance()
@@ -56,7 +54,7 @@ const queryItem = ref<QueryItemConfig[]>([
   },
   {
     label: '权限字符',
-    prop: 'roleName',
+    prop: 'roleKey',
     type: 'input',
     placeholder: '请输入权限字符',
   },
@@ -85,7 +83,7 @@ const data = reactive({
     roleId: undefined,
     roleName: undefined,
     roleKey: undefined,
-    roleSort: 0,
+    roleSort: 1,
     status: '0',
     menuIds: [],
     deptIds: [],
@@ -213,7 +211,7 @@ function reset() {
     roleId: undefined,
     roleName: undefined,
     roleKey: undefined,
-    roleSort: 0,
+    roleSort: 1,
     status: '0',
     menuIds: [],
     deptIds: [],
@@ -439,11 +437,7 @@ onMounted(async () => {
           />
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" prop="createTime" min-width="150">
-        <template #default="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
-        </template>
-      </el-table-column>
+      <el-table-column label="创建时间" min-width="200" prop="createTime" />
       <el-table-column
         label="操作"
         class-name="small-padding fixed-width"
@@ -504,7 +498,7 @@ onMounted(async () => {
     <el-dialog
       v-model="open"
       :title="title"
-      width="500px"
+      width="550px"
       append-to-body
       :close-on-click-modal="false"
     >
@@ -561,7 +555,7 @@ onMounted(async () => {
           />
         </el-form-item>
         <el-form-item label="备注">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" :rows="2" />
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入备注" :rows="2" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -576,7 +570,7 @@ onMounted(async () => {
     <el-dialog
       v-model="openDataScope"
       :title="title"
-      width="500px"
+      width="550px"
       append-to-body
       :close-on-click-modal="false"
     >

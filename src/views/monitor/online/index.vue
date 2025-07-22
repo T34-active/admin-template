@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { forceLogout, list as initData } from '@/api/monitor/online'
-import { parseTime } from '@/utils/ruoyi'
-import QueryForm, { type QueryItemConfig } from '@/components/QueryForm/index.vue'
+import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
 
 const { proxy } = getCurrentInstance()
 

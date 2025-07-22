@@ -148,7 +148,7 @@ import { listJobLog, delJobLog, cleanJobLog } from '@/api/monitor/jobLog'
 import { oneOf } from '@zeronejs/utils'
 
 import { useRoute } from 'vue-router'
-import QueryForm, { type QueryItemConfig } from '@/components/QueryForm/index.vue'
+import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
 
 const { proxy } = getCurrentInstance()
 const { sys_common_status, sys_job_group } = proxy.useDict('sys_common_status', 'sys_job_group')

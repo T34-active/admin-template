@@ -25,8 +25,8 @@
 </template>
 
 <script setup lang="ts">
-import Logo from './Logo'
-import SidebarItem from './SidebarItem'
+import Logo from './Logo.vue'
+import SidebarItem from './SidebarItem.vue'
 import variables from '@/assets/styles/variables.module.scss'
 import useAppStore from '@/store/modules/app'
 import useSettingsStore from '@/store/modules/settings'
@@ -92,7 +92,7 @@ const activeMenu = computed(() => {
       color: v-bind(getMenuTextColor);
 
       &.is-active {
-        color: var(--menu-active-text, #409eff);
+        color: var(--menu-active-text, #ff6801);
         background-color: var(--menu-hover, rgba(0, 0, 0, 0.06)) !important;
       }
     }

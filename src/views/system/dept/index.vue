@@ -7,10 +7,9 @@ import {
   updateDept,
   listDeptExcludeChild,
 } from '@/api/system/dept'
-import { parseTime } from '@/utils/ruoyi'
 import type { FormInstance, FormRules } from 'element-plus'
 import { createRules } from '@/utils'
-import QueryForm, { type QueryItemConfig } from '@/components/QueryForm/index.vue'
+import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
 
 const { proxy } = getCurrentInstance()
 
@@ -218,11 +217,7 @@ onMounted(async () => {
           <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" prop="createTime" min-width="200">
-        <template #default="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
-        </template>
-      </el-table-column>
+      <el-table-column label="创建时间" min-width="200" prop="createTime" />
       <el-table-column
         label="操作"
         class-name="small-padding fixed-width"

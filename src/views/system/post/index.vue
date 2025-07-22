@@ -2,7 +2,7 @@
 import { listPost, addPost, delPost, getPost, updatePost } from '@/api/system/post'
 import { createRules } from '@/utils'
 import type { FormInstance, FormRules } from 'element-plus'
-import QueryForm, { type QueryItemConfig } from '@/components/QueryForm/index.vue'
+import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
 
 const { proxy } = getCurrentInstance()
 
@@ -289,7 +289,7 @@ onMounted(async () => {
     <el-dialog
       v-model="open"
       :title="title"
-      width="500px"
+      width="550px"
       append-to-body
       :close-on-click-modal="false"
     >
@@ -311,7 +311,7 @@ onMounted(async () => {
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入备注" />
         </el-form-item>
       </el-form>
       <template #footer>

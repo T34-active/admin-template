@@ -7,10 +7,9 @@ import {
   updateConfig,
   refreshCache,
 } from '@/api/system/config'
-import { parseTime } from '@/utils/ruoyi'
 import { createRules } from '@/utils'
 import type { FormInstance, FormRules } from 'element-plus'
-import QueryForm, { type QueryItemConfig } from '@/components/QueryForm/index.vue'
+import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
 
 const { proxy } = getCurrentInstance()
 const { sys_yes_no } = proxy.useDict('sys_yes_no')
@@ -268,22 +267,39 @@ onMounted(async () => {
     </CollapsePanel>
     <el-table v-loading="loading" :data="configList" @selectionChange="handleSelectionChange">
       <el-table-column type="selection" width="55" />
-      <el-table-column label="参数主键" prop="configId" />
-      <el-table-column label="参数名称" prop="configName" :show-overflow-tooltip="true" />
-      <el-table-column label="参数键名" prop="configKey" :show-overflow-tooltip="true" />
-      <el-table-column label="参数键值" prop="configValue" :show-overflow-tooltip="true" />
-      <el-table-column label="系统内置" prop="configType">
+      <el-table-column label="参数主键" prop="configId" min-width="85" />
+      <el-table-column
+        label="参数名称"
+        prop="configName"
+        :show-overflow-tooltip="true"
+        min-width="200"
+      />
+      <el-table-column
+        label="参数键名"
+        prop="configKey"
+        :show-overflow-tooltip="true"
+        min-width="200"
+      />
+      <el-table-column
+        label="参数键值"
+        prop="configValue"
+        :show-overflow-tooltip="true"
+        min-width="200"
+      />
+      <el-table-column label="系统内置" prop="configType" min-width="85">
         <template #default="scope">
           <dict-tag :options="sys_yes_no" :value="scope.row.configType" />
         </template>
       </el-table-column>
-      <el-table-column label="备注" prop="remark" :show-overflow-tooltip="true" />
-      <el-table-column label="创建时间" prop="createTime" width="180">
-        <template #default="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="150" class-name="small-padding fixed-width">
+      <el-table-column label="备注" prop="remark" :show-overflow-tooltip="true" min-width="200" />
+      <el-table-column label="创建时间" prop="createTime" width="180" min-width="200" />
+
+      <el-table-column
+        label="操作"
+        min-width="150"
+        class-name="small-padding fixed-width"
+        fixed="right"
+      >
         <template #default="scope">
           <el-button
             v-hasPermi="['system:config:edit']"
@@ -321,7 +337,7 @@ onMounted(async () => {
     <el-dialog
       v-model="open"
       :title="title"
-      width="500px"
+      width="550px"
       append-to-body
       :close-on-click-modal="false"
     >
@@ -343,7 +359,7 @@ onMounted(async () => {
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" :rows="2" />
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入备注" :rows="2" />
         </el-form-item>
       </el-form>
       <template #footer>

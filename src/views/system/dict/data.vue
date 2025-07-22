@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import useDictStore from '@/store/modules/dict'
-import { optionselect, getType } from '@/api/system/dict/type'
-import { listData, getData, delData, addData, updateData } from '@/api/system/dict/data'
+import { getType, optionselect } from '@/api/system/dict/type'
+import { addData, delData, getData, listData, updateData } from '@/api/system/dict/data'
 
 import { useRoute } from 'vue-router'
 import type { FormInstance, FormRules } from 'element-plus'
 import { createRules } from '@/utils'
 
 import { listClassOptions } from '@/utils/column'
-import QueryForm, { type QueryItemConfig } from '@/components/QueryForm/index.vue'
+import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
 
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
@@ -44,8 +44,7 @@ const items = ref<QueryItemConfig[]>([
   {
     label: '数据状态',
     prop: 'status',
-    type: 'select',
-    placeholder: '请选择数据状态',
+    type: 'radio',
     dict: sys_normal_disable,
   },
 ])
@@ -91,12 +90,10 @@ async function getTypes(dictId) {
 async function getTypeList() {
   const response = await optionselect()
   typeOptions.value = response.data
-  const data = response.data.map((item) => ({
+  items.value[0].dict = response.data.map((item) => ({
     label: item.dictName,
     value: item.dictType,
   }))
-  items.value[0].dict = data
-  console.log(items.value[0].dict)
 }
 /** 查询字典数据列表 */
 async function getList() {
@@ -345,36 +342,52 @@ onMounted(async () => {
     <el-dialog
       v-model="open"
       :title="title"
-      width="500px"
+      width="550px"
       append-to-body
       :close-on-click-modal="false"
     >
       <el-form ref="dataRef" :model="form" :rules="rules" label-width="auto">
-        <el-form-item label="字典类型">
-          <el-tag>{{ form.dictType }}</el-tag>
-        </el-form-item>
-        <el-form-item label="数据标签" prop="dictLabel">
-          <el-input v-model="form.dictLabel" placeholder="请输入数据标签" clearable />
-        </el-form-item>
-        <el-form-item label="数据键值" prop="dictValue">
-          <el-input v-model="form.dictValue" placeholder="请输入数据键值" clearable />
-        </el-form-item>
-        <el-form-item label="样式属性" prop="cssClass">
-          <el-input v-model="form.cssClass" placeholder="请输入样式属性" clearable />
-        </el-form-item>
-        <el-form-item label="显示排序" prop="dictSort">
-          <el-input-number v-model="form.dictSort" controls-position="right" :min="0" />
-        </el-form-item>
-        <el-form-item label="回显样式" prop="listClass">
-          <el-select v-model="form.listClass">
-            <el-option
-              v-for="item in listClassOptions"
-              :key="item.value"
-              :label="item.label + '（' + item.value + '）'"
-              :value="item.value"
-            />
-          </el-select>
-        </el-form-item>
+        <el-row :gutter="20">
+          <el-col :span="12" xs="24">
+            <el-form-item label="字典类型">
+              <el-tag>{{ form.dictType }}</el-tag>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" xs="24">
+            <el-form-item label="数据标签" prop="dictLabel">
+              <el-input v-model="form.dictLabel" placeholder="请输入数据标签" clearable />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" xs="24">
+            <el-form-item label="样式属性" prop="cssClass">
+              <el-input v-model="form.cssClass" placeholder="请输入样式属性" clearable />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" xs="24">
+            <el-form-item label="数据键值" prop="dictValue">
+              <el-input v-model="form.dictValue" placeholder="请输入数据键值" clearable />
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="12" xs="24">
+            <el-form-item label="显示排序" prop="dictSort">
+              <el-input-number v-model="form.dictSort" controls-position="right" :min="0" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" xs="24">
+            <el-form-item label="回显样式" prop="listClass">
+              <el-select v-model="form.listClass" clearable filterable>
+                <el-option
+                  v-for="item in listClassOptions"
+                  :key="item.value"
+                  :label="`${item.label}（${item.value}）`"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
         <el-form-item label="状态" prop="status">
           <el-radio-group v-model="form.status">
             <el-radio v-for="dict in sys_normal_disable" :key="dict.value" :value="dict.value">
@@ -383,7 +396,7 @@ onMounted(async () => {
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入备注" />
         </el-form-item>
       </el-form>
       <template #footer>

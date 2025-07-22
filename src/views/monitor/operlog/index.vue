@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { list, delOperlog, cleanOperlog } from '@/api/monitor/operlog'
 import type { Sort } from 'element-plus'
-import QueryForm, { type QueryItemConfig } from '@/components/QueryForm/index.vue'
+import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
 
 const { proxy } = getCurrentInstance()
 
@@ -142,17 +142,11 @@ function handleDelete(row) {
   //   .catch(() => {});
 }
 /** 清空按钮操作 */
-function handleClean() {
-  proxy.$modal
-    .confirm('是否确认清空所有操作日志数据项？')
-    .then(function () {
-      return cleanOperlog()
-    })
-    .then(() => {
-      getList()
-      proxy.$modal.msgSuccess('清空成功')
-    })
-  //   .catch(() => {});
+async function handleClean() {
+  await proxy.$modal.confirm('是否确认清空所有操作日志数据项？')
+  await cleanOperlog()
+  await getList()
+  proxy.$modal.msgSuccess('清空成功')
 }
 /** 导出按钮操作 */
 function handleExport() {
@@ -298,63 +292,65 @@ onMounted(async () => {
 
     <!-- 操作日志详细 -->
     <el-dialog
+      v-if="open"
       v-model="open"
       title="操作日志详细"
-      width="700px"
+      width="1200px"
       append-to-body
       :close-on-click-modal="false"
     >
-      <el-form :model="form" label-width="auto">
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="操作模块">{{ form.title }} / {{ typeFormat(form) }}</el-form-item>
-            <el-form-item label="登录信息">
-              {{ form.operName }} / {{ form.operIp }} / {{ form.operLocation }}
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="请求地址">{{ form.operUrl }}</el-form-item>
-            <el-form-item label="请求方式">{{ form.requestMethod }}</el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="操作方法">
-              <div v-highlight>
-                <pre><code class="language-java break-all whitespace-pre-wrap rounded-md">{{ form.method }}</code></pre>
-              </div>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="请求参数">
-              <div v-highlight>
-                <pre><code class="language-javascript break-all whitespace-pre-wrap rounded-md">{{ form.operParam }}</code></pre>
-              </div>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="返回参数">
-              <div v-highlight>
-                <pre><code class="language-javascript break-all whitespace-pre-wrap rounded-md">{{ form.jsonResult }}</code></pre>
-              </div>
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="操作状态">
-              <dict-tag :options="sys_common_status" :value="form.status" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="消耗时间">{{ form.costTime }}毫秒</el-form-item>
-          </el-col>
-          <el-col :span="10">
-            <el-form-item label="操作时间">{{ form.operTime }}</el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item v-if="form.status === 1" label="异常信息">
-              {{ form.errorMsg }}
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
+      <el-descriptions border direction="vertical">
+        <el-descriptions-item label="操作模块">
+          {{ form.title }} / {{ typeFormat(form) }}
+        </el-descriptions-item>
+      </el-descriptions>
+      <el-descriptions border direction="vertical">
+        <el-descriptions-item label="登录信息">
+          {{ form.operName }} / {{ form.operIp }} / {{ form.operLocation }}
+        </el-descriptions-item>
+        <el-descriptions-item label="请求方式">
+          <el-tag>{{ form.requestMethod }}</el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="操作状态">
+          <dict-tag :options="sys_common_status" :value="form.status" />
+        </el-descriptions-item>
+        <el-descriptions-item label="消耗时间">{{ form.costTime }}毫秒</el-descriptions-item>
+        <el-descriptions-item label="消耗时间">{{ form.costTime }}毫秒</el-descriptions-item>
+        <el-descriptions-item label="操作时间">
+          {{ form.operTime }}
+        </el-descriptions-item>
+        <el-descriptions-item label="异常信息" v-if="form.status === 1">
+          {{ form.errorMsg }}
+        </el-descriptions-item>
+      </el-descriptions>
+      <el-descriptions border direction="vertical">
+        <el-descriptions-item label="请求地址" :rowspan="1">
+          <div v-highlight>
+            <pre><code class="language-javascript break-all whitespace-pre-wrap rounded-md">{{ form.operUrl }}</code></pre>
+          </div>
+        </el-descriptions-item>
+      </el-descriptions>
+      <el-descriptions border direction="vertical">
+        <el-descriptions-item label="操作方法" :rowspan="1">
+          <div v-highlight>
+            <pre><code class="language-java break-all whitespace-pre-wrap rounded-md">{{ form.method }}</code></pre>
+          </div>
+        </el-descriptions-item>
+      </el-descriptions>
+      <el-descriptions border direction="vertical">
+        <el-descriptions-item label="请求参数" :rowspan="1">
+          <div v-highlight>
+            <pre><code class="language-java break-all whitespace-pre-wrap rounded-md">{{ form.operParam }}</code></pre>
+          </div>
+        </el-descriptions-item>
+      </el-descriptions>
+      <el-descriptions border direction="vertical">
+        <el-descriptions-item label="返回参数" :rowspan="1">
+          <div v-highlight>
+            <pre><code class="language-java break-all whitespace-pre-wrap rounded-md">{{ form.jsonResult }}</code></pre>
+          </div>
+        </el-descriptions-item>
+      </el-descriptions>
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="open = false">关 闭</el-button>

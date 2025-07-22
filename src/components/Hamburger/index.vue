@@ -2,7 +2,7 @@
   <div class="p-16" @click="toggleClick">
     <svg
       :class="{ 'rotate-180': isActive }"
-      class="inline-block align-middle w-20px h-20px transition-all duration-450 dark:fill-white"
+      class="inline-block align-middle size-20 transition-all duration-450 dark:fill-white hover:dark:bg-primaryText"
       viewBox="0 0 1024 1024"
       xmlns="http://www.w3.org/2000/svg"
       width="64"

@@ -45,6 +45,7 @@ export const createRules = (
 export function defaultTime(): [Date, Date] {
   return [new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59)]
 }
+
 // 禁止选择今天之后的结束日期
 export function disabledFutureDate(date: Date) {
   const today = new Date()

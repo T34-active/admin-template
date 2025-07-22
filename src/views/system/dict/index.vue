@@ -10,8 +10,7 @@ import {
 } from '@/api/system/dict/type'
 import type { FormRules } from 'element-plus'
 import { createRules } from '@/utils'
-
-import QueryForm, { type QueryItemConfig } from '@/components/QueryForm/index.vue'
+import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
 
 const { proxy } = getCurrentInstance()
 
@@ -42,8 +41,7 @@ const items = ref<QueryItemConfig[]>([
   {
     label: '字典状态',
     prop: 'status',
-    type: 'select',
-    placeholder: '请选择字典状态',
+    type: 'radio',
     dict: sys_normal_disable,
   },
   {
@@ -65,7 +63,7 @@ const data = reactive({
   },
   queryParams: {
     pageNum: 1,
-    pageSize: 10,
+    pageSize: 50,
     dictName: undefined,
     dictType: undefined,
     status: undefined,
@@ -86,8 +84,7 @@ async function getList() {
     Array.isArray(queryParams.value.dateRange) && queryParams.value.dateRange.length === 2
       ? [queryParams.value.dateRange[0], queryParams.value.dateRange[1]]
       : [undefined, undefined]
-  const params = proxy.addDateRange({ ...queryParams.value }, safeRange)
-  const response = await listType(params)
+  const response = await listType(proxy.addDateRange(queryParams.value, safeRange))
   typeList.value = response.rows
   total.value = response.total
   loading.value = false
@@ -132,14 +129,13 @@ function handleSelectionChange(selection) {
   multiple.value = !selection.length
 }
 /** 修改按钮操作 */
-function handleUpdate(row) {
+async function handleUpdate(row) {
   reset()
   const dictId = row.dictId || ids.value
-  getType(dictId).then((response) => {
-    form.value = response.data
-    open.value = true
-    title.value = '修改字典类型'
-  })
+  const response = await getType(dictId)
+  form.value = response.data
+  open.value = true
+  title.value = '修改字典类型'
 }
 /** 提交按钮 */
 async function submitForm() {
@@ -182,11 +178,10 @@ function handleExport() {
   )
 }
 /** 刷新缓存按钮操作 */
-function handleRefreshCache() {
-  refreshCache().then(() => {
-    proxy.$modal.msgSuccess('刷新成功')
-    useDictStore().cleanDict()
-  })
+async function handleRefreshCache() {
+  await refreshCache()
+  proxy.$modal.msgSuccess('刷新成功')
+  useDictStore().cleanDict()
 }
 
 onMounted(async () => {
@@ -335,7 +330,7 @@ onMounted(async () => {
     <el-dialog
       v-model="open"
       :title="title"
-      width="500px"
+      width="550px"
       append-to-body
       :close-on-click-modal="false"
     >
@@ -354,7 +349,7 @@ onMounted(async () => {
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入备注" />
         </el-form-item>
       </el-form>
       <template #footer>

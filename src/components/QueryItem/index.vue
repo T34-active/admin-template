@@ -8,7 +8,7 @@ const props = defineProps({
   label: String,
   // 表单项对应的字段名，用于表单验证等
   prop: String,
-  // 组件类型，默认是 input，可选 input/select/daterange/radio
+  // 组件类型，默认是 input，可选 input/select/daterange/radio/datetimerange
   type: {
     type: String,
     default: 'input',
@@ -16,9 +16,15 @@ const props = defineProps({
   // 输入框或选择框的占位提示文字
   placeholder: String,
   // 日期范围选择器的开始日期占位文字
-  startPlaceholder: String,
+  startPlaceholder: {
+    type: String,
+    default: () => '开始时间',
+  },
   // 日期范围选择器的结束日期占位文字
-  endPlaceholder: String,
+  endPlaceholder: {
+    type: String,
+    default: () => '结束时间',
+  },
   // 下拉选项的数据数组，元素包含 label 和 value 字段
   dict: {
     type: Array as () => Array<{ label: string; value: string | number }>,
@@ -60,7 +66,6 @@ const innerValue = computed({
         :placeholder="placeholder"
         clearable
       />
-
       <!-- 下拉选择类型 -->
       <el-select
         v-if="type === 'select'"
@@ -82,6 +87,7 @@ const innerValue = computed({
         v-if="type === 'daterange'"
         v-model="innerValue as [string, string]"
         type="daterange"
+        :default-time="defaultTime()"
         value-format="YYYY-MM-DD"
         range-separator="-"
         :start-placeholder="startPlaceholder"
@@ -100,8 +106,8 @@ const innerValue = computed({
         range-separator="-"
         :start-placeholder="startPlaceholder"
         :end-placeholder="endPlaceholder"
+        :disabled-date="disabledFutureDate"
         clearable
-        @change="handleChange"
       />
 
       <!-- 单选框 -->

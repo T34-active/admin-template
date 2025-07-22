@@ -54,7 +54,7 @@ export default defineConfig({
       infoText: '#888888', // 信息性文字色（时间戳、标签辅助等）
       tertiaryText: '#999999', // 三级文字色（提示说明、表单提示等）
     },
-    rounded: {
+    borderRadius: {
       xs: '2px',
       sm: '4px',
       md: '6px',

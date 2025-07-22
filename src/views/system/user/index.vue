@@ -13,9 +13,8 @@ import {
 
 import { ElTree, type FormInstance, type FormRules } from 'element-plus'
 import { createRules } from '@/utils'
-
 import { validatePhone } from '@/utils/validate'
-import QueryForm, { type QueryItemConfig } from '@/components/QueryForm/index.vue'
+import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
 
 const router = useRouter()
 const { proxy } = getCurrentInstance()
@@ -167,20 +166,20 @@ function resetQuery() {
   handleQuery()
 }
 /** 删除按钮操作 */
-function handleDelete(row) {
+async function handleDelete(row) {
   const userIds = row.userId || ids.value
-  proxy.$modal
-    .confirm('是否确认删除用户编号为"' + userIds + '"的数据项？')
-    .then(function () {
-      return delUser(userIds)
-    })
-    .then(() => {
-      getList()
-      proxy.$modal.msgSuccess('删除成功')
-    })
-    .catch((e) => {
-      console.log(e)
-    })
+  try {
+    await proxy.$modal.confirm('是否确认删除用户编号为"' + userIds + '"的数据项？')
+    await delUser(userIds)
+    await getList()
+    proxy.$modal.msgSuccess('删除成功')
+  } catch (err) {
+    // 可以根据情况区分是否是用户取消
+    if (err !== 'cancel') {
+      console.error('删除异常:', err)
+      proxy.$modal.msgError('删除失败')
+    }
+  }
 }
 /** 导出按钮操作 */
 function handleExport() {
@@ -193,19 +192,16 @@ function handleExport() {
   )
 }
 /** 用户状态修改 */
-function handleStatusChange(row) {
+async function handleStatusChange(row) {
   const text = row.status === '0' ? '启用' : '停用'
-  proxy.$modal
-    .confirm('确认要"' + text + '""' + row.userName + '"用户吗？')
-    .then(function () {
-      return changeUserStatus(row.userId, row.status)
-    })
-    .then(() => {
-      proxy.$modal.msgSuccess(text + '成功')
-    })
-    .catch(function () {
-      row.status = row.status === '0' ? '1' : '0'
-    })
+  try {
+    await proxy.$modal.confirm(`确认要"${text}" "${row.userName}" 用户吗？`)
+    await changeUserStatus(row.userId, row.status)
+    proxy.$modal.msgSuccess(`${text}成功`)
+  } catch (err) {
+    // 用户点击取消时，回滚 UI 状态
+    row.status = row.status === '0' ? '1' : '0'
+  }
 }
 /** 跳转角色分配 */
 function handleAuthRole(row) {
@@ -213,23 +209,20 @@ function handleAuthRole(row) {
   router.push('/system/user-auth/role/' + userId)
 }
 /** 重置密码按钮操作 */
-function handleResetPwd(row) {
-  proxy
-    .$prompt('请输入"' + row.userName + '"的新密码', '提示', {
+async function handleResetPwd(row) {
+  try {
+    const { value } = await proxy.$modal.prompt(`请输入【${row.userName}】的新密码`, '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       closeOnClickModal: false,
       inputPattern: /^.{5,20}$/,
       inputErrorMessage: '用户密码长度必须介于 5 和 20 之间',
     })
-    .then(({ value }: any) => {
-      resetUserPwd(row.userId, value).then((response) => {
-        proxy.$modal.msgSuccess('修改成功，新密码是：' + value)
-      })
-    })
-    .catch((e) => {
-      console.log(e)
-    })
+    await resetUserPwd(row.userId, value)
+    proxy.$modal.msgSuccess('修改成功，新密码是：' + value)
+  } catch (err) {
+    console.error(err)
+  }
 }
 /** 选择条数 */
 function handleSelectionChange(selection) {
@@ -574,22 +567,24 @@ onMounted(async () => {
               <el-input v-model="form.email" placeholder="请输入邮箱" maxlength="50" clearable />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item v-if="form.userId === undefined" label="用户名称" prop="userName">
-              <el-input v-model="form.userName" placeholder="请输入用户名称" maxlength="30" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item v-if="form.userId === undefined" label="用户密码" prop="password">
-              <el-input
-                v-model="form.password"
-                placeholder="请输入用户密码"
-                type="password"
-                maxlength="20"
-                show-password
-              />
-            </el-form-item>
-          </el-col>
+          <template v-if="form.userId === undefined">
+            <el-col :span="12">
+              <el-form-item label="用户名称" prop="userName">
+                <el-input v-model="form.userName" placeholder="请输入用户名称" maxlength="30" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="用户密码" prop="password">
+                <el-input
+                  v-model="form.password"
+                  placeholder="请输入用户密码"
+                  type="password"
+                  maxlength="20"
+                  show-password
+                />
+              </el-form-item>
+            </el-col>
+          </template>
           <el-col :span="12">
             <el-form-item label="用户性别">
               <el-select v-model="form.sex" placeholder="请选择">
@@ -639,7 +634,7 @@ onMounted(async () => {
           </el-col>
           <el-col :span="24">
             <el-form-item label="备注">
-              <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
+              <el-input v-model="form.remark" type="textarea" placeholder="请输入备注" />
             </el-form-item>
           </el-col>
         </el-row>

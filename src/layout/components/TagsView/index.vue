@@ -11,47 +11,64 @@
         :data-path="tag.path"
         :class="isActive(tag) ? 'active' : ''"
         :to="{ path: tag.path, query: tag.query, fullPath: tag.fullPath } as any"
-        class="tags-view-item inline-flex items-center rounded-2xl gap-x-0.5 shadow-xl"
+        class="tags-view-item inline-flex items-center rounded-md gap-x-2 shadow-xl"
         :style="activeStyle(tag)"
         @click.middle="!isAffix(tag) ? closeSelectedTag(tag) : ''"
         @contextmenu.prevent="openMenu(tag, $event)"
       >
         {{ tag.title }}
-        <span v-if="!isAffix(tag)" @click.prevent.stop="closeSelectedTag(tag)">
-          <close class="el-icon-close" style="width: 1em; height: 1em; vertical-align: middle" />
-        </span>
+        <el-icon v-if="!isAffix(tag)" @click.prevent.stop="closeSelectedTag(tag)">
+          <close />
+        </el-icon>
       </router-link>
     </scroll-pane>
     <ul
       v-show="visible"
       :style="{ left: left + 'px', top: top + 'px' }"
-      class="contextmenu flex flex-col shadow-2xl"
+      class="contextmenu flex flex-col shadow-2xl absolute text-xs text-primaryText font-medium bg-white dark:bg-black dark:text-white rounded-md py-4 z-3000 overflow-hidden"
     >
-      <li @click="refreshSelectedTag(selectedTag)" class="flex items-center gap-x-2">
+      <li
+        @click="refreshSelectedTag(selectedTag)"
+        class="flex items-center gap-x-2 hover:bg-surface dark:hover:bg-primaryText cursor-pointer"
+      >
         <refresh-right class="size-12" />
         刷新页面
       </li>
       <li
         v-if="!isAffix(selectedTag)"
         @click="closeSelectedTag(selectedTag)"
-        class="flex items-center gap-x-2"
+        class="flex items-center gap-x-2 hover:bg-surface dark:hover:bg-primaryText cursor-pointer"
       >
         <close class="size-12" />
         关闭当前
       </li>
-      <li @click="closeOthersTags" class="flex items-center gap-x-2">
+      <li
+        @click="closeOthersTags"
+        class="flex items-center gap-x-2 hover:bg-surface dark:hover:bg-primaryText cursor-pointer"
+      >
         <circle-close class="size-12" />
         关闭其他
       </li>
-      <li v-if="!isFirstView()" @click="closeLeftTags" class="flex items-center gap-x-2">
+      <li
+        v-if="!isFirstView()"
+        @click="closeLeftTags"
+        class="flex items-center gap-x-2 hover:bg-surface dark:hover:bg-primaryText cursor-pointer"
+      >
         <back class="size-12" />
         关闭左侧
       </li>
-      <li v-if="!isLastView()" @click="closeRightTags" class="flex items-center gap-x-2">
+      <li
+        v-if="!isLastView()"
+        @click="closeRightTags"
+        class="flex items-center gap-x-2 hover:bg-surface dark:hover:bg-primaryText cursor-pointer"
+      >
         <right class="size-12" />
         关闭右侧
       </li>
-      <li @click="closeAllTags(selectedTag)" class="flex items-center gap-x-2">
+      <li
+        @click="closeAllTags(selectedTag)"
+        class="flex items-center gap-x-2 hover:bg-surface dark:hover:bg-primaryText cursor-pointer"
+      >
         <circle-close class="size-12" />
         全部关闭
       </li>
@@ -301,23 +318,8 @@ function handleScroll() {
     }
   }
   .contextmenu {
-    margin: 0;
-    background: #fff;
-    z-index: 3000;
-    position: absolute;
-    list-style-type: none;
-    padding: 5px 0;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 400;
-    color: #333;
     li {
-      margin: 0;
       padding: 7px 16px;
-      cursor: pointer;
-      &:hover {
-        background: #eee;
-      }
     }
   }
 }

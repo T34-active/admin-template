@@ -1,5 +1,8 @@
 <template>
-  <div class="border rounded-2xl mb-16" :class="modelValue ? 'border' : 'border-b-none'">
+  <div
+    class="border rounded-md overflow-hidden mb-16"
+    :class="modelValue ? 'border' : 'border-b-none'"
+  >
     <div
       class="overflow-hidden p-16 border-b border-solid bg-baseBg text-primaryText cursor-pointer dark:bg-black"
       @click="$emit('update:modelValue', !modelValue)"

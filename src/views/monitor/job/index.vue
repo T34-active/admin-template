@@ -229,7 +229,7 @@
                 <template #append>
                   <el-button type="primary" @click="handleShowCron">
                     生成表达式
-                    <i class="el-icon-time el-icon--right"></i>
+                    <i class="el-icon-time el-icon--right" />
                   </el-button>
                 </template>
               </el-input>
@@ -356,8 +356,8 @@ import { parseTime } from '@/utils/ruoyi'
 
 import Crontab from '@/components/Crontab/index.vue'
 import type { FormInstance, FormRules } from 'element-plus'
-import { createRules } from '@/utils'
-import QueryForm, { type QueryItemConfig } from '@/components/QueryForm/index.vue'
+
+import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
 
 const router = useRouter()
 const { proxy } = getCurrentInstance()

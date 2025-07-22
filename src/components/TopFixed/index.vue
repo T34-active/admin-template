@@ -3,9 +3,9 @@
   <div :style="{ height: `${height}px` }" />
   <!-- 底部固定栏 -->
   <div
-    ref="footerRef"
+    ref="topRef"
     :style="{ width: appStore.sidebar.opened ? 'calc(100% - 200px)' : '' }"
-    class="shadow-[0_-4px_10px_rgba(0,0,0,0.1)] border-t fixed w-full bottom-0 right-0 z-990 transition-all duration-300 bg-white dark:bg-black"
+    class="fixed w-full top-84 right-0 z-30 transition-all duration-300 border-b shadow-xl bg-white dark:bg-black"
   >
     <slot />
   </div>
@@ -17,14 +17,14 @@ import useAppStore from '@/store/modules/app'
 
 const appStore = useAppStore()
 // 绑定底部栏 DOM
-const footerRef = ref<HTMLElement | null>(null)
+const topRef = ref<HTMLElement | null>(null)
 
 // 动态获取 sidebar 宽度
 const sidebarRef = ref<HTMLElement | null>(null)
 const sidebarWidth = ref(0)
 
 // 计算底部栏高度
-const { height } = useElementSize(footerRef)
+const { height } = useElementSize(topRef)
 
 onMounted(() => {
   sidebarRef.value = document.querySelector('.sidebar-container') as HTMLElement
