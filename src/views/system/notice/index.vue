@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { listNotice, delNotice } from '@/api/system/notice'
 
-import QueryForm, { type QueryItemConfig } from '@/components/QueryForm/index.vue'
+import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
 
 const { proxy } = getCurrentInstance()
 

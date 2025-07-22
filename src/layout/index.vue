@@ -28,7 +28,7 @@ import useSettingsStore from '@/store/modules/settings'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 const settingsStore = useSettingsStore()
 const theme = computed(() => settingsStore.theme)
-const sideTheme = computed(() => settingsStore.sideTheme)
+// const sideTheme = computed(() => settingsStore.sideTheme)
 const sidebar = computed(() => useAppStore().sidebar)
 const device = computed(() => useAppStore().device)
 const needTagsView = computed(() => settingsStore.tagsView)

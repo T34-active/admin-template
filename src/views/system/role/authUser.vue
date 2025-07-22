@@ -4,7 +4,7 @@ import { allocatedUserList, authUserCancel, authUserCancelAll } from '@/api/syst
 import { parseTime } from '@/utils/ruoyi'
 
 import { useRoute } from 'vue-router'
-import QueryForm, { type QueryItemConfig } from '@/components/QueryForm/index.vue'
+import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
 
 const route = useRoute()
 const { proxy } = getCurrentInstance()

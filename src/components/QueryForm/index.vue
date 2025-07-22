@@ -14,6 +14,7 @@
 </template>
 
 <script setup lang="ts">
+import type { Ref } from 'vue'
 /**
  * QueryForm.vue
  * @description 用于动态渲染多个查询表单项组件 <QueryItem />，支持 input、select、daterange 类型。
@@ -48,7 +49,6 @@
  * ]
  */
 import { unref } from 'vue'
-import type { Ref } from 'vue'
 import QueryItem from '@/components/QueryItem/index.vue' // 引入通用查询项组件
 
 // 定义下拉选项（字典）结构
@@ -65,7 +65,7 @@ export interface QueryItemConfig {
   placeholder?: string // 控件的占位文字
   startPlaceholder?: string // daterange 的开始占位符
   endPlaceholder?: string // daterange 的结束占位符
-  dict?: DictItem[] | Ref<DictItem[]> // ✅ 允许传 ref // 下拉列表项，只有 select 类型用到
+  dict?: DictItem[] | Ref<DictItem[]> // 允许传 ref // 下拉列表项，只有 select 类型用到
 }
 
 // 接收父组件传入的 model 数据和查询项配置数组
@@ -73,7 +73,7 @@ const props = defineProps<{
   model: Record<string, any> // 表单绑定的数据对象（通过 v-model 传入）
   items: QueryItemConfig[] // 表单项配置数组（定义需要渲染哪些查询项）
 }>()
-// ✅ 新增 computed 代理
+// 新增 computed 代理
 const proxyModel = computed({
   get: () => props.model,
   set: (val) => emit('update:model', val),

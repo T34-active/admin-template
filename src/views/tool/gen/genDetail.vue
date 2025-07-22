@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import TopFixed from '@/components/TopFixed/index.vue'
 import { previewTable } from '@/api/tool/gen'
 const { proxy } = getCurrentInstance()
 const route = proxy.$route
@@ -20,7 +21,7 @@ function getLangClass(fileName: string): string {
   const pureName = fileName.replace(/\.vm$/, '').toLowerCase()
   if (pureName.endsWith('.java')) return 'language-java'
   if (pureName.endsWith('.xml')) return 'language-xml'
-  if (pureName.endsWith('.sql')) return 'language-java'
+  if (pureName.endsWith('sql')) return 'language-sql'
   if (pureName.endsWith('.js') || pureName.endsWith('.vue')) return 'language-javascript'
   if (pureName.endsWith('.ts')) return 'language-typescript'
   return 'language-plaintext'
@@ -42,6 +43,11 @@ function handleClose() {
   const obj = { path: '/tool/gen' }
   proxy.$tab.closeOpenPage(obj)
 }
+
+// 获取当前激活 tab 的 key
+const activeKey = computed(() => {
+  return Object.keys(preview.value.data).find((key) => getTabName(key) === preview.value.activeName)
+})
 onMounted(async () => {
   if (route.params.tableId) {
     await handlePreview(route.params.tableId)
@@ -52,29 +58,55 @@ onMounted(async () => {
 
 <template>
   <div class="app-container">
-    <div>{{ preview.title }}</div>
-    <el-tabs v-model="preview.activeName">
-      <el-tab-pane
-        v-for="(value, key) in preview.data"
-        :key="key"
-        :label="getTabName(key)"
-        :name="getTabName(key)"
-      >
-        <!-- 输出当前语言 class 供调试 -->
-        <div class="text-xs text-gray-400 mb-1">{{ getLangClass(key) }}</div>
-        <div class="flex justify-end items-center mb-2 lan">
-          <el-link underline="always" v-copyText="value" v-copyText:callback="copyTextSuccess">
-            <span class="inline-flex items-center gap-x-1">
-              <el-icon><DocumentCopy /></el-icon>
-              复制
-            </span>
-          </el-link>
+    <!-- 吸顶部分 -->
+    <TopFixed>
+      <div class="container mx-auto">
+        <div class="flex flex-col justify-start px-16 py-12">
+          <!-- 吸顶标题和 tabs -->
+          <div class="text-xl font-bold mb-2 text-center">{{ preview.title }}</div>
+          <el-tabs v-model="preview.activeName">
+            <el-tab-pane
+              v-for="(value, key) in preview.data"
+              :key="key"
+              :label="getTabName(key)"
+              :name="getTabName(key)"
+            />
+          </el-tabs>
+
+          <!-- 只显示当前 tab 的复制区域 -->
+          <template v-if="preview.data[activeKey]">
+            <div class="flex items-center justify-between">
+              <div class="text-xs text-gray-400 mb-1">{{ getLangClass(activeKey) }}</div>
+              <div class="flex justify-end items-center mb-2 lan">
+                <el-link
+                  underline="always"
+                  v-copyText="preview.data[activeKey]"
+                  v-copyText:callback="copyTextSuccess"
+                >
+                  <span class="inline-flex items-center gap-x-4">
+                    <el-icon><DocumentCopy /></el-icon>
+                    复制
+                  </span>
+                </el-link>
+              </div>
+            </div>
+          </template>
         </div>
-        <div v-highlight>
-          <pre><code :class="getLangClass(key)">{{ value }}</code></pre>
-        </div>
-      </el-tab-pane>
-    </el-tabs>
+      </div>
+    </TopFixed>
+
+    <!-- tab 内容区域 -->
+    <div
+      v-for="(value, key) in preview.data"
+      :key="key"
+      v-show="preview.activeName === getTabName(key)"
+    >
+      <div v-highlight>
+        <pre><code :class="getLangClass(key)">{{ value }}</code></pre>
+      </div>
+    </div>
+
+    <!-- 底部操作栏 -->
     <BottomFixed>
       <div class="flex items-center justify-center p-16">
         <el-button @click="handleClose">返回</el-button>
@@ -82,5 +114,3 @@ onMounted(async () => {
     </BottomFixed>
   </div>
 </template>
-
-<style scoped lang="scss"></style>

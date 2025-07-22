@@ -96,11 +96,7 @@ function hasTitle(title: any) {
             :class="item.redirect === '/index' ? '' : 'mr-16'"
           />
           <template #title>
-            <span
-              class="menu-title"
-              :class="item.redirect === '/index' ? 'ml-16' : ''"
-              :title="hasTitle(onlyOneChild.meta.title)"
-            >
+            <span class="menu-title" :title="hasTitle(onlyOneChild.meta.title)">
               {{ onlyOneChild.meta.title }}
             </span>
           </template>

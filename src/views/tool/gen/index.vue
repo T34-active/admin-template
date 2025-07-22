@@ -22,6 +22,7 @@ const uniqueId = ref('')
 const queryParams = ref({
   pageNum: 1,
   pageSize: 50,
+  className: undefined,
   tableName: undefined,
   tableComment: undefined,
 })
@@ -162,6 +163,16 @@ onMounted(async () => {
                 <el-input
                   v-model="queryParams.tableComment"
                   placeholder="请输入表描述"
+                  clearable
+                  @keyup.enter="handleQuery"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="8">
+              <el-form-item label="实体" prop="className">
+                <el-input
+                  v-model="queryParams.className"
+                  placeholder="请输入实体"
                   clearable
                   @keyup.enter="handleQuery"
                 />

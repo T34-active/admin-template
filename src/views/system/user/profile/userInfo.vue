@@ -26,6 +26,7 @@
 import { updateUserProfile } from '@/api/system/user'
 import type { FormInstance, FormRules } from 'element-plus'
 import { createRules } from '@/utils'
+
 const userRef = ref<FormInstance>(null)
 const props = defineProps({
   user: {
