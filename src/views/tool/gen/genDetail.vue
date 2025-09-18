@@ -22,7 +22,7 @@ function getLangClass(fileName: string): string {
   if (pureName.endsWith('.java')) return 'language-java'
   if (pureName.endsWith('.xml')) return 'language-xml'
   if (pureName.endsWith('sql')) return 'language-sql'
-  if (pureName.endsWith('.js') || pureName.endsWith('.vue')) return 'language-javascript'
+  if (pureName.endsWith('.js') || pureName.endsWith('.vue')) return 'language-typescript'
   if (pureName.endsWith('.ts')) return 'language-typescript'
   return 'language-plaintext'
 }
@@ -72,25 +72,6 @@ onMounted(async () => {
               :name="getTabName(key)"
             />
           </el-tabs>
-
-          <!-- 只显示当前 tab 的复制区域 -->
-          <template v-if="preview.data[activeKey]">
-            <div class="flex items-center justify-between">
-              <div class="text-xs text-gray-400 mb-1">{{ getLangClass(activeKey) }}</div>
-              <div class="flex justify-end items-center mb-2 lan">
-                <el-link
-                  underline="always"
-                  v-copyText="preview.data[activeKey]"
-                  v-copyText:callback="copyTextSuccess"
-                >
-                  <span class="inline-flex items-center gap-x-4">
-                    <el-icon><DocumentCopy /></el-icon>
-                    复制
-                  </span>
-                </el-link>
-              </div>
-            </div>
-          </template>
         </div>
       </div>
     </TopFixed>
@@ -101,11 +82,24 @@ onMounted(async () => {
       :key="key"
       v-show="preview.activeName === getTabName(key)"
     >
-      <div v-highlight>
+      <div class="flex justify-between items-center px-16 mt-4">
+        <div class="text-base text-primary">{{ getLangClass(key) }}</div>
+        <el-link
+          type="primary"
+          :underline="false"
+          v-copyText="value"
+          v-copyText:callback="copyTextSuccess"
+        >
+          <span class="inline-flex items-center gap-x-4">
+            <el-icon><DocumentCopy /></el-icon>
+            复制当前代码
+          </span>
+        </el-link>
+      </div>
+      <div v-highlight class="px-16">
         <pre><code :class="getLangClass(key)">{{ value }}</code></pre>
       </div>
     </div>
-
     <!-- 底部操作栏 -->
     <BottomFixed>
       <div class="flex items-center justify-center p-16">

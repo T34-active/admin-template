@@ -360,7 +360,7 @@ onMounted(async () => {
     <CollapsePanel v-model="showSearch">
       <div class="p-16">
         <el-form ref="queryRef" :model="queryParams" label-width="auto">
-          <el-row :gutter="20">
+          <el-row :gutter="10">
             <QueryForm :model="queryParams" :items="queryItem" />
           </el-row>
         </el-form>
@@ -498,7 +498,7 @@ onMounted(async () => {
     <el-dialog
       v-model="open"
       :title="title"
-      width="550px"
+      width="80%"
       append-to-body
       :close-on-click-modal="false"
     >
@@ -570,7 +570,7 @@ onMounted(async () => {
     <el-dialog
       v-model="openDataScope"
       :title="title"
-      width="550px"
+      width="80%"
       append-to-body
       :close-on-click-modal="false"
     >

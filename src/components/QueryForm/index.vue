@@ -8,7 +8,7 @@
     :placeholder="item.placeholder"
     :start-placeholder="item.startPlaceholder"
     :end-placeholder="item.endPlaceholder"
-    :dict="unref(item.dict)"
+    :dict="item.dict"
     v-model="proxyModel[item.prop]"
   />
 </template>
@@ -48,7 +48,6 @@ import type { Ref } from 'vue'
  *   { label: '时间范围', prop: 'timeRange', type: 'daterange', startPlaceholder: '开始时间', endPlaceholder: '结束时间' }
  * ]
  */
-import { unref } from 'vue'
 import QueryItem from '@/components/QueryItem/index.vue' // 引入通用查询项组件
 
 // 定义下拉选项（字典）结构
@@ -61,7 +60,7 @@ export interface DictItem {
 export interface QueryItemConfig {
   label?: string // 显示的标签
   prop?: string // 表单字段名，对应 model 的属性
-  type?: 'input' | 'select' | 'daterange' | 'datetimerange' | 'radio' // 控件类型
+  type?: 'input' | 'select' | 'daterange' | 'datetimerange' | 'radio' | 'checkbox' // 控件类型
   placeholder?: string // 控件的占位文字
   startPlaceholder?: string // daterange 的开始占位符
   endPlaceholder?: string // daterange 的结束占位符

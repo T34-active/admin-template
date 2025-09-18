@@ -1,135 +1,3 @@
-<template>
-  <el-card>
-    <el-tabs v-model="activeName">
-      <el-tab-pane label="基本信息" name="basic">
-        <basic-info-form ref="basicInfo" :info="info" />
-      </el-tab-pane>
-      <el-tab-pane label="字段信息" name="columnInfo">
-        <el-table ref="dragTable" :data="columns" row-key="columnId">
-          <el-table-column label="序号" type="index" min-width="55" />
-          <el-table-column
-            label="字段列名"
-            prop="columnName"
-            min-width="150px"
-            align="center"
-            :show-overflow-tooltip="true"
-          />
-          <el-table-column label="字段描述" min-width="150px" align="center">
-            <template #default="scope">
-              <el-input v-model="scope.row.columnComment" />
-            </template>
-          </el-table-column>
-          <el-table-column
-            label="物理类型"
-            prop="columnType"
-            min-width="150px"
-            align="center"
-            :show-overflow-tooltip="true"
-          />
-          <el-table-column label="Java类型" min-width="150px" align="center">
-            <template #default="scope">
-              <el-select v-model="scope.row.javaType">
-                <el-option
-                  v-for="item in javaTypeOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column label="java属性" min-width="150px" align="center">
-            <template #default="scope">
-              <el-input v-model="scope.row.javaField" />
-            </template>
-          </el-table-column>
-          <el-table-column label="插入" min-width="55px" align="center">
-            <template #default="scope">
-              <el-checkbox true-value="1" false-value="0" v-model="scope.row.isInsert" />
-            </template>
-          </el-table-column>
-          <el-table-column label="编辑" min-width="55px" align="center">
-            <template #default="scope">
-              <el-checkbox true-value="1" false-value="0" v-model="scope.row.isEdit" />
-            </template>
-          </el-table-column>
-          <el-table-column label="列表" min-width="55px" align="center">
-            <template #default="scope">
-              <el-checkbox true-value="1" false-value="0" v-model="scope.row.isList" />
-            </template>
-          </el-table-column>
-          <el-table-column label="查询" min-width="55px" align="center">
-            <template #default="scope">
-              <el-checkbox true-value="1" false-value="0" v-model="scope.row.isQuery" />
-            </template>
-          </el-table-column>
-          <el-table-column label="查询方式" min-width="150px" align="center">
-            <template #default="scope">
-              <el-select v-model="scope.row.queryType">
-                <el-option
-                  v-for="item in queryTypeOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column label="必填" min-width="55px" align="center">
-            <template #default="scope">
-              <el-checkbox true-value="1" false-value="0" v-model="scope.row.isRequired" />
-            </template>
-          </el-table-column>
-          <el-table-column label="显示类型" min-width="150px" align="center">
-            <template #default="scope">
-              <el-select v-model="scope.row.htmlType">
-                <el-option
-                  v-for="item in htmlTypeOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column label="字典类型" min-width="150px" align="center">
-            <template #default="scope">
-              <el-select v-model="scope.row.dictType" clearable filterable placeholder="请选择">
-                <el-option
-                  v-for="dict in dictOptions"
-                  :key="dict.dictType"
-                  :label="dict.dictName"
-                  :value="dict.dictType"
-                >
-                  <div class="flex items-center justify-between">
-                    <span>{{ dict.dictName }}</span>
-                    <span class="text-[#8492a6] text-sm">
-                      {{ dict.dictType }}
-                    </span>
-                  </div>
-                </el-option>
-              </el-select>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-tab-pane>
-      <el-tab-pane label="生成信息" name="genInfo">
-        <gen-info-form ref="genInfo" :info="info" :tables="tables" />
-      </el-tab-pane>
-    </el-tabs>
-    <BottomFixed>
-      <div class="flex items-center justify-center p-16">
-        <el-popconfirm title="是否保存" placement="top-start" @confirm="submitForm">
-          <template #reference>
-            <el-button type="primary">提交</el-button>
-          </template>
-        </el-popconfirm>
-        <el-button plain @click="close()">返回</el-button>
-      </div>
-    </BottomFixed>
-  </el-card>
-</template>
-
 <script setup lang="ts">
 import { getGenTable, updateGenTable } from '@/api/tool/gen'
 import { optionselect } from '@/api/system/dict/type'
@@ -144,7 +12,12 @@ const activeName = ref('columnInfo')
 const tables = ref([])
 const columns = ref([])
 const dictOptions = ref([])
-const info = ref({})
+const info = ref({
+  treeCode: null,
+  treeName: null,
+  treeParentCode: null,
+  parentMenuId: null,
+})
 
 /** 提交按钮 */
 async function submitForm() {
@@ -168,7 +41,6 @@ async function submitForm() {
         parentMenuId: info.value.parentMenuId,
       },
     }
-
     const res = await updateGenTable(genTable)
     proxy.$modal.msgSuccess(res.msg)
     if (res.code === 200) {
@@ -219,3 +91,132 @@ async function fetchDictOptions() {
   dictOptions.value = res.data
 }
 </script>
+<template>
+  <div class="app-container">
+    <el-tabs v-model="activeName">
+      <el-tab-pane label="基本信息" name="basic">
+        <basic-info-form ref="basicInfo" :info="info" />
+      </el-tab-pane>
+      <el-tab-pane label="字段信息" name="columnInfo">
+        <el-table ref="dragTable" :data="columns" row-key="columnId">
+          <el-table-column label="序号" type="index" min-width="55" />
+          <el-table-column
+            label="字段列名"
+            prop="columnName"
+            min-width="150px"
+            :show-overflow-tooltip="true"
+          />
+          <el-table-column label="字段描述" min-width="150px">
+            <template #default="scope">
+              <el-input v-model="scope.row.columnComment" />
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="物理类型"
+            prop="columnType"
+            min-width="150px"
+            :show-overflow-tooltip="true"
+          />
+          <el-table-column label="Java类型" min-width="150px">
+            <template #default="scope">
+              <el-select v-model="scope.row.javaType">
+                <el-option
+                  v-for="item in javaTypeOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </template>
+          </el-table-column>
+          <el-table-column label="java属性" min-width="150px">
+            <template #default="scope">
+              <el-input v-model="scope.row.javaField" />
+            </template>
+          </el-table-column>
+          <el-table-column label="插入" min-width="55px">
+            <template #default="scope">
+              <el-checkbox true-value="1" false-value="0" v-model="scope.row.isInsert" />
+            </template>
+          </el-table-column>
+          <el-table-column label="编辑" min-width="55px">
+            <template #default="scope">
+              <el-checkbox true-value="1" false-value="0" v-model="scope.row.isEdit" />
+            </template>
+          </el-table-column>
+          <el-table-column label="列表" min-width="55px">
+            <template #default="scope">
+              <el-checkbox true-value="1" false-value="0" v-model="scope.row.isList" />
+            </template>
+          </el-table-column>
+          <el-table-column label="查询" min-width="55px">
+            <template #default="scope">
+              <el-checkbox true-value="1" false-value="0" v-model="scope.row.isQuery" />
+            </template>
+          </el-table-column>
+          <el-table-column label="查询方式" min-width="150px">
+            <template #default="scope">
+              <el-select v-model="scope.row.queryType">
+                <el-option
+                  v-for="item in queryTypeOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </template>
+          </el-table-column>
+          <el-table-column label="必填" min-width="55px">
+            <template #default="scope">
+              <el-checkbox true-value="1" false-value="0" v-model="scope.row.isRequired" />
+            </template>
+          </el-table-column>
+          <el-table-column label="显示类型" min-width="150px">
+            <template #default="scope">
+              <el-select v-model="scope.row.htmlType">
+                <el-option
+                  v-for="item in htmlTypeOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </template>
+          </el-table-column>
+          <el-table-column label="字典类型" min-width="150px">
+            <template #default="scope">
+              <el-select v-model="scope.row.dictType" clearable filterable placeholder="请选择">
+                <el-option
+                  v-for="dict in dictOptions"
+                  :key="dict.dictType"
+                  :label="dict.dictName"
+                  :value="dict.dictType"
+                >
+                  <div class="flex items-center justify-between">
+                    <span>{{ dict.dictName }}</span>
+                    <span class="text-tertiaryText text-sm">
+                      {{ dict.dictType }}
+                    </span>
+                  </div>
+                </el-option>
+              </el-select>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-tab-pane>
+      <el-tab-pane label="生成信息" name="genInfo">
+        <gen-info-form ref="genInfo" :info="info" :tables="tables" />
+      </el-tab-pane>
+    </el-tabs>
+    <BottomFixed>
+      <div class="flex items-center justify-center p-16">
+        <el-popconfirm title="是否保存" placement="top-start" @confirm="submitForm">
+          <template #reference>
+            <el-button type="primary">提交</el-button>
+          </template>
+        </el-popconfirm>
+        <el-button plain @click="close()">返回</el-button>
+      </div>
+    </BottomFixed>
+  </div>
+</template>

@@ -1,13 +1,13 @@
 <template>
   <div
-    class="border rounded-md overflow-hidden mb-16"
+    class="border rounded-md overflow-hidden mb-16 text-base"
     :class="modelValue ? 'border' : 'border-b-none'"
   >
     <div
-      class="overflow-hidden p-16 border-b border-solid bg-baseBg text-primaryText cursor-pointer dark:bg-black"
+      class="overflow-hidden p-12 border-b border-solid bg-baseBg text-primaryText cursor-pointer dark:bg-black"
       @click="$emit('update:modelValue', !modelValue)"
     >
-      <div class="flex items-center gap-x-4 dark:text-white">
+      <div class="flex items-center gap-x-16 dark:text-white">
         <el-icon
           size="16"
           :class="['transition-transform duration-200', modelValue ? 'rotate-0' : '-rotate-90']"

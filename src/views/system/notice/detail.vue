@@ -64,7 +64,7 @@ onMounted(async () => {
 <template>
   <div class="app-container">
     <el-form ref="noticeRef" :model="form" :rules="rules" label-width="auto">
-      <el-row :gutter="20">
+      <el-row :gutter="10">
         <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <el-form-item label="公告标题" prop="noticeTitle">
             <el-input v-model="form.noticeTitle" placeholder="请输入公告标题" clearable />

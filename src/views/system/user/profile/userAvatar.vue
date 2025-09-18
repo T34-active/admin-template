@@ -108,7 +108,7 @@ function closeDialog() {
       @close="closeDialog"
       :close-on-click-modal="false"
     >
-      <el-row :gutter="20">
+      <el-row :gutter="10">
         <el-col :xs="24" :md="12" :style="{ height: '350px' }">
           <vue-cropper
             v-if="visible"

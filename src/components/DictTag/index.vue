@@ -29,18 +29,18 @@ const props = defineProps({
   // 数据
   options: {
     type: Array as () => Array<any>,
-    default: null,
+    default: () => [],
   },
   // 当前的值
   value: [Number, String, Array],
 })
 
 const values = computed(() => {
-  if (props.value !== null && typeof props.value !== 'undefined') {
-    return Array.isArray(props.value) ? props.value : [String(props.value)]
-  } else {
-    return []
+  const val = props.value
+  if (val !== null && typeof val !== 'undefined') {
+    return Array.isArray(val) ? val : [String(val)]
   }
+  return []
 })
 </script>
 

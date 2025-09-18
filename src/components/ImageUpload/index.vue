@@ -1,5 +1,5 @@
 <template>
-  <div class="component-upload-image">
+  <div class="flex items-start w-full gap-x-20">
     <el-upload
       ref="imageUpload"
       multiple
@@ -23,7 +23,7 @@
     </el-upload>
     <!-- 上传提示 -->
     <template v-if="isShowTip">
-      <div v-if="!$slots.tip && tip === ''" class="el-upload__tip">
+      <div v-if="!$slots.tip && tip === ''" class="text-xs font-medium">
         请上传
         <template v-if="fileSize">
           大小不超过
@@ -97,7 +97,7 @@ const uploadList = ref([])
 const dialogImageUrl = ref('')
 const dialogVisible = ref(false)
 const baseUrl = ''
-const uploadImgUrl = ref(import.meta.env.VITE_APP_BASE_URL + '/common/upload') // 上传的图片服务器地址
+const uploadImgUrl = ref(import.meta.env.VITE_APP_BASE_URL + '/common/uploadImages') // 上传的图片服务器地址
 const headers = ref({ Authorization: 'Bearer ' + getToken() })
 const fileList = ref([])
 
@@ -165,13 +165,14 @@ function handleExceed() {
 // 上传成功回调
 function handleUploadSuccess(res: any, file: any) {
   if (res.code === 200) {
-    uploadList.value.push({ name: res.fileName, url: res.url })
+    // uploadList.value.push({ name: res.fileName, url: res.url })
+    uploadList.value.push({ name: res.msg, url: res.msg })
     uploadedSuccessfully()
   } else {
     number.value--
     proxy.$modal.closeLoading()
     proxy.$modal.msgError(res.msg)
-    ;(proxy!.$refs.imageUpload as any).handleRemove(file)
+    proxy.$refs.imageUpload.handleRemove(file)
     uploadedSuccessfully()
   }
 }

@@ -93,7 +93,7 @@ const emit = defineEmits(['update:modelValue'])
 const number = ref(0)
 const uploadList = ref<any[]>([])
 const baseUrl = import.meta.env.VITE_APP_BASE_URL
-const uploadFileUrl = ref(import.meta.env.VITE_APP_BASE_URL + '/common/upload') // 上传文件服务器地址
+const uploadFileUrl = ref(import.meta.env.VITE_APP_BASE_URL + '/common/uploadImages') // 上传文件服务器地址
 const headers = ref({ Authorization: 'Bearer ' + getToken() })
 const fileList = ref<any[]>([])
 // const showTip = computed(() => props.isShowTip && (props.fileType || props.fileSize))
@@ -157,7 +157,7 @@ function handleUploadError(err) {
 }
 
 // 上传成功回调
-function handleUploadSuccess(res: any, file: any) {
+function handleUploadSuccess(res, file) {
   if (res.code === 200) {
     uploadList.value.push({ name: res.fileName, url: res.url })
     uploadedSuccessfully()

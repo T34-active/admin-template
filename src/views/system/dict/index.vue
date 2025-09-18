@@ -8,9 +8,12 @@ import {
   updateType,
   refreshCache,
 } from '@/api/system/dict/type'
-import type { FormRules } from 'element-plus'
+import { ElButton, ElAutoResizer, ElTag, type FormRules } from 'element-plus'
+import { RouterLink } from 'vue-router'
 import { createRules } from '@/utils'
 import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
+
+import { h } from 'vue'
 
 const { proxy } = getCurrentInstance()
 
@@ -20,9 +23,6 @@ const typeList = ref([])
 const open = ref(false)
 const loading = ref(true)
 const showSearch = ref(true)
-const ids = ref<number[]>([])
-const single = ref(true)
-const multiple = ref(true)
 const total = ref(0)
 const title = ref('')
 const items = ref<QueryItemConfig[]>([
@@ -50,6 +50,108 @@ const items = ref<QueryItemConfig[]>([
     type: 'daterange',
     startPlaceholder: '开始时间',
     endPlaceholder: '结束时间',
+  },
+])
+
+// 表格列配置
+const columns = ref([
+  {
+    key: 'dictId',
+    title: '字典编号',
+    dataKey: 'dictId',
+    width: 100,
+  },
+  {
+    key: 'dictName',
+    title: '字典名称',
+    dataKey: 'dictName',
+    width: 150,
+  },
+  {
+    key: 'dictType',
+    title: '字典类型',
+    width: 300,
+    cellRenderer: ({ rowData }) =>
+      h(
+        RouterLink,
+        {
+          to: `/system/dict-data/index/${rowData.dictId}`,
+        },
+        {
+          default: () =>
+            h('span', { class: 'link-type', title: rowData.dictType }, rowData.dictType),
+        },
+      ),
+  },
+  {
+    key: 'status',
+    title: '状态',
+    dataKey: 'status',
+    width: 75,
+    cellRenderer: ({ rowData }) => {
+      const status = rowData.status
+      let label = ''
+      let type: 'primary' | 'success' | 'info' | 'warning' | 'danger' = 'primary'
+      if (status === '0' || status === 0) {
+        label = '正常'
+        type = 'success'
+      } else if (status === '1' || status === 1) {
+        label = '停用'
+        type = 'danger'
+      }
+
+      return h(
+        ElTag,
+        {
+          type,
+          disableTransitions: true,
+        },
+        () => label,
+      )
+    },
+  },
+  {
+    key: 'createTime',
+    title: '创建时间',
+    dataKey: 'createTime',
+    width: 200,
+  },
+  {
+    key: 'remark',
+    title: '备注',
+    dataKey: 'remark',
+    width: 200,
+  },
+  {
+    key: 'operation',
+    title: '操作',
+    fixed: 'right',
+    width: 150,
+    cellRenderer: ({ rowData }) =>
+      h('div', { class: 'small-padding fixed-width' }, [
+        h(
+          ElButton,
+          {
+            link: true,
+            type: 'primary',
+            icon: 'Edit',
+            onClick: () => handleUpdate(rowData),
+            'v-hasPermi': 'system:dict:edit',
+          },
+          () => '修改',
+        ),
+        h(
+          ElButton,
+          {
+            link: true,
+            type: 'primary',
+            icon: 'Delete',
+            onClick: () => handleDelete(rowData),
+            'v-hasPermi': 'system:dict:remove',
+          },
+          () => '删除',
+        ),
+      ]),
   },
 ])
 
@@ -122,16 +224,11 @@ function handleAdd() {
   open.value = true
   title.value = '添加字典类型'
 }
-/** 多选框选中数据 */
-function handleSelectionChange(selection) {
-  ids.value = selection.map((item) => item.dictId)
-  single.value = selection.length !== 1
-  multiple.value = !selection.length
-}
+
 /** 修改按钮操作 */
 async function handleUpdate(row) {
   reset()
-  const dictId = row.dictId || ids.value
+  const dictId = row.dictId
   const response = await getType(dictId)
   form.value = response.data
   open.value = true
@@ -153,9 +250,9 @@ async function submitForm() {
 }
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const dictIds = row.dictId || ids.value
+  const dictIds = row.dictId
   proxy.$modal
-    .confirm('是否确认删除字典编号为"' + dictIds + '"的数据项？')
+    .confirm(`是否确认删除字典编号为【${row.dictName}】的数据项？`)
     .then(function () {
       return delType(dictIds)
     })
@@ -216,7 +313,6 @@ onMounted(async () => {
               type="success"
               plain
               icon="Edit"
-              :disabled="single"
               @click="handleUpdate"
             >
               修改
@@ -228,7 +324,6 @@ onMounted(async () => {
               type="danger"
               plain
               icon="Delete"
-              :disabled="multiple"
               @click="handleDelete"
             >
               删除
@@ -265,57 +360,19 @@ onMounted(async () => {
         </el-row>
       </div>
     </collapsePanel>
-    <el-table v-loading="loading" :data="typeList" @selectionChange="handleSelectionChange">
-      <el-table-column type="selection" width="55" />
-      <el-table-column label="字典编号" prop="dictId" min-width="100" />
-      <el-table-column
-        label="字典名称"
-        prop="dictName"
-        :show-overflow-tooltip="true"
-        min-width="150"
-      />
-      <el-table-column label="字典类型" :show-overflow-tooltip="true" min-width="200">
-        <template #default="scope">
-          <router-link :to="'/system/dict-data/index/' + scope.row.dictId" class="link-type">
-            <span>{{ scope.row.dictType }}</span>
-          </router-link>
+    <div class="h-50vh">
+      <el-auto-resizer>
+        <template #default="{ height, width }">
+          <el-table-v2
+            :columns="columns"
+            :data="typeList"
+            :width="width"
+            :height="height"
+            :loading="loading"
+          />
         </template>
-      </el-table-column>
-      <el-table-column label="状态" prop="status" min-width="75">
-        <template #default="scope">
-          <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
-        </template>
-      </el-table-column>
-      <el-table-column label="创建时间" prop="createTime" min-width="200" />
-      <el-table-column label="备注" prop="remark" :show-overflow-tooltip="true" min-width="200" />
-      <el-table-column
-        label="操作"
-        class-name="small-padding fixed-width"
-        fixed="right"
-        min-width="150"
-      >
-        <template #default="scope">
-          <el-button
-            v-hasPermi="['system:dict:edit']"
-            link
-            type="primary"
-            icon="Edit"
-            @click="handleUpdate(scope.row)"
-          >
-            修改
-          </el-button>
-          <el-button
-            v-hasPermi="['system:dict:remove']"
-            link
-            type="primary"
-            icon="Delete"
-            @click="handleDelete(scope.row)"
-          >
-            删除
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+      </el-auto-resizer>
+    </div>
     <BottomFixed>
       <div class="flex items-center justify-end p-16">
         <pagination
@@ -330,27 +387,78 @@ onMounted(async () => {
     <el-dialog
       v-model="open"
       :title="title"
-      width="550px"
+      width="80%"
       append-to-body
       :close-on-click-modal="false"
     >
       <el-form ref="dictRef" :model="form" :rules="rules" label-width="auto">
-        <el-form-item label="字典名称" prop="dictName">
-          <el-input v-model="form.dictName" placeholder="请输入字典名称" />
-        </el-form-item>
-        <el-form-item label="字典类型" prop="dictType">
-          <el-input v-model="form.dictType" placeholder="请输入字典类型" />
-        </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-radio-group v-model="form.status">
-            <el-radio v-for="dict in sys_normal_disable" :key="dict.value" :value="dict.value">
-              {{ dict.label }}
-            </el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入备注" />
-        </el-form-item>
+        <el-row :gutter="10">
+          <el-col :span="12" :xs="24">
+            <el-form-item prop="dictName">
+              <template #label>
+                <span>
+                  <el-tooltip
+                    content="字典名称用于后台展示和管理，例如：性别、宠物类型。"
+                    placement="top"
+                  >
+                    <el-icon><question-filled /></el-icon>
+                  </el-tooltip>
+                  字典名称
+                </span>
+              </template>
+              <el-input v-model="form.dictName" placeholder="请输入字典名称" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" :xs="24">
+            <el-form-item prop="dictType">
+              <template #label>
+                <span>
+                  <el-tooltip
+                    content="字典类型是字典的唯一标识，例如：gender、petType，用于前端字段绑定。"
+                    placement="top"
+                  >
+                    <el-icon><question-filled /></el-icon>
+                  </el-tooltip>
+                  字典类型
+                </span>
+              </template>
+              <el-input v-model="form.dictType" placeholder="请输入字典类型" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" :xs="24">
+            <el-form-item prop="status">
+              <template #label>
+                <span>
+                  <el-tooltip
+                    content="设置该字典是否启用，启用后可被表单或其他模块引用。"
+                    placement="top"
+                  >
+                    <el-icon><question-filled /></el-icon>
+                  </el-tooltip>
+                  启用状态
+                </span>
+              </template>
+              <el-radio-group v-model="form.status">
+                <el-radio v-for="dict in sys_normal_disable" :key="dict.value" :value="dict.value">
+                  {{ dict.label }}
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24" :xs="24">
+            <el-form-item prop="remark">
+              <template #label>
+                <span>
+                  <el-tooltip content="补充说明该字典的用途或说明。" placement="top">
+                    <el-icon><question-filled /></el-icon>
+                  </el-tooltip>
+                  备注
+                </span>
+              </template>
+              <el-input v-model="form.remark" type="textarea" placeholder="请输入备注" />
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
