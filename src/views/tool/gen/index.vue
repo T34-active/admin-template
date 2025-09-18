@@ -29,7 +29,7 @@ const queryParams = ref({
 
 onActivated(() => {
   const time = route.query.t
-  if (time != null && time !== uniqueId.value) {
+  if (time !== null && time !== uniqueId.value) {
     uniqueId.value = time
     queryParams.value.pageNum = Number(route.query.pageNum)
     dateRange.value = [null, null]
@@ -147,7 +147,7 @@ onMounted(async () => {
     <collapsePanel v-model="showSearch">
       <div class="p-16">
         <el-form :model="queryParams" ref="queryRef" label-width="auto">
-          <el-row :gutter="20">
+          <el-row :gutter="10">
             <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="8">
               <el-form-item label="表名称" prop="tableName">
                 <el-input
@@ -262,8 +262,8 @@ onMounted(async () => {
       </div>
     </collapsePanel>
     <el-table v-loading="loading" :data="tableList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" align="center" width="55" />
-      <el-table-column label="序号" type="index" width="50" align="center">
+      <el-table-column type="selection" width="55" />
+      <el-table-column label="序号" type="index" width="50">
         <template #default="scope">
           <span>{{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}</span>
         </template>

@@ -174,7 +174,7 @@ onMounted(async () => {
     <CollapsePanel v-model="showSearch">
       <div class="p-16">
         <el-form ref="queryRef" :model="queryParams" label-width="auto">
-          <el-row :gutter="20">
+          <el-row :gutter="10">
             <QueryForm :model="queryParams" :items="items" />
           </el-row>
         </el-form>

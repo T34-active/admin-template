@@ -9,14 +9,14 @@
     >
       <template #suffix><i class="el-icon-search el-input__icon" /></template>
     </el-input>
-    <div class="icon-list flex flex-wrap w-full pt-2">
+    <div class="icon-list h-200 grid grid-cols-12 gap-5 pt-2">
       <div
         v-for="(item, index) in iconList"
         :key="index"
         @click="selectedIcon(item)"
-        class="flex items-center gap-x-1 w-1/3"
+        class="col-span-4 flex items-center gap-x-5 p-5 w-full cursor-pointer hover:bg-baseBg"
       >
-        <svg-icon :icon-class="item" style="height: 30px; width: 16px" />
+        <svg-icon :icon-class="item" class="size-20" />
         <span>{{ item }}</span>
       </div>
     </div>
@@ -55,18 +55,9 @@ defineExpose({
 <style lang="scss" scoped>
 .icon-body {
   width: 100%;
-  padding: 10px;
-  .icon-list {
-    height: 200px;
-    overflow-y: scroll;
+  overflow-y: scroll;
 
-    div {
-      height: 30px;
-      line-height: 30px;
-      margin-bottom: -5px;
-      cursor: pointer;
-      width: 33%;
-    }
+  .icon-list {
     span {
       display: inline-block;
       vertical-align: -0.15em;

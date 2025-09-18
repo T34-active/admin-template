@@ -33,18 +33,17 @@ function show() {
 }
 
 /** 导入按钮操作 */
-function handleImportTable() {
+async function handleImportTable() {
   if (content.value === '') {
     proxy.$modal.msgError('请输入建表语句')
     return
   }
-  createTable({ sql: content.value }).then((res) => {
-    proxy.$modal.msgSuccess(res.msg)
-    if (res.code === 200) {
-      visible.value = false
-      emit('ok')
-    }
-  })
+  const response = await createTable({ sql: content.value })
+  proxy.$modal.msgSuccess(response.msg)
+  if (response.code === 200) {
+    visible.value = false
+    emit('ok')
+  }
 }
 
 defineExpose({

@@ -56,7 +56,7 @@ const data = reactive({
     dictValue: undefined,
     cssClass: undefined,
     listClass: 'default',
-    dictSort: 0,
+    dictSort: 1,
     status: '0',
     remark: undefined,
     dictType: undefined,
@@ -116,7 +116,7 @@ function reset() {
     dictValue: undefined,
     cssClass: undefined,
     listClass: 'default',
-    dictSort: 0,
+    dictSort: 1,
     status: '0',
     remark: undefined,
     dictType: undefined,
@@ -342,40 +342,95 @@ onMounted(async () => {
     <el-dialog
       v-model="open"
       :title="title"
-      width="550px"
+      width="80%"
       append-to-body
       :close-on-click-modal="false"
     >
       <el-form ref="dataRef" :model="form" :rules="rules" label-width="auto">
-        <el-row :gutter="20">
-          <el-col :span="12" xs="24">
-            <el-form-item label="字典类型">
-              <el-tag>{{ form.dictType }}</el-tag>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12" xs="24">
-            <el-form-item label="数据标签" prop="dictLabel">
+        <el-row :gutter="10">
+          <!-- 数据标签 -->
+          <el-col :span="12" :xs="24">
+            <el-form-item prop="dictLabel">
+              <template #label>
+                <span>
+                  <el-tooltip
+                    content="字典项在页面中显示的文本，例如：男、狗、启用等。"
+                    placement="top"
+                  >
+                    <el-icon><question-filled /></el-icon>
+                  </el-tooltip>
+                  数据标签
+                </span>
+              </template>
               <el-input v-model="form.dictLabel" placeholder="请输入数据标签" clearable />
             </el-form-item>
           </el-col>
-          <el-col :span="12" xs="24">
-            <el-form-item label="样式属性" prop="cssClass">
-              <el-input v-model="form.cssClass" placeholder="请输入样式属性" clearable />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12" xs="24">
-            <el-form-item label="数据键值" prop="dictValue">
+
+          <!-- 数据键值 -->
+          <el-col :span="12" :xs="24">
+            <el-form-item prop="dictValue">
+              <template #label>
+                <span>
+                  <el-tooltip
+                    content="该标签对应的实际值，例如：男=1，女=0，用于表单绑定。"
+                    placement="top"
+                  >
+                    <el-icon><question-filled /></el-icon>
+                  </el-tooltip>
+                  数据键值
+                </span>
+              </template>
               <el-input v-model="form.dictValue" placeholder="请输入数据键值" clearable />
             </el-form-item>
           </el-col>
 
-          <el-col :span="12" xs="24">
-            <el-form-item label="显示排序" prop="dictSort">
+          <!-- 样式属性 -->
+          <el-col :span="12" :xs="24">
+            <el-form-item prop="cssClass">
+              <template #label>
+                <span>
+                  <el-tooltip
+                    content="为该字典项添加自定义样式类，用于个性化展示。"
+                    placement="top"
+                  >
+                    <el-icon><question-filled /></el-icon>
+                  </el-tooltip>
+                  样式属性
+                </span>
+              </template>
+              <el-input v-model="form.cssClass" placeholder="请输入样式属性" clearable />
+            </el-form-item>
+          </el-col>
+
+          <!-- 显示排序 -->
+          <el-col :span="12" :xs="24">
+            <el-form-item prop="dictSort">
+              <template #label>
+                <span>
+                  <el-tooltip content="字典项在列表中的显示顺序，数字越小越靠前。" placement="top">
+                    <el-icon><question-filled /></el-icon>
+                  </el-tooltip>
+                  显示排序
+                </span>
+              </template>
               <el-input-number v-model="form.dictSort" controls-position="right" :min="0" />
             </el-form-item>
           </el-col>
-          <el-col :span="12" xs="24">
-            <el-form-item label="回显样式" prop="listClass">
+
+          <!-- 回显样式 -->
+          <el-col :span="12" :xs="24">
+            <el-form-item prop="listClass">
+              <template #label>
+                <span>
+                  <el-tooltip
+                    content="用于设置标签的展示样式，例如 primary、danger、success，用于颜色区分。"
+                    placement="top"
+                  >
+                    <el-icon><question-filled /></el-icon>
+                  </el-tooltip>
+                  回显样式
+                </span>
+              </template>
               <el-select v-model="form.listClass" clearable filterable>
                 <el-option
                   v-for="item in listClassOptions"
@@ -386,18 +441,33 @@ onMounted(async () => {
               </el-select>
             </el-form-item>
           </el-col>
+          <el-col :span="12" :xs="24">
+            <!-- 状态 -->
+            <el-form-item prop="status">
+              <template #label>
+                <span>
+                  <el-tooltip
+                    content="设置该字典项是否启用，禁用后不会出现在下拉或展示中。"
+                    placement="top"
+                  >
+                    <el-icon><question-filled /></el-icon>
+                  </el-tooltip>
+                  启用状态
+                </span>
+              </template>
+              <el-radio-group v-model="form.status">
+                <el-radio v-for="dict in sys_normal_disable" :key="dict.value" :value="dict.value">
+                  {{ dict.label }}
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24" :xs="24">
+            <el-form-item label="备注" prop="remark">
+              <el-input v-model="form.remark" type="textarea" placeholder="请输入备注" />
+            </el-form-item>
+          </el-col>
         </el-row>
-
-        <el-form-item label="状态" prop="status">
-          <el-radio-group v-model="form.status">
-            <el-radio v-for="dict in sys_normal_disable" :key="dict.value" :value="dict.value">
-              {{ dict.label }}
-            </el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入备注" />
-        </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { listMenu } from '@/api/system/menu'
-import { createRules, validatorIsEmpty } from '@/utils'
-import type { FormItemRule } from 'element-plus'
+import { createRules } from '@/utils'
 
 const subColumns = ref([])
 const menuOptions = ref([])
@@ -17,39 +16,29 @@ const props = defineProps({
     default: null,
   },
 })
-
-// 生成包路径不能为 com.ruoyi.system
-const validatorIsPackageName = (val: string) => {
-  if (!validatorIsEmpty(val)) {
-    return Promise.reject('请输入生成包路径')
-  }
-  if (val === 'com.ruoyi.system') {
-    return Promise.reject('生成包路径不能为 com.ruoyi.system')
-  }
-  return Promise.resolve()
-}
-
-// 生成模块名不能为 system
-const validatorIsModuleName = (val: string) => {
-  if (!validatorIsEmpty(val)) {
-    return Promise.reject('请输入生成模块名')
-  }
-  if (val === 'system') {
-    return Promise.reject('生成模块名不能为 system')
-  }
-  return Promise.resolve()
-}
 // 表单校验
 const rules = ref({
   tplCategory: createRules('请选择生成模板'),
-  packageName: createRules('请输入生成包路径', {
-    validator: validatorIsPackageName,
-    required: true,
-  }),
-  moduleName: createRules('请输入生成模块名', {
-    validator: validatorIsModuleName,
-    required: true,
-  }),
+  // packageName: [
+  // ...createRules('请输入生成包路径', { required: true, trigger: 'change' }),
+  // ...createRules('生成包路径不能为 com.ruoyi.system', {
+  //   required: true,
+  //   trigger: 'change',
+  //   validator: (value) => {
+  //     return value === 'com.ruoyi.system'
+  //   },
+  // }),
+  // ],
+  // moduleName: [
+  //   ...createRules('请输入生成模块名', { required: true, trigger: 'change' }),
+  //   ...createRules('生成模块名不能为 system', {
+  //     required: true,
+  //     trigger: 'change',
+  //     validator: (value) => {
+  //       return value === '生成模块名不能为 system'
+  //     },
+  //   }),
+  // ],
   businessName: createRules('请输入生成业务名'),
   functionName: createRules('请输入生成功能名'),
   parentMenuId: createRules('请选择上级菜单'),
@@ -105,7 +94,7 @@ watch(
 </script>
 <template>
   <el-form ref="genInfoForm" :model="info" :rules="rules" label-width="auto">
-    <el-row :gutter="20">
+    <el-row :gutter="10">
       <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
         <el-form-item prop="tplCategory">
           <template #label>生成模板</template>
@@ -237,7 +226,7 @@ watch(
               <el-dropdown>
                 <el-button plain type="primary">
                   最近路径快速选择
-                  <i class="el-icon-arrow-down el-icon--right"></i>
+                  <i class="el-icon-arrow-down el-icon--right" />
                 </el-button>
                 <template #dropdown>
                   <el-dropdown-menu>
@@ -280,7 +269,7 @@ watch(
           <el-form-item>
             <template #label>
               树父编码字段
-              <el-tooltip content="树显示的父编码字段名， 如：parent_Id" placement="top">
+              <el-tooltip content="树显示的父编码字段名，如：parent_Id" placement="top">
                 <el-icon>
                   <question-filled />
                 </el-icon>
@@ -300,7 +289,7 @@ watch(
           <el-form-item>
             <template #label>
               树名称字段
-              <el-tooltip content="树节点的显示名称字段名， 如：dept_name" placement="top">
+              <el-tooltip content="树节点的显示名称字段名，如：dept_name" placement="top">
                 <el-icon>
                   <question-filled />
                 </el-icon>
@@ -318,7 +307,6 @@ watch(
         </el-col>
       </el-row>
     </template>
-
     <template v-if="info.tplCategory === 'sub'">
       <h4 class="form-header">关联信息</h4>
       <el-row>
@@ -326,7 +314,7 @@ watch(
           <el-form-item>
             <template #label>
               关联子表的表名
-              <el-tooltip content="关联子表的表名， 如：sys_user" placement="top">
+              <el-tooltip content="关联子表的表名，如：sys_user" placement="top">
                 <el-icon>
                   <question-filled />
                 </el-icon>

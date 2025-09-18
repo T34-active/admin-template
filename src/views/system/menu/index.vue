@@ -5,8 +5,8 @@ import IconSelect from '@/components/IconSelect/index.vue'
 import { ClickOutside as vClickOutside, type FormInstance, type FormRules } from 'element-plus'
 import { createRules } from '@/utils'
 import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
-import { menuTypeOptions } from '@/utils/column.ts'
-
+import { menuTypeOptions } from '@/utils/column'
+import { ElButton, ElAutoResizer, ElTag } from 'element-plus'
 const { proxy } = getCurrentInstance()
 
 const { sys_show_hide, sys_normal_disable } = proxy.useDict('sys_show_hide', 'sys_normal_disable')
@@ -21,6 +21,164 @@ const isExpandAll = ref(false)
 const refreshTable = ref(true)
 const showChooseIcon = ref(false)
 const iconSelectRef = ref(null)
+const isExpandedMap = ref<Record<string, boolean>>({})
+
+// 模拟扁平化数据结构
+function flattenTreeData(list, parentId = null, level = 0) {
+  const result = []
+  list.forEach((item) => {
+    const id = item.menuId
+    const flatItem = {
+      ...item,
+      _level: level,
+      _parentId: parentId,
+      _hasChildren: Array.isArray(item.children) && item.children.length > 0,
+    }
+    result.push(flatItem)
+    if (flatItem._hasChildren) {
+      result.push(...flattenTreeData(item.children, id, level + 1))
+    }
+  })
+  return result
+}
+
+const flatMenuListAll = computed(() => flattenTreeData(menuList.value ?? []))
+
+// 只展示展开后的节点
+const flatMenuList = computed(() => {
+  const list = []
+  const map = isExpandedMap.value
+
+  const idSet = new Set<string>()
+  flatMenuListAll.value.forEach((item) => {
+    const parentId = item._parentId
+    if (!parentId || idSet.has(parentId)) {
+      list.push(item)
+      if (item._hasChildren && map[item.menuId]) {
+        idSet.add(item.menuId)
+      }
+    }
+  })
+  return list
+})
+
+// 展开或折叠
+function toggleExpand(row) {
+  isExpandedMap.value[row.menuId] = !isExpandedMap.value[row.menuId]
+}
+
+// 2. el-table-v2 的 columns 定义
+const columns = ref([
+  {
+    key: 'menuName',
+    title: '菜单名称',
+    dataKey: 'menuName',
+    width: 250,
+    cellRenderer: ({ rowData }) => {
+      const indent = `${rowData._level * 20}px`
+      const isExpanded = isExpandedMap.value[rowData.menuId] ?? false
+      const hasChildren = rowData._hasChildren
+      return h(
+        'div',
+        {
+          class: 'flex items-center gap-x-15',
+          style: { paddingLeft: indent },
+        },
+        [
+          hasChildren &&
+            h(
+              'span',
+              {
+                class: 'cursor-pointer text-xs select-none',
+                onClick: () => toggleExpand(rowData),
+              },
+              isExpanded ? '▼' : '▶',
+            ),
+          h('span', null, rowData.menuName),
+        ],
+      )
+    },
+  },
+  {
+    key: 'icon',
+    title: '图标',
+    dataKey: 'icon',
+    width: 100,
+    cellRenderer: ({ rowData }) => h(SvgIcon, { iconClass: rowData.icon }),
+  },
+  { key: 'orderNum', title: '排序', dataKey: 'orderNum', width: 60 },
+  { key: 'perms', title: '权限标识', dataKey: 'perms', width: 200 },
+  { key: 'component', title: '组件路径', dataKey: 'component', width: 200 },
+  { key: 'path', title: '路由地址', dataKey: 'path', width: 150 },
+  { key: 'routeName', title: '路由名称', dataKey: 'routeName', width: 150 },
+  {
+    key: 'status',
+    title: '状态',
+    dataKey: 'status',
+    width: 80,
+    cellRenderer: ({ rowData }) => {
+      const status = rowData.status
+      let label = ''
+      let type: 'primary' | 'success' | 'info' | 'warning' | 'danger' = 'primary'
+
+      if (status === '0' || status === 0) {
+        label = '正常'
+        type = 'success'
+      } else if (status === '1' || status === 1) {
+        label = '停用'
+        type = 'danger'
+      }
+
+      return h(
+        ElTag,
+        {
+          type,
+          disableTransitions: true,
+        },
+        () => label,
+      )
+    },
+  },
+  { key: 'createTime', title: '创建时间', dataKey: 'createTime', width: 200 },
+  {
+    key: 'actions',
+    title: '操作',
+    width: 250,
+    cellRenderer: ({ rowData }) =>
+      h('div', { class: 'small-padding fixed-width' }, [
+        h(
+          ElButton,
+          {
+            link: true,
+            type: 'primary',
+            icon: 'Edit',
+            onClick: () => handleUpdate(rowData),
+          },
+          () => '修改',
+        ),
+        h(
+          ElButton,
+          {
+            link: true,
+            type: 'primary',
+            icon: 'Plus',
+            onClick: () => handleAdd(rowData),
+          },
+          () => '新增',
+        ),
+        h(
+          ElButton,
+          {
+            link: true,
+            type: 'primary',
+            icon: 'Delete',
+            onClick: () => handleDelete(rowData),
+          },
+          () => '删除',
+        ),
+      ]),
+  },
+])
 
 const items = ref<QueryItemConfig[]>([
   {
@@ -161,11 +319,19 @@ async function handleAdd(row) {
 
 /** 展开/折叠操作 */
 function toggleExpandAll() {
-  refreshTable.value = false
-  isExpandAll.value = !isExpandAll.value
-  nextTick(() => {
-    refreshTable.value = true
-  })
+  const expand = !isExpandAll.value
+  isExpandAll.value = expand
+
+  const map = {}
+  if (expand) {
+    for (const item of flatMenuListAll.value) {
+      if (item._hasChildren) {
+        map[item.menuId] = true
+      }
+    }
+  }
+
+  isExpandedMap.value = map
 }
 
 /** 修改按钮操作 */
@@ -214,7 +380,7 @@ onMounted(async () => {
     <CollapsePanel v-model="showSearch">
       <div class="p-16">
         <el-form v-show="showSearch" ref="queryRef" :model="queryParams" label-width="auto">
-          <el-row :gutter="20">
+          <el-row :gutter="10">
             <QueryForm :model="queryParams" :items="items" />
           </el-row>
         </el-form>
@@ -242,88 +408,27 @@ onMounted(async () => {
         </el-row>
       </div>
     </CollapsePanel>
-    <el-table
-      v-if="refreshTable"
-      v-loading="loading"
-      :data="menuList"
-      row-key="menuId"
-      :default-expand-all="isExpandAll"
-      :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-    >
-      <el-table-column prop="menuName" label="菜单名称" :show-overflow-tooltip="true" width="160" />
-      <el-table-column prop="icon" label="图标" width="100">
-        <template #default="scope">
-          <svg-icon :icon-class="scope.row.icon" />
+    <!-- 扁平化后的 menuList -->
+    <div class="h-65vh">
+      <el-auto-resizer>
+        <template #default="{ height, width }">
+          <el-table-v2
+            v-if="refreshTable"
+            :data="flatMenuList"
+            :columns="columns"
+            :width="width"
+            :height="height"
+            :loading="loading"
+          />
         </template>
-      </el-table-column>
-      <el-table-column prop="orderNum" label="排序" min-width="60" />
-      <el-table-column
-        prop="perms"
-        label="权限标识"
-        :show-overflow-tooltip="true"
-        min-width="200"
-      />
-      <el-table-column
-        prop="component"
-        label="组件路径"
-        :show-overflow-tooltip="true"
-        min-width="200"
-      />
-      <el-table-column prop="path" label="路由地址" :show-overflow-tooltip="true" min-width="150" />
-      <el-table-column
-        prop="routeName"
-        label="路由名称"
-        :show-overflow-tooltip="true"
-        min-width="150"
-      />
-      <el-table-column prop="status" label="状态" min-width="80">
-        <template #default="scope">
-          <dict-tag :options="sys_normal_disable" :value="scope.row.status" />
-        </template>
-      </el-table-column>
-      <el-table-column label="创建时间" min-width="200" prop="createTime" />
-      <el-table-column
-        label="操作"
-        min-width="250"
-        class-name="small-padding fixed-width"
-        fixed="right"
-      >
-        <template #default="scope">
-          <el-button
-            v-hasPermi="['system:menu:edit']"
-            link
-            type="primary"
-            icon="Edit"
-            @click="handleUpdate(scope.row)"
-          >
-            修改
-          </el-button>
-          <el-button
-            v-hasPermi="['system:menu:add']"
-            link
-            type="primary"
-            icon="Plus"
-            @click="handleAdd(scope.row)"
-          >
-            新增
-          </el-button>
-          <el-button
-            v-hasPermi="['system:menu:remove']"
-            link
-            type="primary"
-            icon="Delete"
-            @click="handleDelete(scope.row)"
-          >
-            删除
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+      </el-auto-resizer>
+    </div>
+
     <!-- 添加或修改菜单对话框 -->
     <el-dialog
       v-model="open"
       :title="title"
-      width="850px"
+      width="80%"
       append-to-body
       :close-on-click-modal="false"
     >
@@ -386,7 +491,7 @@ onMounted(async () => {
           </el-col>
           <el-col :span="12" :xs="24">
             <el-form-item label="菜单名称" prop="menuName">
-              <el-input v-model="form.menuName" placeholder="请输入菜单名称" />
+              <el-input v-model="form.menuName" placeholder="请输入菜单名称" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="12" :xs="24" v-if="form.menuType === 'C'">
@@ -402,7 +507,7 @@ onMounted(async () => {
                   路由名称
                 </span>
               </template>
-              <el-input v-model="form.routeName" placeholder="请输入路由名称" />
+              <el-input v-model="form.routeName" placeholder="请输入路由名称" clearable />
             </el-form-item>
           </el-col>
           <el-col :span="12" :xs="24">
@@ -443,7 +548,7 @@ onMounted(async () => {
                     路由地址
                   </span>
                 </template>
-                <el-input v-model="form.path" placeholder="请输入路由地址" />
+                <el-input v-model="form.path" placeholder="请输入路由地址" clearable />
               </el-form-item>
             </el-col>
           </template>
@@ -460,12 +565,17 @@ onMounted(async () => {
                   组件路径
                 </span>
               </template>
-              <el-input v-model="form.component" placeholder="请输入组件路径" />
+              <el-input v-model="form.component" placeholder="请输入组件路径" clearable />
             </el-form-item>
           </el-col>
           <el-col v-if="form.menuType !== 'M'" :span="12" :xs="24">
             <el-form-item>
-              <el-input v-model="form.perms" placeholder="请输入权限标识" maxlength="100" />
+              <el-input
+                v-model="form.perms"
+                placeholder="请输入权限标识"
+                maxlength="100"
+                clearable
+              />
               <template #label>
                 <span>
                   <el-tooltip
@@ -482,7 +592,12 @@ onMounted(async () => {
           <template v-if="form.menuType === 'C'">
             <el-col :span="12" :xs="24">
               <el-form-item>
-                <el-input v-model="form.query" placeholder="请输入路由参数" maxlength="255" />
+                <el-input
+                  v-model="form.query"
+                  placeholder="请输入路由参数"
+                  maxlength="255"
+                  clearable
+                />
                 <template #label>
                   <span>
                     <el-tooltip

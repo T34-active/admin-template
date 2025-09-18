@@ -177,7 +177,6 @@ async function handleDelete(row) {
     // 可以根据情况区分是否是用户取消
     if (err !== 'cancel') {
       console.error('删除异常:', err)
-      proxy.$modal.msgError('删除失败')
     }
   }
 }
@@ -331,7 +330,7 @@ onMounted(async () => {
 </script>
 <template>
   <div class="app-container">
-    <el-row :gutter="20">
+    <el-row :gutter="10">
       <!--部门数据-->
       <el-col :span="4" :xs="24" :sm="6" :md="6" :lg="4" :xl="4">
         <div class="head-container mb-2">
@@ -361,7 +360,7 @@ onMounted(async () => {
         <CollapsePanel v-model="showSearch">
           <div class="p-16">
             <el-form ref="queryRef" :model="queryParams" label-width="auto">
-              <el-row :gutter="20">
+              <el-row :gutter="10">
                 <QueryForm :model="queryParams" :items="items" @change="handleQuery" />
               </el-row>
             </el-form>
@@ -532,7 +531,7 @@ onMounted(async () => {
       :close-on-click-modal="false"
     >
       <el-form ref="userRef" :model="form" :rules="rules" label-width="auto">
-        <el-row :gutter="20">
+        <el-row :gutter="10">
           <el-col :span="24">
             <el-form-item label="归属部门" prop="deptId">
               <el-tree-select

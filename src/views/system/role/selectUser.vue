@@ -85,7 +85,7 @@ defineExpose({
     :close-on-click-modal="false"
   >
     <el-form ref="queryRef" :model="queryParams" label-width="auto">
-      <el-row :gutter="20">
+      <el-row :gutter="10">
         <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
           <el-form-item label="用户名称" prop="userName">
             <el-input
