@@ -55,3 +55,9 @@ export const listClassOptions = ref([
   { value: 'warning', label: '警告' },
   { value: 'danger', label: '危险' },
 ])
+/** 菜单类型 */
+export const menuTypeOptions = ref([
+  { value: 'M', label: '目录' },
+  { value: 'C', label: '菜单' },
+  { value: 'F', label: '按钮' },
+])

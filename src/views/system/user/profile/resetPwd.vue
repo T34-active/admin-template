@@ -37,6 +37,7 @@
 <script setup lang="ts">
 import { updateUserPwd } from '@/api/system/user'
 import type { FormInstance, FormRules } from 'element-plus'
+import { createRules } from '@/utils'
 
 const { proxy } = getCurrentInstance()
 const pwdRef = ref<FormInstance>(null)
