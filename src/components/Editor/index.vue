@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import { getToken } from '@/utils/auth'
+import { cleanQueryParams } from '@/utils/ruoyi'
 
 const { proxy } = getCurrentInstance()
 

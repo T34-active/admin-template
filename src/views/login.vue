@@ -1,15 +1,23 @@
 <template>
   <div class="login min-h-screen bg-cover flex justify-center items-center">
-    <div class="container flex items-center justify-end w-full mx-auto">
+    <div class="container center w-full mx-auto">
       <el-form
         ref="loginRef"
         :model="loginForm"
         :rules="loginRules"
         class="login-form rounded-2xl pb-46 px-50 pt-42 min-w-400 bg-white"
       >
-        <img src="@/assets/logo/logo.png" :alt="title" class="mx-auto pb-6" />
-        <h3 class="text-primaryText text-center text-2xl font-medium pb-31">
-          {{ title }}
+        <img src="@/assets/logo/logo.png" :alt="title" class="mx-auto pb-6 size-75" />
+        <h3
+          class="text-primaryText text-center text-2xl font-medium pb-31 flex items-center justify-center gap-x-10"
+        >
+          <span>{{ title }}</span>
+          <el-tooltip content="主题模式" effect="dark" placement="bottom">
+            <div class="cursor-pointer flex flex-col items-center" @click="toggleTheme">
+              <svg-icon v-if="settingsStore.isDark" icon-class="sunny" />
+              <svg-icon v-if="!settingsStore.isDark" icon-class="moon" />
+            </div>
+          </el-tooltip>
         </h3>
         <el-form-item prop="username">
           <el-input
@@ -61,18 +69,15 @@
             </div>
           </div>
         </el-form-item>
-        <el-form-item style="width: 100%">
-          <el-button
-            :loading="loading"
-            size="large"
-            type="primary"
-            style="width: 100%"
-            @click.prevent="handleLogin"
-          >
-            <span v-if="!loading">登 录</span>
-            <span v-else>登 录 中...</span>
-          </el-button>
-        </el-form-item>
+        <el-button
+          :loading="loading"
+          size="large"
+          type="primary"
+          @click.prevent="handleLogin"
+          class="w-full"
+        >
+          {{ !loading ? '登 录' : '登 录 中...' }}
+        </el-button>
       </el-form>
     </div>
   </div>
@@ -86,15 +91,16 @@ import useUserStore from '@/store/modules/user'
 import { useRouter } from 'vue-router'
 import type { FormInstance, FormRules } from 'element-plus'
 import { createRules } from '@/utils'
+import useSettingsStore from '@/store/modules/settings'
 
 const userStore = useUserStore()
 const router = useRouter()
 const loginForm = ref({
-  username: '',
-  password: '',
+  username: null,
+  password: null,
   rememberMe: false,
-  code: '',
-  uuid: '',
+  code: null,
+  uuid: null,
 })
 
 const uuid = ref('')
@@ -110,10 +116,12 @@ const codeUrl = ref('')
 const loading = ref(false)
 // 验证码开关
 const captchaEnabled = ref(true)
-// 注册开关
-const register = ref(false)
 const redirect = ref(undefined)
 const loginRef = ref<FormInstance>()
+const settingsStore = useSettingsStore()
+function toggleTheme() {
+  settingsStore.toggleTheme()
+}
 
 function handleLogin() {
   loginRef.value?.validate((valid) => {
@@ -173,12 +181,13 @@ async function getCookie() {
     username: username === undefined ? loginForm.value.username : username,
     password: password === undefined ? loginForm.value.password : decrypt(password) || '',
     rememberMe: rememberMe === undefined ? false : Boolean(rememberMe),
+    code: null,
+    uuid: null,
   }
 }
 
 onMounted(async () => {
-  await getCode()
-  await getCookie()
+  await Promise.all([getCode(), getCookie()])
 })
 </script>
 

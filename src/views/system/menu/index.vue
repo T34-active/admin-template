@@ -7,6 +7,7 @@ import { createRules } from '@/utils'
 import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
 import { menuTypeOptions } from '@/utils/column'
 import { ElButton, ElAutoResizer, ElTag } from 'element-plus'
+import { cleanQueryParams } from '@/utils/ruoyi'
 const { proxy } = getCurrentInstance()
 
 const { sys_show_hide, sys_normal_disable } = proxy.useDict('sys_show_hide', 'sys_normal_disable')
@@ -230,7 +231,7 @@ const { queryParams, form, rules } = toRefs(data)
 /** 查询菜单列表 */
 async function getList() {
   loading.value = true
-  const response = await listMenu(queryParams.value)
+  const response = await listMenu(cleanQueryParams(queryParams.value))
   menuList.value = proxy.handleTree(response.data, 'menuId')
   loading.value = false
 }
@@ -428,7 +429,7 @@ onMounted(async () => {
     <el-dialog
       v-model="open"
       :title="title"
-      width="80%"
+      width="60%"
       append-to-body
       :close-on-click-modal="false"
     >

@@ -4,6 +4,7 @@ import { optionselect } from '@/api/system/dict/type'
 import basicInfoForm from './basicInfoForm.vue'
 import genInfoForm from './genInfoForm.vue'
 import { htmlTypeOptions, javaTypeOptions, queryTypeOptions } from '@/utils/column'
+import { cleanQueryParams } from '@/utils/ruoyi'
 
 const route = useRoute()
 const { proxy } = getCurrentInstance()

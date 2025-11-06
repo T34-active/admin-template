@@ -65,11 +65,6 @@ export const constantRoutes: RouteRecordRaw[] = [
     hidden: true,
   },
   {
-    path: '/register',
-    component: () => import('@/views/register.vue'),
-    hidden: true,
-  },
-  {
     path: '/:pathMatch(.*)*',
     component: () => import('@/views/error/404.vue'),
     hidden: true,

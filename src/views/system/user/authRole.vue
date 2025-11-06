@@ -60,7 +60,7 @@
 
 <script setup lang="ts">
 import { getAuthRole, updateAuthRole } from '@/api/system/user'
-import { parseTime } from '@/utils/ruoyi'
+import { parseTime, cleanQueryParams } from '@/utils/ruoyi'
 
 import { useRoute } from 'vue-router'
 

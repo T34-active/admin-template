@@ -264,3 +264,21 @@ export function getNormalPath(p: any) {
 export function blobValidate(data: any) {
   return data.type !== 'application/json'
 }
+
+/** 去除对象中字符串类型字段的空格，并可选移除空值字段 */
+export function cleanQueryParams(params) {
+  const cleaned = {}
+  for (const key in params) {
+    const value = params[key]
+    if (typeof value === 'string') {
+      // 去掉所有空格（包括中间的）
+      const noSpace = value.replace(/\s+/g, '')
+      if (noSpace !== '') {
+        cleaned[key] = noSpace
+      }
+    } else if (value != null && value !== '') {
+      cleaned[key] = value
+    }
+  }
+  return cleaned
+}

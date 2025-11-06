@@ -10,6 +10,7 @@ import {
 import type { FormInstance, FormRules } from 'element-plus'
 import { createRules } from '@/utils'
 import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
+import { cleanQueryParams } from '@/utils/ruoyi'
 
 const { proxy } = getCurrentInstance()
 
@@ -31,7 +32,6 @@ const items = ref<QueryItemConfig[]>([
     type: 'input',
     placeholder: '请输入部门名称',
   },
-
   {
     label: '状态',
     prop: 'status',
@@ -71,7 +71,7 @@ const { queryParams, form, rules } = toRefs(data)
 /** 查询部门列表 */
 async function getList() {
   loading.value = true
-  const response = await listDept(queryParams.value)
+  const response = await listDept(cleanQueryParams(queryParams.value))
   deptList.value = proxy.handleTree(response.data, 'deptId')
   loading.value = false
 }
@@ -218,12 +218,7 @@ onMounted(async () => {
         </template>
       </el-table-column>
       <el-table-column label="创建时间" min-width="200" prop="createTime" />
-      <el-table-column
-        label="操作"
-        class-name="small-padding fixed-width"
-        fixed="right"
-        min-width="250"
-      >
+      <el-table-column label="操作" fixed="right" min-width="250">
         <template #default="scope">
           <el-button
             v-hasPermi="['system:dept:edit']"

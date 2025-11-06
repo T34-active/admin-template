@@ -38,6 +38,7 @@
 import { updateUserPwd } from '@/api/system/user'
 import type { FormInstance, FormRules } from 'element-plus'
 import { createRules } from '@/utils'
+import { cleanQueryParams } from '@/utils/ruoyi'
 
 const { proxy } = getCurrentInstance()
 const pwdRef = ref<FormInstance>(null)

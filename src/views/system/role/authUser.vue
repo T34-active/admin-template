@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import selectUser from './selectUser.vue'
 import { allocatedUserList, authUserCancel, authUserCancelAll } from '@/api/system/role'
-import { parseTime } from '@/utils/ruoyi'
+import { parseTime, cleanQueryParams } from '@/utils/ruoyi'
 
 import { useRoute } from 'vue-router'
 import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
@@ -170,7 +170,7 @@ onMounted(async () => {
           <span>{{ parseTime(scope.row.loginTime, 'YYYY-MM-DD HH:mm:ss') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" class-name="small-padding fixed-width">
+      <el-table-column label="操作">
         <template #default="scope">
           <el-button
             v-hasPermi="['system:role:remove']"

@@ -63,15 +63,20 @@ const innerValue = computed({
 </script>
 
 <template>
-  <el-col :xs="24" :sm="12" :md="8" :lg="8" :xl="8">
+  <colBox>
     <el-form-item :label="label" :prop="prop">
       <!-- 输入框类型 -->
-      <el-input v-if="type === 'input'" v-model="innerValue" :placeholder="placeholder" clearable />
+      <el-input
+        v-if="type === 'input'"
+        v-model="innerValue"
+        :placeholder="placeholder ? placeholder : `请输入${label}`"
+        clearable
+      />
       <!-- 下拉选择类型 -->
       <el-select-v2
         v-if="type === 'select'"
         v-model="innerValue"
-        :placeholder="placeholder"
+        :placeholder="placeholder ? placeholder : `请选择${label}`"
         :options="dict"
         clearable
         filterable
@@ -111,5 +116,5 @@ const innerValue = computed({
         </el-radio>
       </el-radio-group>
     </el-form-item>
-  </el-col>
+  </colBox>
 </template>

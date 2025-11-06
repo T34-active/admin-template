@@ -3,6 +3,7 @@ import { createRules } from '@/utils'
 import type { FormInstance } from 'element-plus'
 import { useRoute } from 'vue-router'
 import { addNotice, getNotice, updateNotice } from '@/api/system/notice'
+import { cleanQueryParams } from '@/utils/ruoyi'
 const { proxy } = getCurrentInstance()
 const { sys_notice_type } = proxy.useDict('sys_notice_type')
 

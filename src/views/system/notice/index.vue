@@ -2,6 +2,7 @@
 import { listNotice, delNotice } from '@/api/system/notice'
 
 import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
+import { cleanQueryParams } from '@/utils/ruoyi'
 
 const { proxy } = getCurrentInstance()
 
@@ -48,7 +49,7 @@ const queryParams = ref({
 /** 查询公告列表 */
 async function getList() {
   loading.value = true
-  const response = await listNotice(queryParams.value)
+  const response = await listNotice(cleanQueryParams(queryParams.value))
   noticeList.value = response.rows
   total.value = response.total
   loading.value = false
@@ -180,12 +181,7 @@ onMounted(async () => {
       </el-table-column>
       <el-table-column label="创建者" prop="createBy" min-width="150" />
       <el-table-column label="创建时间" prop="createTime" min-width="200" />
-      <el-table-column
-        label="操作"
-        class-name="small-padding fixed-width"
-        fixed="right"
-        min-width="150"
-      >
+      <el-table-column label="操作" fixed="right" min-width="150">
         <template #default="scope">
           <el-button
             v-hasPermi="['system:notice:edit']"
