@@ -11,9 +11,9 @@ import {
   deptTreeSelect,
 } from '@/api/system/user'
 
-import { ElTree, type FormInstance, type FormRules } from 'element-plus'
+import { type ElTree, type FormInstance, type FormRules } from 'element-plus'
 import { createRules } from '@/utils'
-import { validatePhone } from '@/utils/validate'
+import { createPhoneRules } from '@/utils/validate'
 import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
 
 const router = useRouter()
@@ -115,7 +115,7 @@ const data = reactive({
       { min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur' },
     ],
     email: [{ type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }],
-    phonenumber: [{ required: true, validator: validatePhone, trigger: 'blur' }],
+    phonenumber: createPhoneRules('请输入正确的手机号'),
   } as FormRules,
 })
 
@@ -464,12 +464,7 @@ onMounted(async () => {
             </template>
           </el-table-column>
           <el-table-column label="创建时间" prop="createTime" min-width="160" />
-          <el-table-column
-            label="操作"
-            min-width="150"
-            class-name="small-padding fixed-width"
-            fixed="right"
-          >
+          <el-table-column label="操作" min-width="150" fixed="right">
             <template #default="scope">
               <el-tooltip v-if="scope.row.userId !== 1" content="修改" placement="top">
                 <el-button

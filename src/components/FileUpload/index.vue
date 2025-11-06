@@ -58,6 +58,7 @@
 
 <script setup lang="ts">
 import { getToken } from '@/utils/auth'
+import { cleanQueryParams } from '@/utils/ruoyi'
 
 const props = defineProps({
   modelValue: [String, Object, Array] as any,

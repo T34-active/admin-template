@@ -21,6 +21,7 @@
 <script setup lang="ts">
 import useAppStore from '@/store/modules/app'
 import { sizeOptions } from '@/utils/column'
+import { cleanQueryParams } from '@/utils/ruoyi'
 const appStore = useAppStore()
 const size = computed(() => appStore.size)
 const { proxy } = getCurrentInstance()

@@ -1,10 +1,3 @@
-// 手机号正则
-import type { FormItemRule } from 'element-plus'
-
-const phoneRegex = /^(?:13\d|14[014-9]|15[0-35-9]|16[2567]|17[0-8]|18\d|19[0-35-9])\d{8}$/
-// 密码正则：密码需包含字母、数字、特殊字符，且不少于9位
-const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()[\]{}\-_=+\\|;:'",.<>/?`~]).{9,}$/
-
 /**
  * 判断url是否是http或https
  */
@@ -20,82 +13,98 @@ export function isExternal(path: any) {
 }
 
 /**
+ * 手机号规则：必须为 11 位数字，符合大陆手机号格式
  */
-export function validUsername(str: string) {
-  const validMap = ['admin', 'editor']
-  return validMap.indexOf(str.trim()) >= 0
+export function createPhoneRules(message: string) {
+  return [
+    { required: true, message, trigger: 'blur' },
+    {
+      pattern: /^(?:13\d|14[014-9]|15[0-35-9]|16[2567]|17[0-8]|18\d|19[0-35-9])\d{8}$/,
+      message: '请输入正确的手机号',
+      trigger: 'blur',
+    },
+  ]
 }
 
 /**
+ * 金额规则：非负数，最多两位小数
+ * 自动去除千位分隔符
  */
-export function validURL(url: string) {
-  const reg =
-    /^(https?|ftp):\/\/([a-zA-Z0-9.-]+(:[a-zA-Z0-9.&%$-]+)*@)*((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}|([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+\.(com|edu|gov|int|mil|net|org|biz|arpa|info|name|pro|aero|coop|museum|[a-zA-Z]{2}))(:[0-9]+)*(\/($|[a-zA-Z0-9.,?'\\+&%$#=~_-]+))*$/
-  return reg.test(url)
+export function createAmountRules(message: string) {
+  return [
+    { required: true, message, trigger: 'blur' },
+    {
+      validator: (_rule: any, value: any, callback: any) => {
+        if (value === '' || value === null || value === undefined) {
+          return callback(new Error(message))
+        }
+        // 去除千位分隔符
+        const cleaned = String(value).replace(/,/g, '').trim()
+
+        const pattern = /^(0|[1-9]\d*)(\.\d{1,2})?$/
+        if (!pattern.test(cleaned)) {
+          callback(new Error('金额必须为非负数且小数不超过2位'))
+        } else {
+          callback()
+        }
+      },
+      trigger: 'blur',
+    },
+  ]
 }
 
 /**
+ * 笔数规则：非负整数（不允许小数）
+ * 自动去除千位分隔符
  */
-export function validLowerCase(str: string) {
-  const reg = /^[a-z]+$/
-  return reg.test(str)
+export function createIntegerRules(message: string) {
+  return [
+    { required: true, message, trigger: 'blur' },
+    {
+      validator: (_rule: any, value: any, callback: any) => {
+        if (value === '' || value === null || value === undefined) {
+          return callback(new Error(message))
+        }
+        // 去除千位分隔符
+        const cleaned = String(value).replace(/,/g, '').trim()
+
+        const pattern = /^\d+$/
+        if (!pattern.test(cleaned)) {
+          callback(new Error('笔数必须是整数，不能带小数'))
+        } else {
+          callback()
+        }
+      },
+      trigger: 'blur',
+    },
+  ]
 }
 
 /**
+ * 整数规则：必须是正整数（> 0），兼容带空格的显示值
  */
-export function validUpperCase(str: string) {
-  const reg = /^[A-Z]+$/
-  return reg.test(str)
-}
-
-/**
- */
-export function validAlphabets(str: string) {
-  const reg = /^[A-Za-z]+$/
-  return reg.test(str)
-}
-
-/**
- */
-export function validEmail(email: string) {
-  const reg =
-    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-  return reg.test(email)
-}
-
-export const validatePhone = (
-  rule: FormItemRule,
-  value: string,
-  callback: (error?: string | Error) => void,
-): void => {
-  if (!value) {
-    callback(new Error('请输入手机号码'))
-  } else if (!phoneRegex.test(value)) {
-    callback(new Error('请输入正确的手机号码'))
-  } else {
-    callback()
-  }
-}
-
-export const isValidPhone = (value: string): boolean => {
-  return phoneRegex.test(value)
-}
-
-export const validatePassword = (
-  rule: FormItemRule,
-  value: string,
-  callback: (error?: string | Error) => void,
-): void => {
-  if (!value) {
-    callback(new Error('请输入手机号'))
-  } else if (!passwordRegex.test(value)) {
-    callback(new Error('请输入正确的手机号'))
-  } else {
-    callback()
-  }
-}
-
-// 可在代码逻辑中使用的同步函数
-export const isPassword = (value: string): boolean => {
-  return passwordRegex.test(value)
+export function createPositiveIntegerRules(message: string) {
+  return [
+    { required: true, message, trigger: 'blur' },
+    {
+      validator: (_rule: any, value: any, callback: any) => {
+        // 允许 v-model 传来 null/'' 等
+        if (value === '' || value === null || value === undefined) {
+          return callback(new Error(message))
+        }
+        // 关键：去掉所有空格再判断
+        const cleaned = String(value).replace(/\s+/g, '')
+        // 只要是纯数字，并且转成数是整数且 > 0
+        if (!/^\d+$/.test(cleaned)) {
+          return callback(new Error('必须是正整数，不能为0或小数'))
+        }
+        const num = Number(cleaned)
+        if (!Number.isInteger(num) || num <= 0) {
+          return callback(new Error('必须是正整数，不能为0或小数'))
+        }
+        callback()
+      },
+      trigger: 'blur',
+    },
+  ]
 }

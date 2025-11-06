@@ -10,6 +10,7 @@ import {
 import { createRules } from '@/utils'
 import type { FormInstance, FormRules } from 'element-plus'
 import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
+import { cleanQueryParams } from '@/utils/ruoyi'
 
 const { proxy } = getCurrentInstance()
 const { sys_yes_no } = proxy.useDict('sys_yes_no')
@@ -294,12 +295,7 @@ onMounted(async () => {
       <el-table-column label="备注" prop="remark" :show-overflow-tooltip="true" min-width="200" />
       <el-table-column label="创建时间" prop="createTime" width="180" min-width="200" />
 
-      <el-table-column
-        label="操作"
-        min-width="150"
-        class-name="small-padding fixed-width"
-        fixed="right"
-      >
+      <el-table-column label="操作" min-width="150" fixed="right">
         <template #default="scope">
           <el-button
             v-hasPermi="['system:config:edit']"
@@ -337,7 +333,7 @@ onMounted(async () => {
     <el-dialog
       v-model="open"
       :title="title"
-      width="80%"
+      width="60%"
       append-to-body
       :close-on-click-modal="false"
     >

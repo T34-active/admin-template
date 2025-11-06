@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie'
 
-const TokenKey = 'Admin-Token'
+const TokenKey = 'df-Admin-Token'
 
 export function getToken() {
   return Cookies.get(TokenKey)

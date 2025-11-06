@@ -21,6 +21,7 @@
 
 <script setup lang="ts">
 import { createTable } from '@/api/tool/gen'
+import { cleanQueryParams } from '@/utils/ruoyi'
 
 const visible = ref(false)
 const content = ref('')

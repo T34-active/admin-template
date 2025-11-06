@@ -29,6 +29,7 @@
 </template>
 
 <script setup lang="ts">
+import { cleanQueryParams } from '@/utils/ruoyi'
 const { proxy } = getCurrentInstance()
 
 const props = defineProps({

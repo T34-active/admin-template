@@ -14,6 +14,7 @@ import { createRules } from '@/utils'
 import type { FormInstance } from 'element-plus'
 import { dataScopeOptions } from '@/utils/column'
 import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
+import { cleanQueryParams } from '@/utils/ruoyi'
 
 const router = useRouter()
 const { proxy } = getCurrentInstance()
@@ -438,12 +439,7 @@ onMounted(async () => {
         </template>
       </el-table-column>
       <el-table-column label="创建时间" min-width="200" prop="createTime" />
-      <el-table-column
-        label="操作"
-        class-name="small-padding fixed-width"
-        fixed="right"
-        min-width="150"
-      >
+      <el-table-column label="操作" fixed="right" min-width="150">
         <template #default="scope">
           <el-tooltip v-if="scope.row.roleId !== 1" content="修改" placement="top">
             <el-button
@@ -498,7 +494,7 @@ onMounted(async () => {
     <el-dialog
       v-model="open"
       :title="title"
-      width="80%"
+      width="60%"
       append-to-body
       :close-on-click-modal="false"
     >
@@ -570,7 +566,7 @@ onMounted(async () => {
     <el-dialog
       v-model="openDataScope"
       :title="title"
-      width="80%"
+      width="60%"
       append-to-body
       :close-on-click-modal="false"
     >

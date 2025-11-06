@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { listMenu } from '@/api/system/menu'
 import { createRules } from '@/utils'
+import { cleanQueryParams } from '@/utils/ruoyi'
 
 const subColumns = ref([])
 const menuOptions = ref([])

@@ -4,9 +4,9 @@ import router from '@/router'
 import importTable from './importTable.vue'
 import createTable from './createTable.vue'
 import { disabledFutureDate } from '@/utils'
+import { cleanQueryParams } from '@/utils/ruoyi'
 
 const route = useRoute()
-const { proxy } = getCurrentInstance()
 
 const tableList = ref([])
 const loading = ref(true)
@@ -288,12 +288,7 @@ onMounted(async () => {
       />
       <el-table-column label="创建时间" prop="createTime" min-width="160" />
       <el-table-column label="更新时间" prop="updateTime" min-width="160" />
-      <el-table-column
-        label="操作"
-        min-width="200"
-        fixed="right"
-        class-name="small-padding fixed-width"
-      >
+      <el-table-column label="操作" min-width="200" fixed="right">
         <template #default="scope">
           <el-tooltip content="预览" placement="top">
             <el-button

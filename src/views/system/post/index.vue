@@ -3,6 +3,7 @@ import { listPost, addPost, delPost, getPost, updatePost } from '@/api/system/po
 import { createRules } from '@/utils'
 import type { FormInstance, FormRules } from 'element-plus'
 import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
+import { cleanQueryParams } from '@/utils/ruoyi'
 
 const { proxy } = getCurrentInstance()
 
@@ -68,7 +69,7 @@ const { queryParams, form, rules } = toRefs(data)
 /** 查询岗位列表 */
 async function getList() {
   loading.value = true
-  const response = await listPost(queryParams.value)
+  const response = await listPost(cleanQueryParams(queryParams.value))
   postList.value = response.rows
   total.value = response.total
   loading.value = false
@@ -245,12 +246,7 @@ onMounted(async () => {
         </template>
       </el-table-column>
       <el-table-column label="创建时间" prop="createTime" width="180" />
-      <el-table-column
-        label="操作"
-        class-name="small-padding fixed-width"
-        fixed="right"
-        min-width="150"
-      >
+      <el-table-column label="操作" fixed="right" min-width="150">
         <template #default="scope">
           <el-button
             v-hasPermi="['system:post:edit']"
@@ -289,7 +285,7 @@ onMounted(async () => {
     <el-dialog
       v-model="open"
       :title="title"
-      width="80%"
+      width="60%"
       append-to-body
       :close-on-click-modal="false"
     >

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import TopFixed from '@/components/TopFixed/index.vue'
 import { previewTable } from '@/api/tool/gen'
+import { cleanQueryParams } from '@/utils/ruoyi'
 const { proxy } = getCurrentInstance()
 const route = proxy.$route
 const preview = ref({

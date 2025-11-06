@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { listDbTable, importTable } from '@/api/tool/gen'
 import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
+import { cleanQueryParams } from '@/utils/ruoyi'
 
 const total = ref(0)
 const visible = ref(false)
@@ -91,7 +92,7 @@ defineExpose({
   <el-dialog
     title="导入表"
     v-model="visible"
-    width="80%"
+    width="60%"
     top="5vh"
     append-to-body
     :close-on-click-modal="false"

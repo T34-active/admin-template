@@ -14,6 +14,7 @@ import { createRules } from '@/utils'
 import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
 
 import { h } from 'vue'
+import { cleanQueryParams } from '@/utils/ruoyi'
 
 const { proxy } = getCurrentInstance()
 
@@ -384,12 +385,14 @@ onMounted(async () => {
       </div>
     </BottomFixed>
     <!-- 添加或修改参数配置对话框 -->
-    <el-dialog
-      v-model="open"
+    <el-drawer
       :title="title"
-      width="80%"
+      v-model="open"
+      size="80%"
       append-to-body
       :close-on-click-modal="false"
+      direction="btt"
+      resizable
     >
       <el-form ref="dictRef" :model="form" :rules="rules" label-width="auto">
         <el-row :gutter="10">
@@ -461,11 +464,11 @@ onMounted(async () => {
         </el-row>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
+        <div class="center">
           <el-button type="primary" @click="submitForm">确 定</el-button>
           <el-button @click="cancel">取 消</el-button>
         </div>
       </template>
-    </el-dialog>
+    </el-drawer>
   </div>
 </template>

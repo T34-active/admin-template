@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { authUserSelectAll, unallocatedUserList } from '@/api/system/role'
+import { cleanQueryParams } from '@/utils/ruoyi'
 
 const props = defineProps({
   roleId: {

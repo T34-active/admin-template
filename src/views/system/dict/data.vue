@@ -9,6 +9,7 @@ import { createRules } from '@/utils'
 
 import { listClassOptions } from '@/utils/column'
 import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
+import { cleanQueryParams } from '@/utils/ruoyi'
 
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
@@ -98,7 +99,7 @@ async function getTypeList() {
 /** 查询字典数据列表 */
 async function getList() {
   loading.value = true
-  const response = await listData(queryParams.value)
+  const response = await listData(cleanQueryParams(queryParams.value))
   dataList.value = response.rows
   total.value = response.total
   loading.value = false
@@ -299,12 +300,7 @@ onMounted(async () => {
       </el-table-column>
       <el-table-column label="备注" prop="remark" :show-overflow-tooltip="true" min-width="150" />
       <el-table-column label="创建时间" prop="createTime" min-width="180" />
-      <el-table-column
-        label="操作"
-        min-width="150"
-        class-name="small-padding fixed-width"
-        fixed="right"
-      >
+      <el-table-column label="操作" min-width="150" fixed="right">
         <template #default="scope">
           <el-button
             v-hasPermi="['system:dict:edit']"
@@ -339,12 +335,14 @@ onMounted(async () => {
     </BottomFixed>
 
     <!-- 添加或修改参数配置对话框 -->
-    <el-dialog
-      v-model="open"
+    <el-drawer
       :title="title"
-      width="80%"
+      v-model="open"
+      size="80%"
       append-to-body
       :close-on-click-modal="false"
+      direction="btt"
+      resizable
     >
       <el-form ref="dataRef" :model="form" :rules="rules" label-width="auto">
         <el-row :gutter="10">
@@ -470,11 +468,11 @@ onMounted(async () => {
         </el-row>
       </el-form>
       <template #footer>
-        <div class="dialog-footer">
+        <div class="center">
           <el-button type="primary" @click="submitForm">确 定</el-button>
           <el-button @click="cancel">取 消</el-button>
         </div>
       </template>
-    </el-dialog>
+    </el-drawer>
   </div>
 </template>
