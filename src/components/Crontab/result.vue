@@ -559,3 +559,53 @@ onMounted(() => {
   expressionChange()
 })
 </script>
+
+<style scoped lang="scss">
+.popup-result {
+  padding: 14px;
+  border: 1px solid var(--layout-glass-border);
+  border-radius: 18px;
+  background: var(--layout-glass-bg);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(16px);
+}
+
+.title {
+  position: relative;
+  margin: 0 0 12px;
+  padding: 10px 12px 10px 16px;
+  border: 1px solid var(--layout-glass-border);
+  border-radius: 14px;
+  color: var(--navbar-text);
+  font-weight: 650;
+  background: var(--panel-bg);
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    bottom: 10px;
+    width: 4px;
+    border-radius: 999px;
+    background: var(--current-color, var(--el-color-primary));
+  }
+}
+
+.popup-result-scroll {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    padding: 9px 12px;
+    border-radius: 12px;
+    color: var(--navbar-text);
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: var(--menu-hover);
+    }
+  }
+}
+</style>

@@ -1,41 +1,26 @@
 <template>
-  <!-- 占位元素，动态高度 -->
-  <div :style="{ height: `${height}px` }" />
-  <!-- 底部固定栏 -->
-  <div
-    ref="footerRef"
-    :style="{ width: appStore.sidebar.opened ? 'calc(100% - 200px)' : '' }"
-    class="shadow-[0_-4px_10px_rgba(0,0,0,0.1)] border-t fixed w-full bottom-0 right-0 z-990 transition-all duration-300 bg-white dark:bg-black"
-  >
+  <!-- 底部吸附栏，宽度跟随父容器 -->
+  <div ref="footerRef" class="bottom-fixed-bar sticky bottom-0 z-30 w-full">
     <slot />
   </div>
+  <!-- 占位元素，避免吸附状态遮挡底部内容 -->
+  <!--  <div :style="{ height: `${height}px` }" />-->
 </template>
 
 <script setup lang="ts">
-import { useElementSize } from '@vueuse/core'
-import useAppStore from '@/store/modules/app'
+// import { useElementSize } from '@vueuse/core'
 
-const appStore = useAppStore()
-// 绑定底部栏 DOM
 const footerRef = ref<HTMLElement | null>(null)
-
-// 动态获取 sidebar 宽度
-const sidebarRef = ref<HTMLElement | null>(null)
-const sidebarWidth = ref(0)
-
-// 计算底部栏高度
-const { height } = useElementSize(footerRef)
-
-onMounted(() => {
-  sidebarRef.value = document.querySelector('.sidebar-container') as HTMLElement
-  if (sidebarRef.value) {
-    const { width } = useElementSize(sidebarRef)
-    sidebarWidth.value = width.value
-
-    // 监听宽度变化
-    watch(width, (newWidth) => {
-      sidebarWidth.value = newWidth
-    })
-  }
-})
+// const { height } = useElementSize(footerRef)
 </script>
+
+<style scoped lang="scss">
+.bottom-fixed-bar {
+  border: 1px solid var(--layout-glass-border);
+  border-bottom: 0;
+  border-radius: 20px 20px 0 0;
+  background: var(--layout-glass-bg);
+  box-shadow: var(--layout-shadow);
+  backdrop-filter: blur(18px);
+}
+</style>

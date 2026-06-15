@@ -1,5 +1,5 @@
 <template>
-  <div class="navbar flex justify-between items-center shadow-xl border-b">
+  <div class="navbar flex justify-between items-center overflow-hidden h-50">
     <div class="flex items-center">
       <hamburger
         id="hamburger-container"
@@ -40,8 +40,8 @@
         trigger="hover"
       >
         <div class="avatar-wrapper">
-          <img :src="userStore.avatar" class="user-avatar" />
-          <span class="user-nickname">{{ userStore.nickName }}</span>
+          <img :src="userStore.avatar" class="user-avatar mx-auto" alt="" />
+          <span class="user-nickname">{{ userStore.name }}</span>
         </div>
         <template #dropdown>
           <el-dropdown-menu>
@@ -98,18 +98,14 @@ function handleCommand(command) {
   }
 }
 
-function logout() {
-  ElMessageBox.confirm('确定注销并退出系统吗？', '提示', {
+async function logout() {
+  await ElMessageBox.confirm('确定注销并退出系统吗？', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning',
   })
-    .then(() => {
-      userStore.logOut().then(() => {
-        location.href = '/index'
-      })
-    })
-    .catch(() => {})
+  await userStore.logOut()
+  location.href = '/index'
 }
 
 const emits = defineEmits(['setLayout'])
@@ -124,12 +120,13 @@ function toggleTheme() {
 
 <style lang="scss" scoped>
 .navbar {
-  height: 50px;
-
   overflow: hidden;
   position: relative;
   background: var(--navbar-bg);
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  border: 1px solid var(--layout-glass-border);
+  border-radius: 22px;
+  box-shadow: var(--layout-shadow);
+  backdrop-filter: blur(18px);
 
   .hamburger-container {
     line-height: 46px;
@@ -139,7 +136,7 @@ function toggleTheme() {
     -webkit-tap-highlight-color: transparent;
 
     &:hover {
-      background: rgba(0, 0, 0, 0.025);
+      background: var(--navbar-hover);
     }
   }
   .topmenu-container {
@@ -157,25 +154,35 @@ function toggleTheme() {
     height: 100%;
     line-height: 50px;
     display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-right: 8px;
 
     &:focus {
       outline: none;
     }
 
     .right-menu-item {
-      display: inline-block;
-      padding: 0 8px;
-      height: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      min-width: 36px;
+      height: 36px;
       font-size: 18px;
-      color: #5a5e66;
+      color: var(--navbar-text);
       vertical-align: text-bottom;
+      border-radius: 999px;
+      transition:
+        background 0.2s ease,
+        transform 0.2s ease;
 
       &.hover-effect {
         cursor: pointer;
-        transition: background 0.3s;
 
         &:hover {
-          background: rgba(0, 0, 0, 0.025);
+          background: var(--navbar-hover);
+          transform: translateY(-1px);
         }
       }
 
@@ -194,27 +201,37 @@ function toggleTheme() {
     }
 
     .avatar-container {
-      margin-right: 0px;
-      padding-right: 0px;
+      margin-right: 0;
+      padding: 0 10px 0 8px;
+      min-width: auto;
+      border: 1px solid var(--layout-glass-border);
+      background: var(--avatar-bg);
 
       .avatar-wrapper {
-        margin-top: 10px;
-        right: 5px;
+        right: auto;
         position: relative;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        height: 100%;
 
         .user-avatar {
           cursor: pointer;
           width: 30px;
           height: 30px;
           border-radius: 50%;
+          border: 2px solid var(--avatar-border);
+          box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
         }
 
         .user-nickname {
           position: relative;
-          left: 5px;
-          bottom: 10px;
+          left: auto;
+          bottom: auto;
           font-size: 14px;
-          font-weight: bold;
+          font-weight: 650;
+          color: var(--navbar-text);
+          line-height: 1;
         }
 
         i {
@@ -228,4 +245,5 @@ function toggleTheme() {
     }
   }
 }
+
 </style>

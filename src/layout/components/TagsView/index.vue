@@ -2,7 +2,7 @@
   <div id="tags-view-container" class="tags-view-container w-full">
     <scroll-pane
       ref="scrollPaneRef"
-      class="tags-view-wrapper px-8 bg-white dark:bg-black"
+      class="tags-view-wrapper px-8 overflow-hidden"
       @scroll="handleScroll"
     >
       <router-link
@@ -11,7 +11,7 @@
         :data-path="tag.path"
         :class="isActive(tag) ? 'active' : ''"
         :to="{ path: tag.path, query: tag.query, fullPath: tag.fullPath } as any"
-        class="tags-view-item inline-flex items-center rounded-md gap-x-2 shadow-xl"
+        class="tags-view-item inline-flex items-center gap-x-2"
         :style="activeStyle(tag)"
         @click.middle="!isAffix(tag) ? closeSelectedTag(tag) : ''"
         @contextmenu.prevent="openMenu(tag, $event)"
@@ -25,11 +25,11 @@
     <ul
       v-show="visible"
       :style="{ left: left + 'px', top: top + 'px' }"
-      class="contextmenu flex flex-col shadow-2xl absolute text-xs text-primaryText font-medium bg-white dark:bg-black dark:text-white rounded-md py-4 z-3000 overflow-hidden"
+      class="contextmenu tags-view-contextmenu flex flex-col absolute text-xs font-medium py-4 z-3000 overflow-hidden"
     >
       <li
         @click="refreshSelectedTag(selectedTag)"
-        class="flex items-center gap-x-2 hover:bg-surface dark:hover:bg-primaryText cursor-pointer"
+        class="flex items-center gap-x-2 cursor-pointer"
       >
         <refresh-right class="size-12" />
         刷新页面
@@ -37,14 +37,14 @@
       <li
         v-if="!isAffix(selectedTag)"
         @click="closeSelectedTag(selectedTag)"
-        class="flex items-center gap-x-2 hover:bg-surface dark:hover:bg-primaryText cursor-pointer"
+        class="flex items-center gap-x-2 cursor-pointer"
       >
         <close class="size-12" />
         关闭当前
       </li>
       <li
         @click="closeOthersTags"
-        class="flex items-center gap-x-2 hover:bg-surface dark:hover:bg-primaryText cursor-pointer"
+        class="flex items-center gap-x-2 cursor-pointer"
       >
         <circle-close class="size-12" />
         关闭其他
@@ -52,7 +52,7 @@
       <li
         v-if="!isFirstView()"
         @click="closeLeftTags"
-        class="flex items-center gap-x-2 hover:bg-surface dark:hover:bg-primaryText cursor-pointer"
+        class="flex items-center gap-x-2 cursor-pointer"
       >
         <back class="size-12" />
         关闭左侧
@@ -60,14 +60,14 @@
       <li
         v-if="!isLastView()"
         @click="closeRightTags"
-        class="flex items-center gap-x-2 hover:bg-surface dark:hover:bg-primaryText cursor-pointer"
+        class="flex items-center gap-x-2 cursor-pointer"
       >
         <right class="size-12" />
         关闭右侧
       </li>
       <li
         @click="closeAllTags(selectedTag)"
-        class="flex items-center gap-x-2 hover:bg-surface dark:hover:bg-primaryText cursor-pointer"
+        class="flex items-center gap-x-2 cursor-pointer"
       >
         <circle-close class="size-12" />
         全部关闭
@@ -206,28 +206,25 @@ function refreshSelectedTag(view: any) {
     useTagsViewStore().delIframeView(route)
   }
 }
-function closeSelectedTag(view: any) {
-  proxy.$tab.closePage(view).then(({ visitedViews }) => {
-    if (isActive(view)) {
-      toLastView(visitedViews, view)
-    }
-  })
+async function closeSelectedTag(view: any) {
+  const { visitedViews } = await proxy.$tab.closePage(view)
+  if (isActive(view)) {
+    toLastView(visitedViews, view)
+  }
 }
-function closeRightTags() {
-  proxy.$tab.closeRightPage(selectedTag.value).then((visitedViews: any) => {
-    if (!visitedViews.find((i: any) => i.fullPath === route.fullPath)) {
-      toLastView(visitedViews)
-    }
-  })
+async function closeRightTags() {
+  const visitedViews = await proxy.$tab.closeRightPage(selectedTag.value)
+  if (!visitedViews.find((item) => item.fullPath === route.fullPath)) {
+    toLastView(visitedViews)
+  }
 }
-function closeLeftTags() {
-  proxy.$tab.closeLeftPage(selectedTag.value).then((visitedViews: any) => {
-    if (!visitedViews.find((i: any) => i.fullPath === route.fullPath)) {
-      toLastView(visitedViews)
-    }
-  })
+async function closeLeftTags() {
+  const visitedViews = await proxy.$tab.closeLeftPage(selectedTag.value)
+  if (!visitedViews.find((item) => item.fullPath === route.fullPath)) {
+    toLastView(visitedViews)
+  }
 }
-function closeOthersTags() {
+async function closeOthersTags() {
   router.push(selectedTag.value).catch((e) => {
     console.log(e)
   })
@@ -258,20 +255,16 @@ function toLastView(visitedViews: any, view?: any) {
     }
   }
 }
-function openMenu(tag: any, e: any) {
-  const menuMinWidth = 105
-  const offsetLeft = proxy!.$el.getBoundingClientRect().left // container margin left
-  const offsetWidth = proxy!.$el.offsetWidth // container width
-  const maxLeft = offsetWidth - menuMinWidth // left boundary
-  const l = e.clientX - offsetLeft + 15 // 15: margin right
+function openMenu(tag: any, e: MouseEvent) {
+  const menuMinWidth = 128
+  const container = proxy!.$el as HTMLElement
+  const { left: containerLeft, top: containerTop, width: containerWidth } =
+    container.getBoundingClientRect()
+  const maxLeft = containerWidth - menuMinWidth
+  const l = e.clientX - containerLeft + 4
 
-  if (l > maxLeft) {
-    left.value = maxLeft
-  } else {
-    left.value = l
-  }
-
-  top.value = e.clientY
+  left.value = l > maxLeft ? maxLeft : l
+  top.value = e.clientY - containerTop + 4
   visible.value = true
   selectedTag.value = tag
 }
@@ -285,25 +278,43 @@ function handleScroll() {
 
 <style lang="scss" scoped>
 .tags-view-container {
-  height: 34px;
-  border-bottom: 1px solid #d8dce5;
-  box-shadow:
-    0 1px 3px 0 rgba(0, 0, 0, 0.12),
-    0 0 3px 0 rgba(0, 0, 0, 0.04);
+  position: relative;
+  height: 42px;
+  margin-top: 10px;
+  border: 1px solid var(--layout-glass-border);
+  border-radius: 18px;
+  background: var(--tags-bg);
+  box-shadow: var(--layout-shadow);
+  backdrop-filter: blur(18px);
+
   .tags-view-wrapper {
     .tags-view-item {
-      height: 26px;
-      line-height: 26px;
-      border: 1px solid #d8dce5;
-      color: #495060;
-      background: #fff;
-      padding: 0 8px;
+      height: 30px;
+      line-height: 30px;
+      border: 1px solid var(--tags-item-border);
+      border-radius: 999px;
+      color: var(--tags-item-text);
+      background: var(--tags-item-bg);
+      padding: 0 12px;
       font-size: 12px;
-      margin-left: 5px;
-      margin-top: 4px;
+      margin-left: 6px;
+      margin-top: 5px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+      transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+
+      &:hover {
+        background: var(--tags-item-hover);
+        transform: translateY(-1px);
+      }
+
       &.active {
         @apply bg-primary border-primary;
         color: #fff;
+        box-shadow: 0 12px 26px color-mix(in srgb, var(--current-color) 28%, transparent);
+
         &::before {
           content: '';
           background: #fff;
@@ -318,8 +329,21 @@ function handleScroll() {
     }
   }
   .contextmenu {
+    min-width: 128px;
+    border: 1px solid var(--layout-glass-border);
+    border-radius: 16px;
+    color: var(--navbar-text);
+    background: var(--layout-glass-bg);
+    box-shadow: var(--layout-shadow);
+    backdrop-filter: blur(18px);
+
     li {
       padding: 7px 16px;
+      transition: background 0.2s ease;
+
+      &:hover {
+        background: var(--tags-item-hover);
+      }
     }
   }
 }
@@ -343,8 +367,8 @@ function handleScroll() {
         vertical-align: -3px;
       }
       &:hover {
-        background-color: #b4bccc;
-        color: #fff;
+        background-color: var(--tags-close-hover);
+        color: var(--navbar-text);
         width: 12px !important;
         height: 12px !important;
       }

@@ -39,7 +39,6 @@
 
 <script setup lang="ts">
 import { getToken } from '@/utils/auth'
-import { cleanQueryParams } from '@/utils/ruoyi'
 
 const props = defineProps({
   modelValue: [String, Object, Array],
@@ -143,5 +142,27 @@ defineExpose({
 <style scoped lang="scss">
 :deep(.el-upload-dragger) {
   padding: 20px 0 !important;
+  border-color: var(--layout-glass-border);
+  border-radius: 18px;
+  background: var(--input-bg);
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    border-color: var(--current-color, var(--el-color-primary));
+    background: var(--menu-hover);
+    transform: translateY(-1px);
+  }
 }
+
+:deep(.el-icon--upload) {
+  color: var(--current-color, var(--el-color-primary));
+}
+
+:deep(.el-upload__tip) {
+  color: var(--tags-item-text);
+}
+
 </style>

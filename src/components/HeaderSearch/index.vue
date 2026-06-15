@@ -161,21 +161,32 @@ watch(searchPool, (list) => {
 
   .header-search-select {
     font-size: 18px;
-    transition: width 0.2s;
+    transition:
+      width 0.2s,
+      background 0.2s ease,
+      box-shadow 0.2s ease;
     width: 0;
     overflow: hidden;
     background: transparent;
-    border-radius: 0;
+    border-radius: 999px;
     display: inline-block;
     vertical-align: middle;
 
+    :deep(.el-select__wrapper) {
+      min-height: 32px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: transparent;
+      box-shadow: none !important;
+    }
+
     :deep(.el-input__inner) {
-      border-radius: 0;
+      border-radius: 999px;
       border: 0;
       padding-left: 0;
       padding-right: 0;
       box-shadow: none !important;
-      border-bottom: 1px solid #d9d9d9;
+      color: var(--navbar-text);
       vertical-align: middle;
     }
   }
@@ -184,6 +195,11 @@ watch(searchPool, (list) => {
     .header-search-select {
       width: 210px;
       margin-left: 10px;
+      padding: 3px;
+      border: 1px solid var(--layout-glass-border);
+      background: var(--layout-glass-bg);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+      backdrop-filter: blur(16px);
     }
   }
 }

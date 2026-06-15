@@ -6,23 +6,14 @@
         <h1
           v-else
           class="sidebar-title"
-          :style="{
-            color:
-              sideTheme === 'theme-dark' ? variables.logoTitleColor : variables.logoLightTitleColor,
-          }"
+          :style="{ color: getLogoTextColor }"
         >
           {{ title }}
         </h1>
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link" to="/">
         <img alt="" v-if="logo" :src="logo" class="sidebar-logo rounded-full" />
-        <h1
-          class="sidebar-title"
-          :style="{
-            color:
-              sideTheme === 'theme-dark' ? variables.logoTitleColor : variables.logoLightTitleColor,
-          }"
-        >
+        <h1 class="sidebar-title" :style="{ color: getLogoTextColor }">
           {{ title }}
         </h1>
       </router-link>
@@ -76,15 +67,20 @@ const getLogoTextColor = computed(() => {
 .sidebar-logo-container {
   position: relative;
   width: 100%;
-  height: 50px;
-  line-height: 50px;
-  background: v-bind(getLogoBackground);
+  height: 58px;
+  line-height: 58px;
+  background: transparent;
   text-align: center;
   overflow: hidden;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
 
   & .sidebar-logo-link {
     height: 100%;
     width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
 
     & .sidebar-logo {
       display: inline-block;
@@ -92,15 +88,17 @@ const getLogoTextColor = computed(() => {
       height: 32px;
       vertical-align: middle;
       margin-right: 12px;
+      box-shadow: 0 10px 24px rgba(64, 158, 255, 0.18);
     }
 
     & .sidebar-title {
       display: inline-block;
       margin: 0;
       color: v-bind(getLogoTextColor);
-      font-weight: 600;
-      line-height: 50px;
+      font-weight: 750;
+      line-height: 58px;
       font-size: 14px;
+      letter-spacing: 0.2px;
       font-family:
         Avenir,
         Helvetica Neue,

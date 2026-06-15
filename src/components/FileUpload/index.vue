@@ -58,7 +58,6 @@
 
 <script setup lang="ts">
 import { getToken } from '@/utils/auth'
-import { cleanQueryParams } from '@/utils/ruoyi'
 
 const props = defineProps({
   modelValue: [String, Object, Array] as any,
@@ -209,3 +208,37 @@ function listToString(list: any, separator?: any) {
   return strs !== '' ? strs.slice(0, -separator.length) : ''
 }
 </script>
+
+<style scoped lang="scss">
+.upload-file {
+  :deep(.el-upload__tip),
+  .text-secondaryText {
+    margin-top: 8px;
+    color: var(--tags-item-text);
+  }
+}
+
+:deep(.el-button) {
+  border-radius: 999px;
+}
+
+:deep(ul) {
+  margin-top: 10px;
+  padding: 8px;
+  border-color: var(--layout-glass-border) !important;
+  border-radius: 16px;
+  background: var(--layout-glass-bg);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(16px);
+}
+
+:deep(li) {
+  padding: 8px 10px !important;
+  border-radius: 12px;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: var(--menu-hover);
+  }
+}
+</style>

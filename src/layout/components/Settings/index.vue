@@ -4,7 +4,7 @@
     :withHeader="false"
     :lock-scroll="false"
     direction="rtl"
-    size="300px"
+    size="30%"
   >
     <div class="setting-drawer-title">
       <h3 class="text-base">主题风格设置</h3>

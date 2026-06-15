@@ -42,25 +42,25 @@
         {{ tip }}
       </div>
     </template>
-    <el-dialog
+    <el-drawer
       v-model="dialogVisible"
       title="预览"
-      width="800px"
+      size="80%"
       append-to-body
       :close-on-click-modal="false"
+      direction="btt"
     >
       <img
         :src="dialogImageUrl"
         alt="预览图"
         style="display: block; max-width: 100%; margin: 0 auto"
       />
-    </el-dialog>
+    </el-drawer>
   </div>
 </template>
 
 <script setup lang="ts">
 import { getToken } from '@/utils/auth'
-import { cleanQueryParams } from '@/utils/ruoyi'
 
 const props = defineProps({
   modelValue: [String, Object, Array],
@@ -89,6 +89,11 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  // 上传的图片服务器地址
+  uploadImgUrl: {
+    type: String,
+    default: import.meta.env.VITE_APP_BASE_URL + '/common/uploadImages',
+  },
 })
 
 const { proxy } = getCurrentInstance()
@@ -98,7 +103,6 @@ const uploadList = ref([])
 const dialogImageUrl = ref('')
 const dialogVisible = ref(false)
 const baseUrl = ''
-const uploadImgUrl = ref(import.meta.env.VITE_APP_BASE_URL + '/common/uploadImages') // 上传的图片服务器地址
 const headers = ref({ Authorization: 'Bearer ' + getToken() })
 const fileList = ref([])
 
@@ -233,9 +237,31 @@ function listToString(list: any, separator?: any) {
 :deep(.el-upload-list__item) {
   width: 100px;
   height: 100px;
+  border-color: var(--layout-glass-border);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
 }
 :deep(.el-upload--picture-card) {
   width: 100px;
   height: 100px;
+  border-color: var(--layout-glass-border);
+  border-radius: 18px;
+  background: var(--input-bg);
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    border-color: var(--current-color, var(--el-color-primary));
+    background: var(--menu-hover);
+    transform: translateY(-1px);
+  }
 }
+
+:deep(.avatar-uploader-icon) {
+  color: var(--current-color, var(--el-color-primary));
+}
+
 </style>

@@ -2,10 +2,13 @@
 
 #app {
   .main-container {
-    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
     transition: margin-left 0.28s;
-    margin-left: vars.$base-sidebar-width;
+    margin-left: calc(#{vars.$base-sidebar-width} + 16px);
     position: relative;
+    z-index: 1;
   }
 
   .sidebarHide {
@@ -13,33 +16,38 @@
   }
 
   .sidebar-container {
+    --nts-menu-item-height: 40px;
+    --nts-menu-icon-size: 18px;
+    --nts-menu-gap: 12px;
+    --nts-menu-padding-x: 12px;
+    --nts-menu-indent: 16px;
+    --nts-menu-radius: 12px;
+    --nts-menu-text: var(--sidebar-text);
+
     transition: width 0.28s;
     width: vars.$base-sidebar-width !important;
-    height: 100%;
+    height: calc(100% - 32px);
     position: fixed;
-    font-size: 0px;
-    top: 0;
-    bottom: 0;
-    left: 0;
+    top: 16px;
+    bottom: 16px;
+    left: 16px;
     z-index: 1001;
     overflow: hidden;
-    -webkit-box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);
-    box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.1);
-
-    // reset element-ui css
-    .horizontal-collapse-transition {
-      transition:
-        0s width ease-in-out,
-        0s padding-left ease-in-out,
-        0s padding-right ease-in-out;
-    }
+    border: 1px solid var(--layout-glass-border);
+    border-radius: 24px;
+    background: var(--sidebar-bg);
+    box-shadow: var(--layout-shadow);
+    backdrop-filter: blur(20px);
+    color: var(--nts-menu-text);
+    font-size: var(--el-font-size-base);
 
     .scrollbar-wrapper {
       overflow-x: hidden !important;
+      background: transparent !important;
     }
 
     .el-scrollbar__bar.is-vertical {
-      right: 0px;
+      right: 0;
     }
 
     .el-scrollbar {
@@ -48,69 +56,12 @@
 
     &.has-logo {
       .el-scrollbar {
-        height: calc(100% - 50px);
+        height: calc(100% - 58px);
       }
     }
 
     .is-horizontal {
       display: none;
-    }
-
-    a {
-      display: inline-block;
-      width: 100%;
-      overflow: hidden;
-    }
-
-    .svg-icon {
-      margin-right: 16px;
-    }
-
-    .el-menu {
-      border: none;
-      height: 100%;
-      width: 100% !important;
-    }
-
-    .el-menu-item,
-    .menu-title {
-      overflow: hidden !important;
-      text-overflow: ellipsis !important;
-      white-space: nowrap !important;
-    }
-
-    .el-menu-item .el-menu-tooltip__trigger {
-      display: inline-block !important;
-    }
-
-    // menu hover
-    .sub-menu-title-noDropdown,
-    .el-sub-menu__title {
-      &:hover {
-        background-color: rgba(0, 0, 0, 0.06) !important;
-      }
-    }
-
-    & .theme-dark .is-active > .menu-title {
-      color: vars.$menuLightActiveText !important;
-    }
-
-    & .nest-menu .el-sub-menu > .el-sub-menu__title,
-    & .el-sub-menu .el-menu-item {
-      min-width: vars.$base-sidebar-width !important;
-
-      &:hover {
-        background-color: rgba(0, 0, 0, 0.06) !important;
-      }
-    }
-
-    & .theme-dark .nest-menu .el-sub-menu > .el-sub-menu__title,
-    & .theme-dark .el-sub-menu .el-menu-item {
-      background-color: vars.$base-sub-menu-background;
-
-      &:hover {
-        background-color: vars.$base-sub-menu-hover !important;
-      }
     }
   }
 
@@ -120,64 +71,13 @@
     }
 
     .main-container {
-      margin-left: 54px;
-    }
-
-    .sub-menu-title-noDropdown {
-      padding: 0 !important;
-      position: relative;
-
-      .el-tooltip {
-        padding: 0 !important;
-
-        .svg-icon {
-          margin-left: 20px;
-        }
-      }
-    }
-
-    .el-sub-menu {
-      overflow: hidden;
-
-      & > .el-sub-menu__title {
-        padding: 0 !important;
-
-        .svg-icon {
-          margin-left: 20px;
-        }
-      }
-    }
-
-    .el-menu--collapse {
-      .el-sub-menu {
-        & > .el-sub-menu__title {
-          & > span {
-            height: 0;
-            width: 0;
-            overflow: hidden;
-            visibility: hidden;
-            display: inline-block;
-          }
-          & > i {
-            height: 0;
-            width: 0;
-            overflow: hidden;
-            visibility: hidden;
-            display: inline-block;
-          }
-        }
-      }
+      margin-left: calc(54px + 16px);
     }
   }
 
-  .el-menu--collapse .el-menu .el-sub-menu {
-    min-width: vars.$base-sidebar-width !important;
-  }
-
-  // mobile responsive
   .mobile {
     .main-container {
-      margin-left: 0px;
+      margin-left: 0;
     }
 
     .sidebar-container {
@@ -189,7 +89,7 @@
       .sidebar-container {
         pointer-events: none;
         transition-duration: 0.3s;
-        transform: translate3d(-(vars.$base-sidebar-width), 0, 0);
+        transform: translate3d(calc(-#{vars.$base-sidebar-width} - 32px), 0, 0);
       }
     }
   }
@@ -202,38 +102,144 @@
   }
 }
 
-// when menu collapsed
-.el-menu--vertical {
-  & > .el-menu {
-    .svg-icon {
-      margin-right: 16px;
-    }
+.nts-sidebar-menu {
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+}
+
+.nts-sidebar-menu__item {
+  margin: 2px 0;
+}
+
+.nts-sidebar-menu__link,
+.nts-sidebar-menu__trigger {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: var(--nts-menu-item-height);
+  padding: 0 var(--nts-menu-padding-x);
+  padding-left: calc(
+    var(--nts-menu-padding-x) + (var(--nts-menu-level, 1) - 1) * var(--nts-menu-indent)
+  );
+  border: 0;
+  border-radius: var(--nts-menu-radius);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  gap: var(--nts-menu-gap);
+  text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+  font: inherit;
+
+  &:hover {
+    background-color: var(--menu-hover, rgba(64, 158, 255, 0.1));
   }
 
-  .nest-menu .el-sub-menu > .el-sub-menu__title,
-  .el-menu-item {
-    &:hover {
-      // you can use $sub-menuHover
-      background-color: rgba(0, 0, 0, 0.06) !important;
-    }
+  &.is-active {
+    color: var(--current-color, var(--menu-active-text, #409eff));
+    background-color: var(--menu-active-bg, rgba(64, 158, 255, 0.14));
+    box-shadow: inset 3px 0 0 var(--current-color, #409eff);
+  }
+}
+
+.nts-sidebar-menu__item--level-1 {
+  --nts-menu-level: 1;
+}
+
+.nts-sidebar-menu__item--level-2 {
+  --nts-menu-level: 2;
+}
+
+.nts-sidebar-menu__item--level-3 {
+  --nts-menu-level: 3;
+}
+
+.nts-sidebar-menu__item--level-4,
+.nts-sidebar-menu__item--level-5 {
+  --nts-menu-level: 4;
+}
+
+.nts-sidebar-menu__icon {
+  flex: 0 0 var(--nts-menu-icon-size);
+  width: var(--nts-menu-icon-size);
+  height: var(--nts-menu-icon-size);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  .svg-icon {
+    width: var(--nts-menu-icon-size);
+    height: var(--nts-menu-icon-size);
+  }
+}
+
+.nts-sidebar-menu__label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.nts-sidebar-menu__arrow {
+  flex-shrink: 0;
+  font-size: 12px;
+  transition: transform 0.2s ease;
+
+  &.is-open {
+    transform: rotate(180deg);
+  }
+}
+
+.nts-sidebar-menu__children {
+  list-style: none;
+  margin: 2px 0 4px;
+  padding: 0;
+}
+
+.nts-sidebar-menu--collapsed {
+  padding-inline: 4px;
+
+  .nts-sidebar-menu__item.is-collapsed .nts-sidebar-menu__link,
+  .nts-sidebar-menu__item.is-collapsed .nts-sidebar-menu__trigger {
+    justify-content: center;
+    min-height: 44px;
+    padding: 0;
   }
 
-  // the scroll bar appears when the sub-menu is too long
-  > .el-menu--popup {
-    max-height: 100vh;
-    overflow-y: auto;
-
-    &::-webkit-scrollbar-track-piece {
-      background: #d3dce6;
-    }
-
-    &::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: #99a9bf;
-      border-radius: 20px;
-    }
+  .nts-sidebar-menu__item.is-collapsed .nts-sidebar-menu__icon {
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
+    border-radius: 12px;
+    transition: background-color 0.2s ease;
   }
+
+  .nts-sidebar-menu__item.is-collapsed .nts-sidebar-menu__link:hover .nts-sidebar-menu__icon,
+  .nts-sidebar-menu__item.is-collapsed .nts-sidebar-menu__trigger:hover .nts-sidebar-menu__icon {
+    background-color: var(--menu-hover, rgba(64, 158, 255, 0.1));
+  }
+
+  .nts-sidebar-menu__item.is-collapsed.is-active .nts-sidebar-menu__icon {
+    color: var(--current-color, var(--el-color-primary));
+    background-color: var(--menu-active-bg, rgba(64, 158, 255, 0.14));
+  }
+}
+
+.nts-sidebar-menu--popover {
+  padding: 0;
+}
+
+.nts-sidebar-menu__popover.el-popover.el-popper {
+  padding: 8px !important;
+  border: 1px solid var(--layout-glass-border);
+  border-radius: 18px;
+  background: var(--layout-glass-bg) !important;
+  box-shadow: var(--layout-shadow);
+  backdrop-filter: blur(18px);
 }

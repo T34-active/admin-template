@@ -20,26 +20,17 @@ const tagsViewStore = useTagsViewStore()
 
 <style lang="scss" scoped>
 .app-main {
-  /* 50= navbar  50  */
-  min-height: calc(100vh - 50px);
+  flex: 1;
   width: 100%;
   position: relative;
-  overflow: hidden;
+  padding: 16px;
+  background: transparent;
 }
 
-.hasTagsView {
-  .app-main {
-    /* 84 = navbar + tags-view = 50 + 34 */
-    min-height: calc(100vh - 84px);
-  }
-}
-</style>
-
-<style lang="scss">
-// fix css style bug in open el-dialog
-.el-popup-parent--hidden {
-  .fixed-header {
-    padding-right: 17px;
-  }
+.app-main :deep(.app-container) {
+  border: 1px solid var(--layout-glass-border);
+  border-radius: 24px;
+  background: var(--page-card-bg);
+  box-shadow: var(--layout-shadow);
 }
 </style>
