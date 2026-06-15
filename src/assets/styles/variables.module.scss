@@ -18,11 +18,11 @@ $menuHover: #263445;
 $menuLightBg: #ffffff;
 $menuLightHover: #f0f1f5;
 $menuLightText: #303133;
-$menuLightActiveText: #409EFF;
+$menuLightActiveText: #409eff;
 
 // 基础变量
-$base-sidebar-width: 200px;
-$sideBarWidth: 200px;
+$base-sidebar-width: 240px;
+$sideBarWidth: 240px;
 
 // 菜单暗色变量
 $base-menu-color: #bfcbd9;
@@ -31,16 +31,13 @@ $base-menu-background: #304156;
 $base-sub-menu-background: #1f2d3d;
 $base-sub-menu-hover: #001528;
 
-$--color-primary: #1dcc8a;
-$--color-success: #01a903;
-$--color-warning: #ff7200;
-$--color-danger: #f24025;
-$--color-info: #999999;
+// 组件变量
+$--color-primary: #409eff;
+$--color-success: #67c23a;
+$--color-warning: #e6a23c;
+$--color-danger: #f56c6c;
+$--color-info: #909399;
 
-$base-sidebar-width: 200px;
-
-// the :export directive is the magic sauce for webpack
-// https://www.bluematador.com/blog/how-to-share-variables-between-js-and-sass
 :export {
   menuText: $menuText;
   menuActiveText: $menuActiveText;
@@ -67,77 +64,192 @@ $base-sidebar-width: 200px;
   colorDanger: $--color-danger;
   colorInfo: $--color-info;
 }
+
 // CSS变量定义
 :root {
+  color-scheme: light;
+
   /* 亮色模式变量 */
-  --sidebar-bg: #{$menuBg};
-  --sidebar-text: #{$menuText};
-  --menu-hover: #{$menuHover};
+  --app-bg: #eef5ff;
+  --app-text: #334155;
+  --app-text-muted: #64748b;
+  --app-surface: rgba(255, 255, 255, 0.82);
+  --app-surface-soft: rgba(255, 255, 255, 0.58);
+  --app-border: rgba(148, 163, 184, 0.2);
+  --app-hover: rgba(64, 158, 255, 0.1);
 
-  --navbar-bg: #ffffff;
-  --navbar-text: #303133;
+  --layout-bg: #eef5ff;
+  --layout-grid: rgba(64, 158, 255, 0.1);
+  --layout-glass-bg: rgba(255, 255, 255, 0.72);
+  --layout-glass-border: rgba(255, 255, 255, 0.58);
+  --layout-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
 
-  /* splitpanes default-theme 变量 */
+  --sidebar-bg: rgba(255, 255, 255, 0.72);
+  --sidebar-text: #334155;
+  --menu-hover: rgba(64, 158, 255, 0.1);
+  --menu-active-bg: rgba(64, 158, 255, 0.14);
+  --menu-active-text: #409eff;
+
+  --navbar-bg: rgba(255, 255, 255, 0.72);
+  --navbar-text: #334155;
+  --navbar-hover: rgba(64, 158, 255, 0.1);
+
+  --tags-bg: rgba(255, 255, 255, 0.5);
+  --tags-item-bg: rgba(255, 255, 255, 0.72);
+  --tags-item-border: rgba(148, 163, 184, 0.18);
+  --tags-item-text: #475569;
+  --tags-item-hover: rgba(64, 158, 255, 0.1);
+  --tags-close-hover: rgba(15, 23, 42, 0.12);
+
+  /* 表单 / 卡片语义变量 */
+  --input-bg: rgba(255, 255, 255, 0.66);
+  --input-focus-ring: rgba(64, 158, 255, 0.12);
+  --page-card-bg: rgba(255, 255, 255, 0.88);
+  --panel-bg: var(--layout-glass-bg);
+  --avatar-bg: rgba(255, 255, 255, 0.34);
+  --avatar-border: rgba(255, 255, 255, 0.8);
+  --menu-active-text: #409eff;
+
+  /* splitpanes / blockquote / cron 变量 */
+  --splitpanes-bg: var(--app-surface-soft);
+  --splitpanes-border: var(--app-border);
+  --splitpanes-splitter-bg: rgba(255, 255, 255, 0.7);
+  --splitpanes-splitter-hover-bg: var(--menu-hover);
   --splitpanes-default-bg: #ffffff;
+  --blockquote-bg: var(--app-surface-soft);
+  --blockquote-border: var(--el-color-primary);
+  --blockquote-text: var(--app-text);
+  --cron-border: var(--app-border);
+
+  /* Element Plus 亮色变量 */
+  --el-color-primary: #409eff;
+  --el-bg-color: #ffffff;
+  --el-bg-color-page: var(--app-bg);
+  --el-bg-color-overlay: rgba(255, 255, 255, 0.92);
+  --el-fill-color: rgba(248, 250, 252, 0.9);
+  --el-fill-color-light: rgba(241, 245, 249, 0.82);
+  --el-fill-color-lighter: rgba(248, 250, 252, 0.62);
+  --el-fill-color-blank: #ffffff;
+  --el-text-color-primary: #1e293b;
+  --el-text-color-regular: #334155;
+  --el-text-color-secondary: #64748b;
+  --el-text-color-placeholder: #64748b;
+  --el-border-color: rgba(100, 116, 139, 0.42);
+  --el-border-color-light: rgba(100, 116, 139, 0.34);
+  --el-border-color-lighter: rgba(148, 163, 184, 0.22);
+  --el-border-color-extra-light: rgba(148, 163, 184, 0.1);
+  --el-box-shadow-light: 0 10px 24px rgba(15, 23, 42, 0.08);
+  --el-box-shadow-lighter: 0 8px 18px rgba(15, 23, 42, 0.06);
+  --el-mask-color: rgba(15, 23, 42, 0.42);
+  --el-overlay-color-lighter: rgba(15, 23, 42, 0.42);
+  --el-disabled-bg-color: rgba(241, 245, 249, 0.88);
+  --el-disabled-text-color: #94a3b8;
+  --el-disabled-border-color: rgba(148, 163, 184, 0.28);
+  --el-disabled-fill-color: rgba(226, 232, 240, 0.72);
+
+  /* Element Plus 分页 */
+  --el-pagination-button-color: var(--el-text-color-regular);
+  --el-pagination-button-bg-color: var(--app-surface-soft);
+  --el-pagination-button-disabled-color: var(--el-disabled-text-color);
+  --el-pagination-button-disabled-bg-color: var(--el-disabled-bg-color);
+  --el-pagination-hover-color: var(--el-color-primary);
 }
 
 // 暗黑模式变量
 html.dark {
+  color-scheme: dark;
+
   /* 默认通用 */
-  --el-bg-color: #141414;
-  --el-bg-color-overlay: #1d1e1f;
-  --el-text-color-primary: #ffffff;
-  --el-text-color-regular: #d0d0d0;
-  --el-border-color: #434343;
-  --el-border-color-light: #434343;
+  --app-bg: #050816;
+  --app-text: #f8fafc;
+  --app-text-muted: #cbd5e1;
+  --app-surface: rgba(15, 23, 42, 0.82);
+  --app-surface-soft: rgba(15, 23, 42, 0.58);
+  --app-border: rgba(148, 163, 184, 0.16);
+  --app-hover: rgba(96, 165, 250, 0.12);
+
+  --el-bg-color: #0f172a;
+  --el-bg-color-page: #050816;
+  --el-bg-color-overlay: rgba(15, 23, 42, 0.94);
+  --el-fill-color: rgba(30, 41, 59, 0.9);
+  --el-fill-color-light: rgba(30, 41, 59, 0.72);
+  --el-fill-color-lighter: rgba(30, 41, 59, 0.5);
+  --el-fill-color-blank: rgba(15, 23, 42, 0.88);
+  --el-text-color-primary: #f8fafc;
+  --el-text-color-regular: #e2e8f0;
+  --el-text-color-secondary: #cbd5e1;
+  --el-text-color-placeholder: #cbd5e1;
+  --el-border-color: rgba(148, 163, 184, 0.32);
+  --el-border-color-light: rgba(148, 163, 184, 0.24);
+  --el-border-color-lighter: rgba(148, 163, 184, 0.12);
+  --el-border-color-extra-light: rgba(148, 163, 184, 0.08);
+  --el-box-shadow-light: 0 18px 42px rgba(0, 0, 0, 0.32);
+  --el-box-shadow-lighter: 0 12px 28px rgba(0, 0, 0, 0.24);
+  --el-mask-color: rgba(2, 6, 23, 0.68);
+  --el-overlay-color-lighter: rgba(2, 6, 23, 0.68);
+  --el-disabled-bg-color: rgba(30, 41, 59, 0.72);
+  --el-disabled-text-color: #64748b;
+  --el-disabled-border-color: rgba(100, 116, 139, 0.28);
+  --el-disabled-fill-color: rgba(51, 65, 85, 0.62);
+
+  --layout-bg: #050816;
+  --layout-grid: rgba(96, 165, 250, 0.08);
+  --layout-glass-bg: rgba(15, 23, 42, 0.72);
+  --layout-glass-border: rgba(148, 163, 184, 0.12);
+  --layout-shadow: 0 22px 60px rgba(0, 0, 0, 0.35);
 
   /* 侧边栏 */
-  --sidebar-bg: #141414;
-  --sidebar-text: #ffffff;
-  --menu-hover: #2d2d2d;
+  --sidebar-bg: rgba(15, 23, 42, 0.78);
+  --sidebar-text: #cbd5e1;
+  --menu-hover: rgba(96, 165, 250, 0.12);
+  --menu-active-bg: rgba(96, 165, 250, 0.16);
   --menu-active-text: #{$menuActiveText};
 
   /* 顶部导航栏 */
-  --navbar-bg: #141414;
-  --navbar-text: #ffffff;
-  --navbar-hover: #141414;
+  --navbar-bg: rgba(15, 23, 42, 0.72);
+  --navbar-text: #f8fafc;
+  --navbar-hover: rgba(96, 165, 250, 0.12);
 
   /* 标签栏 */
-  --tags-bg: #141414;
-  --tags-item-bg: #1d1e1f;
-  --tags-item-border: #303030;
-  --tags-item-text: #d0d0d0;
-  --tags-item-hover: #2d2d2d;
-  --tags-close-hover: #64666a;
+  --tags-bg: rgba(15, 23, 42, 0.45);
+  --tags-item-bg: rgba(15, 23, 42, 0.7);
+  --tags-item-border: rgba(148, 163, 184, 0.14);
+  --tags-item-text: #cbd5e1;
+  --tags-item-hover: rgba(96, 165, 250, 0.12);
+  --tags-close-hover: rgba(148, 163, 184, 0.2);
+
+  /* 表单 / 卡片语义变量 */
+  --input-bg: rgba(30, 41, 59, 0.82);
+  --input-focus-ring: rgba(96, 165, 250, 0.18);
+  --page-card-bg: rgba(15, 23, 42, 0.88);
+  --panel-bg: var(--layout-glass-bg);
+  --avatar-bg: rgba(15, 23, 42, 0.55);
+  --avatar-border: rgba(148, 163, 184, 0.28);
+  --menu-active-text: #60a5fa;
+
+  /* Element Plus 分页 */
+  --el-pagination-button-color: var(--el-text-color-regular);
+  --el-pagination-button-bg-color: rgba(30, 41, 59, 0.88);
+  --el-pagination-button-disabled-color: var(--el-disabled-text-color);
+  --el-pagination-button-disabled-bg-color: var(--el-disabled-bg-color);
+  --el-pagination-hover-color: var(--el-color-primary);
 
   /* splitpanes 组件暗黑模式变量 */
-  --splitpanes-bg: #141414;
-  --splitpanes-border: #303030;
-  --splitpanes-splitter-bg: #1d1e1f;
-  --splitpanes-splitter-hover-bg: #2d2d2d;
+  --splitpanes-bg: var(--app-surface-soft);
+  --splitpanes-border: var(--app-border);
+  --splitpanes-splitter-bg: rgba(30, 41, 59, 0.88);
+  --splitpanes-splitter-hover-bg: var(--menu-hover);
 
   /* blockquote 暗黑模式变量 */
-  --blockquote-bg: #1d1e1f;
-  --blockquote-border: #303030;
-  --blockquote-text: #d0d0d0;
+  --blockquote-bg: var(--app-surface-soft);
+  --blockquote-border: var(--el-color-primary);
+  --blockquote-text: var(--app-text);
 
   /* Cron 时间表达式 模式变量 */
-  --cron-border: #303030;
+  --cron-border: var(--app-border);
 
   /* splitpanes default-theme 暗黑模式变量 */
-  --splitpanes-default-bg: #141414;
-
-  /* 侧边栏菜单覆盖 */
-  .sidebar-container {
-    .el-menu-item,
-    .menu-title {
-      color: var(--el-text-color-regular);
-    }
-    & .theme-dark .nest-menu .el-sub-menu > .el-sub-menu__title,
-    & .theme-dark .el-sub-menu .el-menu-item {
-      background-color: var(--el-bg-color) !important;
-    }
-  }
+  --splitpanes-default-bg: var(--app-surface);
 
   /* 顶部栏栏菜单覆盖 */
   .el-menu--horizontal {
@@ -181,13 +293,19 @@ html.dark {
     --el-table-header-text-color: var(--el-text-color-regular) !important;
     --el-table-border-color: var(--el-border-color-light) !important;
     --el-table-row-hover-bg-color: var(--el-bg-color-overlay) !important;
+    --el-table-current-row-bg-color: rgba(96, 165, 250, 0.18);
 
     .el-table__header-wrapper,
     .el-table__fixed-header-wrapper {
       th {
-        background-color: var(--el-bg-color-overlay, #f8f8f9) !important;
-        color: var(--el-text-color-regular, #515a6e);
+        background-color: var(--el-bg-color-overlay) !important;
+        color: var(--el-text-color-regular);
       }
+    }
+
+    .el-table__body tr.current-row > td.el-table__cell {
+      background-color: rgba(96, 165, 250, 0.18) !important;
+      color: var(--menu-active-text, #60a5fa);
     }
   }
 
@@ -218,6 +336,6 @@ html.dark {
 
   /* 时间表达式标题样式覆盖 */
   .popup-result .title {
-    background: var(--cron-border);
+    background: var(--app-surface-soft);
   }
 }

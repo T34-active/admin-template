@@ -1,4 +1,7 @@
 import { createApp } from 'vue'
+import setupElementPlusDefaults from './plugins/element'
+
+setupElementPlusDefaults()
 
 import App from './App.vue'
 import store from './store'

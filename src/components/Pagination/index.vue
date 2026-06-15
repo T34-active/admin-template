@@ -94,12 +94,7 @@ function handleCurrentChange(val: number) {
 </script>
 
 <style scoped lang="scss">
-.pagination-container {
-  background: #fff;
-  padding-top: 10px;
-  padding-bottom: 30px;
-  .hidden {
-    display: none;
-  }
+.hidden {
+  display: none;
 }
 </style>

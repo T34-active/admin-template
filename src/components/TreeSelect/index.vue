@@ -29,7 +29,6 @@
 </template>
 
 <script setup lang="ts">
-import { cleanQueryParams } from '@/utils/ruoyi'
 const { proxy } = getCurrentInstance()
 
 const props = defineProps({
@@ -134,11 +133,9 @@ watch(valueId, () => {
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/styles/variables.module.scss';
-
 .el-scrollbar .el-scrollbar__view .el-select-dropdown__item {
   padding: 0;
-  background-color: #fff;
+  background-color: var(--layout-glass-bg);
   height: auto;
 }
 
@@ -156,7 +153,32 @@ ul li .el-tree .el-tree-node__content {
 :deep(.el-tree-node__content:active),
 :deep(.is-current > div:first-child),
 :deep(.el-tree-node__content:focus) {
-  background-color: mix(#fff, $--color-primary, 90%);
-  color: $--color-primary;
+  background-color: var(--menu-hover);
+  color: var(--current-color, var(--el-color-primary));
 }
+
+:deep(.el-select__wrapper) {
+  border-radius: 14px;
+  background: var(--input-bg);
+  box-shadow: 0 0 0 1px var(--el-border-color) inset;
+}
+
+:deep(.el-select__wrapper.is-focused) {
+  box-shadow:
+    0 0 0 1px var(--current-color, var(--el-color-primary)) inset,
+    0 0 0 3px rgba(64, 158, 255, 0.12);
+}
+
+:deep(.el-tree) {
+  color: var(--navbar-text);
+  background: transparent;
+}
+
+:deep(.el-tree-node__content) {
+  border-radius: 10px;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease;
+}
+
 </style>

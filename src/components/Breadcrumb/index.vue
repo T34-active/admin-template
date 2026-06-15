@@ -69,10 +69,27 @@ onMounted(async () => {
   font-size: 14px;
   line-height: 50px;
   margin-left: 8px;
+  padding: 0 12px;
+  border-radius: 999px;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: var(--navbar-hover);
+  }
 
   .no-redirect {
-    color: #97a8be;
+    color: var(--tags-item-text);
     cursor: text;
+  }
+
+  :deep(.el-breadcrumb__inner a),
+  :deep(.el-breadcrumb__inner.is-link) {
+    color: var(--navbar-text);
+    font-weight: 600;
+  }
+
+  :deep(.el-breadcrumb__separator) {
+    color: var(--tags-item-text);
   }
 }
 </style>

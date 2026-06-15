@@ -4,10 +4,9 @@ import router from '@/router'
 import importTable from './importTable.vue'
 import createTable from './createTable.vue'
 import { disabledFutureDate } from '@/utils'
-import { cleanQueryParams } from '@/utils/ruoyi'
 
 const route = useRoute()
-
+const { proxy } = getCurrentInstance()
 const tableList = ref([])
 const loading = ref(true)
 const showSearch = ref(true)

@@ -9,7 +9,9 @@
     :start-placeholder="item.startPlaceholder"
     :end-placeholder="item.endPlaceholder"
     :dict="item.dict"
+    :maxlength="item.maxlength"
     v-model="proxyModel[item.prop]"
+    @change="(val) => handleItemChange(item, val)"
   />
 </template>
 
@@ -39,7 +41,7 @@ import type { Ref } from 'vue'
  * @property {string | number} value - 实际值
  *
  * @usage 示例用法：
- * <QueryForm :model="formModel" :items="queryItems" />
+ * <QueryForm :model="formModel" :items="queryItems" @search="handleQuery" />
  *
  * const formModel = reactive({ keyword: '', gender: '', timeRange: [] });
  * const queryItems = [
@@ -65,7 +67,10 @@ export interface QueryItemConfig {
   startPlaceholder?: string // daterange 的开始占位符
   endPlaceholder?: string // daterange 的结束占位符
   dict?: DictItem[] | Ref<DictItem[]> // 允许传 ref // 下拉列表项，只有 select 类型用到
+  maxlength?: number // 最大输入长度
 }
+
+const AUTO_SEARCH_TYPES = ['select', 'radio', 'daterange', 'datetimerange'] as const
 
 // 接收父组件传入的 model 数据和查询项配置数组
 const props = defineProps<{
@@ -78,5 +83,12 @@ const proxyModel = computed({
   set: (val) => emit('update:model', val),
 })
 // 声明自定义事件，用于向父组件通知更新
-const emit = defineEmits(['update:model', 'change'])
+const emit = defineEmits(['update:model', 'change', 'search'])
+
+function handleItemChange(item: QueryItemConfig, value: unknown) {
+  emit('change', { prop: item.prop, value, type: item.type })
+  if (item.type && AUTO_SEARCH_TYPES.includes(item.type as (typeof AUTO_SEARCH_TYPES)[number])) {
+    emit('search', { prop: item.prop, value, type: item.type })
+  }
+}
 </script>

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import { getToken } from '@/utils/auth'
-import { cleanQueryParams } from '@/utils/ruoyi'
 
 const { proxy } = getCurrentInstance()
 
@@ -123,10 +122,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="border">
+  <div class="editor-wrapper">
     <Toolbar
       :editor="editorRef"
-      style="border-bottom: 1px solid #ccc"
+      class="editor-toolbar"
       :defaultConfig="toolbarConfig"
     />
     <Editor
@@ -139,10 +138,19 @@ onBeforeUnmount(() => {
 </template>
 
 <style src="@wangeditor/editor/dist/css/style.css"></style>
-<style scoped>
-.border {
-  border: 1px solid #ccc;
-  border-radius: 1px;
+<style scoped lang="scss">
+.editor-wrapper {
+  overflow: hidden;
+  border: 1px solid var(--layout-glass-border);
+  border-radius: 18px;
   width: 100%;
+  background: var(--layout-glass-bg);
+  box-shadow: var(--layout-shadow);
+  backdrop-filter: blur(16px);
+}
+
+.editor-toolbar {
+  border-bottom: 1px solid var(--layout-glass-border);
+  background: var(--panel-bg);
 }
 </style>
