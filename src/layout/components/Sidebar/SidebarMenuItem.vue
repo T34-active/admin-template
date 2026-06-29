@@ -49,6 +49,13 @@ const emit = defineEmits<{
 }>()
 
 const popoverVisible = ref(false)
+const closeSidebarPopover = inject<(() => void) | null>('closeSidebarPopover', null)
+
+provide('closeSidebarPopover', () => {
+  popoverVisible.value = false
+  closeSidebarPopover?.()
+})
+
 const resolved = computed(() => resolveSidebarItem(props.item, props.basePath))
 
 const showLabel = computed(() => !props.collapsed || props.inPopover)
@@ -62,6 +69,10 @@ const isBranchActive = computed(() => {
   }
   return hasActiveDescendant(resolved.value.children, props.activeMenu, props.basePath)
 })
+
+function handleLinkClick() {
+  closeSidebarPopover?.()
+}
 
 function handleToggle() {
   if (!resolved.value || resolved.value.type !== 'branch') {
@@ -95,7 +106,7 @@ function handleToggle() {
           :to="resolved.to"
           class="nts-sidebar-menu__link"
           :class="{ 'is-active': isLeafActive }"
-          @click="popoverVisible = false"
+          @click="handleLinkClick"
         >
           <span class="nts-sidebar-menu__icon" aria-hidden="true">
             <svg-icon v-if="resolved.icon" :icon-class="resolved.icon" />
@@ -124,7 +135,7 @@ function handleToggle() {
         v-model:visible="popoverVisible"
         placement="right-start"
         :width="220"
-        trigger="click"
+        trigger="manual"
         popper-class="nts-sidebar-menu__popover"
         :show-arrow="false"
         :offset="8"
