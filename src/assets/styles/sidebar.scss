@@ -16,14 +16,6 @@
   }
 
   .sidebar-container {
-    --nts-menu-item-height: 40px;
-    --nts-menu-icon-size: 18px;
-    --nts-menu-gap: 12px;
-    --nts-menu-padding-x: 12px;
-    --nts-menu-indent: 16px;
-    --nts-menu-radius: 12px;
-    --nts-menu-text: var(--sidebar-text);
-
     transition: width 0.28s;
     width: vars.$base-sidebar-width !important;
     height: calc(100% - 32px);
@@ -38,7 +30,7 @@
     background: var(--sidebar-bg);
     box-shadow: var(--layout-shadow);
     backdrop-filter: blur(20px);
-    color: var(--nts-menu-text);
+    color: var(--sidebar-text, var(--app-text));
     font-size: var(--el-font-size-base);
 
     .scrollbar-wrapper {
@@ -103,9 +95,19 @@
 }
 
 .nts-sidebar-menu {
+  --nts-menu-item-height: 40px;
+  --nts-menu-icon-size: 18px;
+  --nts-menu-gap: 12px;
+  --nts-menu-padding-x: 12px;
+  --nts-menu-indent: 16px;
+  --nts-menu-radius: 12px;
+  --nts-menu-text: var(--sidebar-text, var(--app-text));
+
   list-style: none;
   margin: 0;
   padding: 8px;
+  color: var(--nts-menu-text);
+  font-size: var(--el-font-size-base);
 }
 
 .nts-sidebar-menu__item {
@@ -117,17 +119,17 @@
   display: flex;
   align-items: center;
   width: 100%;
-  min-height: var(--nts-menu-item-height);
-  padding: 0 var(--nts-menu-padding-x);
+  min-height: var(--nts-menu-item-height, 40px);
+  padding: 0 var(--nts-menu-padding-x, 12px);
   padding-left: calc(
-    var(--nts-menu-padding-x) + (var(--nts-menu-level, 1) - 1) * var(--nts-menu-indent)
+    var(--nts-menu-padding-x, 12px) + (var(--nts-menu-level, 1) - 1) * var(--nts-menu-indent, 16px)
   );
   border: 0;
-  border-radius: var(--nts-menu-radius);
+  border-radius: var(--nts-menu-radius, 12px);
   background: transparent;
   color: inherit;
   cursor: pointer;
-  gap: var(--nts-menu-gap);
+  gap: var(--nts-menu-gap, 12px);
   text-decoration: none;
   transition:
     background-color 0.2s ease,
@@ -164,16 +166,18 @@
 }
 
 .nts-sidebar-menu__icon {
-  flex: 0 0 var(--nts-menu-icon-size);
-  width: var(--nts-menu-icon-size);
-  height: var(--nts-menu-icon-size);
+  flex: 0 0 var(--nts-menu-icon-size, 18px);
+  width: var(--nts-menu-icon-size, 18px);
+  height: var(--nts-menu-icon-size, 18px);
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
   .svg-icon {
-    width: var(--nts-menu-icon-size);
-    height: var(--nts-menu-icon-size);
+    width: var(--nts-menu-icon-size, 18px) !important;
+    height: var(--nts-menu-icon-size, 18px) !important;
+    max-width: none;
+    flex-shrink: 0;
   }
 }
 
@@ -233,13 +237,30 @@
 
 .nts-sidebar-menu--popover {
   padding: 0;
+  min-width: 180px;
 }
 
 .nts-sidebar-menu__popover.el-popover.el-popper {
+  --nts-menu-item-height: 40px;
+  --nts-menu-icon-size: 18px;
+  --nts-menu-gap: 12px;
+  --nts-menu-padding-x: 12px;
+  --nts-menu-indent: 16px;
+  --nts-menu-radius: 12px;
+  --nts-menu-text: var(--sidebar-text, var(--app-text));
+
   padding: 8px !important;
   border: 1px solid var(--layout-glass-border);
   border-radius: 18px;
   background: var(--layout-glass-bg) !important;
   box-shadow: var(--layout-shadow);
   backdrop-filter: blur(18px);
+  overflow: hidden;
+  color: var(--nts-menu-text);
+  font-size: var(--el-font-size-base);
+
+  .nts-sidebar-menu__link,
+  .nts-sidebar-menu__trigger {
+    box-sizing: border-box;
+  }
 }
