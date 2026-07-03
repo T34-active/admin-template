@@ -21,8 +21,8 @@ $menuLightText: #303133;
 $menuLightActiveText: #409eff;
 
 // 基础变量
-$base-sidebar-width: 240px;
-$sideBarWidth: 240px;
+$base-sidebar-width: 280px;
+$sideBarWidth: 280px;
 
 // 菜单暗色变量
 $base-menu-color: #bfcbd9;
@@ -219,7 +219,7 @@ html.dark {
   --tags-close-hover: rgba(148, 163, 184, 0.2);
 
   /* 表单 / 卡片语义变量 */
-  --input-bg: rgba(30, 41, 59, 0.82);
+  --input-bg: rgba(30, 41, 59, 0.92);
   --input-focus-ring: rgba(96, 165, 250, 0.18);
   --page-card-bg: rgba(15, 23, 42, 0.88);
   --panel-bg: var(--layout-glass-bg);
@@ -297,8 +297,14 @@ html.dark {
 
     .el-table__header-wrapper,
     .el-table__fixed-header-wrapper {
-      th {
+      th:not(.el-table-fixed-column--left):not(.el-table-fixed-column--right) {
         background-color: var(--el-bg-color-overlay) !important;
+        color: var(--el-text-color-regular);
+      }
+
+      th.el-table-fixed-column--left,
+      th.el-table-fixed-column--right {
+        background-color: var(--el-bg-color) !important;
         color: var(--el-text-color-regular);
       }
     }

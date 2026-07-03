@@ -263,5 +263,4 @@ function listToString(list: any, separator?: any) {
 :deep(.avatar-uploader-icon) {
   color: var(--current-color, var(--el-color-primary));
 }
-
 </style>

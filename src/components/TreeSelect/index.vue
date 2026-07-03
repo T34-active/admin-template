@@ -166,7 +166,7 @@ ul li .el-tree .el-tree-node__content {
 :deep(.el-select__wrapper.is-focused) {
   box-shadow:
     0 0 0 1px var(--current-color, var(--el-color-primary)) inset,
-    0 0 0 3px rgba(64, 158, 255, 0.12);
+    0 0 0 3px var(--input-focus-ring);
 }
 
 :deep(.el-tree) {
@@ -180,5 +180,4 @@ ul li .el-tree .el-tree-node__content {
     color 0.2s ease,
     background 0.2s ease;
 }
-
 </style>

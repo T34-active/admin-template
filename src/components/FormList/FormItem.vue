@@ -202,6 +202,7 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 :deep(.el-input__wrapper),
+:deep(.el-textarea__inner),
 :deep(.el-select-v2__wrapper),
 :deep(.el-select__wrapper),
 :deep(.el-cascader .el-input__wrapper),
@@ -215,6 +216,7 @@ onMounted(async () => {
 }
 
 :deep(.el-input__wrapper.is-focus),
+:deep(.el-textarea__inner:focus),
 :deep(.el-select-v2__wrapper.is-focused),
 :deep(.el-select__wrapper.is-focused),
 :deep(.el-cascader .el-input__wrapper.is-focus),
@@ -225,6 +227,7 @@ onMounted(async () => {
 }
 
 :deep(.is-disabled .el-input__wrapper),
+:deep(.is-disabled .el-textarea__inner),
 :deep(.is-disabled .el-select__wrapper),
 :deep(.is-disabled .el-select-v2__wrapper),
 :deep(.is-disabled .el-cascader .el-input__wrapper),
