@@ -164,5 +164,4 @@ defineExpose({
 :deep(.el-upload__tip) {
   color: var(--tags-item-text);
 }
-
 </style>

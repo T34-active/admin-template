@@ -66,7 +66,7 @@ defineExpose({
 :deep(.el-input__wrapper.is-focus) {
   box-shadow:
     0 0 0 1px var(--current-color, var(--el-color-primary)) inset,
-    0 0 0 3px rgba(64, 158, 255, 0.12);
+    0 0 0 3px var(--input-focus-ring);
 }
 
 .icon-select-list {
@@ -92,5 +92,4 @@ defineExpose({
     transform: translateY(-1px);
   }
 }
-
 </style>

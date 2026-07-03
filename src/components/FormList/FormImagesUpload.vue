@@ -234,6 +234,7 @@ function handleExceed() {
 }
 
 :deep(.el-upload-list__item) {
+  background: var(--input-bg);
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
 }
 
@@ -254,5 +255,4 @@ function handleExceed() {
 :deep(.el-icon) {
   color: var(--current-color, var(--el-color-primary));
 }
-
 </style>
