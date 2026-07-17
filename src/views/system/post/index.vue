@@ -4,6 +4,7 @@ import { createRules } from '@/utils'
 import type { FormInstance, FormRules } from 'element-plus'
 import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
 import { cleanQueryParams } from '@/utils/ruoyi'
+import ColBox from '@/components/ColBox/index.vue'
 
 const { proxy } = getCurrentInstance()
 
@@ -282,33 +283,47 @@ onMounted(async () => {
     </BottomFixed>
 
     <!-- 添加或修改岗位对话框 -->
-    <el-dialog
+    <el-drawer
       v-model="open"
       :title="title"
-      width="60%"
+      size="520px"
       append-to-body
       :close-on-click-modal="false"
+      direction="rtl"
+      resizable
     >
       <el-form ref="postRef" :model="form" :rules="rules" label-width="auto">
-        <el-form-item label="岗位名称" prop="postName">
-          <el-input v-model="form.postName" placeholder="请输入岗位名称" clearable />
-        </el-form-item>
-        <el-form-item label="岗位编码" prop="postCode">
-          <el-input v-model="form.postCode" placeholder="请输入编码名称" clearable />
-        </el-form-item>
-        <el-form-item label="岗位顺序" prop="postSort">
-          <el-input-number v-model="form.postSort" controls-position="right" :min="0" />
-        </el-form-item>
-        <el-form-item label="岗位状态" prop="status">
-          <el-radio-group v-model="form.status">
-            <el-radio v-for="dict in sys_normal_disable" :key="dict.value" :value="dict.value">
-              {{ dict.label }}
-            </el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入备注" />
-        </el-form-item>
+        <el-row :gutter="10">
+          <ColBox half>
+            <el-form-item label="岗位名称" prop="postName">
+              <el-input v-model="form.postName" placeholder="请输入岗位名称" clearable />
+            </el-form-item>
+          </ColBox>
+          <ColBox half>
+            <el-form-item label="岗位编码" prop="postCode">
+              <el-input v-model="form.postCode" placeholder="请输入编码名称" clearable />
+            </el-form-item>
+          </ColBox>
+          <ColBox half>
+            <el-form-item label="岗位顺序" prop="postSort">
+              <el-input-number v-model="form.postSort" controls-position="right" :min="0" />
+            </el-form-item>
+          </ColBox>
+          <ColBox half>
+            <el-form-item label="岗位状态" prop="status">
+              <el-radio-group v-model="form.status">
+                <el-radio v-for="dict in sys_normal_disable" :key="dict.value" :value="dict.value">
+                  {{ dict.label }}
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </ColBox>
+          <ColBox full>
+            <el-form-item label="备注" prop="remark">
+              <el-input v-model="form.remark" type="textarea" placeholder="请输入备注" />
+            </el-form-item>
+          </ColBox>
+        </el-row>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
@@ -316,6 +331,6 @@ onMounted(async () => {
           <el-button @click="cancel">取 消</el-button>
         </div>
       </template>
-    </el-dialog>
+    </el-drawer>
   </div>
 </template>

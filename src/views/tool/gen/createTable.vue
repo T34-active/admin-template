@@ -1,13 +1,15 @@
 <template>
   <!-- 创建表 -->
-  <el-dialog
+  <el-drawer
     title="创建表"
     v-model="visible"
-    width="800px"
-    top="5vh"
+    size="560px"
+
     append-to-body
     :close-on-click-modal="false"
-  >
+    direction="rtl"
+    resizable
+    >
     <span>创建表语句(支持多个建表语句)：</span>
     <el-input type="textarea" :rows="10" placeholder="请输入文本" v-model="content" />
     <template #footer>
@@ -16,7 +18,7 @@
         <el-button plain @click="visible = false">取 消</el-button>
       </div>
     </template>
-  </el-dialog>
+  </el-drawer>
 </template>
 
 <script setup lang="ts">

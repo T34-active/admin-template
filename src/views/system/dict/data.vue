@@ -10,6 +10,7 @@ import { createRules } from '@/utils'
 import { listClassOptions } from '@/utils/column'
 import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
 import { cleanQueryParams } from '@/utils/ruoyi'
+import ColBox from '@/components/ColBox/index.vue'
 
 const { proxy } = getCurrentInstance()
 const { sys_normal_disable } = proxy.useDict('sys_normal_disable')
@@ -338,16 +339,16 @@ onMounted(async () => {
     <el-drawer
       :title="title"
       v-model="open"
-      size="80%"
+      size="520px"
       append-to-body
       :close-on-click-modal="false"
-      direction="btt"
+      direction="rtl"
       resizable
     >
       <el-form ref="dataRef" :model="form" :rules="rules" label-width="auto">
         <el-row :gutter="10">
           <!-- 数据标签 -->
-          <el-col :span="12" :xs="24">
+          <ColBox half>
             <el-form-item prop="dictLabel">
               <template #label>
                 <span>
@@ -362,10 +363,10 @@ onMounted(async () => {
               </template>
               <el-input v-model="form.dictLabel" placeholder="请输入数据标签" clearable />
             </el-form-item>
-          </el-col>
+          </ColBox>
 
           <!-- 数据键值 -->
-          <el-col :span="12" :xs="24">
+          <ColBox half>
             <el-form-item prop="dictValue">
               <template #label>
                 <span>
@@ -380,10 +381,10 @@ onMounted(async () => {
               </template>
               <el-input v-model="form.dictValue" placeholder="请输入数据键值" clearable />
             </el-form-item>
-          </el-col>
+          </ColBox>
 
           <!-- 样式属性 -->
-          <el-col :span="12" :xs="24">
+          <ColBox half>
             <el-form-item prop="cssClass">
               <template #label>
                 <span>
@@ -398,10 +399,10 @@ onMounted(async () => {
               </template>
               <el-input v-model="form.cssClass" placeholder="请输入样式属性" clearable />
             </el-form-item>
-          </el-col>
+          </ColBox>
 
           <!-- 显示排序 -->
-          <el-col :span="12" :xs="24">
+          <ColBox half>
             <el-form-item prop="dictSort">
               <template #label>
                 <span>
@@ -413,10 +414,10 @@ onMounted(async () => {
               </template>
               <el-input-number v-model="form.dictSort" controls-position="right" :min="0" />
             </el-form-item>
-          </el-col>
+          </ColBox>
 
           <!-- 回显样式 -->
-          <el-col :span="12" :xs="24">
+          <ColBox half>
             <el-form-item prop="listClass">
               <template #label>
                 <span>
@@ -438,8 +439,8 @@ onMounted(async () => {
                 />
               </el-select>
             </el-form-item>
-          </el-col>
-          <el-col :span="12" :xs="24">
+          </ColBox>
+          <ColBox half>
             <!-- 状态 -->
             <el-form-item prop="status">
               <template #label>
@@ -459,12 +460,12 @@ onMounted(async () => {
                 </el-radio>
               </el-radio-group>
             </el-form-item>
-          </el-col>
-          <el-col :span="24" :xs="24">
+          </ColBox>
+          <ColBox full>
             <el-form-item label="备注" prop="remark">
               <el-input v-model="form.remark" type="textarea" placeholder="请输入备注" />
             </el-form-item>
-          </el-col>
+          </ColBox>
         </el-row>
       </el-form>
       <template #footer>

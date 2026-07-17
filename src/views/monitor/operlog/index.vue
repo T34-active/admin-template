@@ -291,13 +291,15 @@ onMounted(async () => {
     </BottomFixed>
 
     <!-- 操作日志详细 -->
-    <el-dialog
+    <el-drawer
       v-if="open"
       v-model="open"
       title="操作日志详细"
-      width="1200px"
+      size="720px"
       append-to-body
       :close-on-click-modal="false"
+      direction="rtl"
+      resizable
     >
       <el-descriptions border direction="vertical">
         <el-descriptions-item label="操作模块">
@@ -356,6 +358,6 @@ onMounted(async () => {
           <el-button @click="open = false">关 闭</el-button>
         </div>
       </template>
-    </el-dialog>
+    </el-drawer>
   </div>
 </template>

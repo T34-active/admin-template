@@ -15,6 +15,7 @@ import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
 
 import { h } from 'vue'
 import { cleanQueryParams } from '@/utils/ruoyi'
+import ColBox from '@/components/ColBox/index.vue'
 
 const { proxy } = getCurrentInstance()
 
@@ -388,15 +389,15 @@ onMounted(async () => {
     <el-drawer
       :title="title"
       v-model="open"
-      size="80%"
+      size="520px"
       append-to-body
       :close-on-click-modal="false"
-      direction="btt"
+      direction="rtl"
       resizable
     >
       <el-form ref="dictRef" :model="form" :rules="rules" label-width="auto">
         <el-row :gutter="10">
-          <el-col :span="12" :xs="24">
+          <ColBox half>
             <el-form-item prop="dictName">
               <template #label>
                 <span>
@@ -411,8 +412,8 @@ onMounted(async () => {
               </template>
               <el-input v-model="form.dictName" placeholder="请输入字典名称" />
             </el-form-item>
-          </el-col>
-          <el-col :span="12" :xs="24">
+          </ColBox>
+          <ColBox half>
             <el-form-item prop="dictType">
               <template #label>
                 <span>
@@ -427,8 +428,8 @@ onMounted(async () => {
               </template>
               <el-input v-model="form.dictType" placeholder="请输入字典类型" />
             </el-form-item>
-          </el-col>
-          <el-col :span="12" :xs="24">
+          </ColBox>
+          <ColBox half>
             <el-form-item prop="status">
               <template #label>
                 <span>
@@ -447,8 +448,8 @@ onMounted(async () => {
                 </el-radio>
               </el-radio-group>
             </el-form-item>
-          </el-col>
-          <el-col :span="24" :xs="24">
+          </ColBox>
+          <ColBox full>
             <el-form-item prop="remark">
               <template #label>
                 <span>
@@ -460,7 +461,7 @@ onMounted(async () => {
               </template>
               <el-input v-model="form.remark" type="textarea" placeholder="请输入备注" />
             </el-form-item>
-          </el-col>
+          </ColBox>
         </el-row>
       </el-form>
       <template #footer>

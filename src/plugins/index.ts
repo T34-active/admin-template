@@ -3,8 +3,10 @@ import auth from './auth'
 import cache from './cache'
 import modal from './modal'
 import download from './download'
+import setupElementPlusDefaults from './element'
 
 export default function installPlugins(app: any) {
+  setupElementPlusDefaults()
   // 页签操作
   app.config.globalProperties.$tab = tab
   // 认证对象

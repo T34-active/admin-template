@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { authUserSelectAll, unallocatedUserList } from '@/api/system/role'
 import { cleanQueryParams } from '@/utils/ruoyi'
+import ColBox from '@/components/ColBox/index.vue'
 
 const props = defineProps({
   roleId: {
@@ -78,16 +79,18 @@ defineExpose({
 </script>
 <template>
   <!-- 授权用户 -->
-  <el-dialog
+  <el-drawer
     v-model="visible"
     title="选择用户"
-    width="800px"
+    size="560px"
     append-to-body
     :close-on-click-modal="false"
+    direction="rtl"
+    resizable
   >
     <el-form ref="queryRef" :model="queryParams" label-width="auto">
       <el-row :gutter="10">
-        <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
+        <ColBox half>
           <el-form-item label="用户名称" prop="userName">
             <el-input
               v-model="queryParams.userName"
@@ -96,8 +99,8 @@ defineExpose({
               @keyup.enter="handleQuery"
             />
           </el-form-item>
-        </el-col>
-        <el-col :xs="24" :sm="12" :md="12" :lg="12" :xl="12">
+        </ColBox>
+        <ColBox half>
           <el-form-item label="手机号码" prop="phonenumber">
             <el-input
               v-model="queryParams.phonenumber"
@@ -106,7 +109,7 @@ defineExpose({
               @keyup.enter="handleQuery"
             />
           </el-form-item>
-        </el-col>
+        </ColBox>
       </el-row>
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -147,5 +150,5 @@ defineExpose({
         <el-button @click="visible = false">取 消</el-button>
       </div>
     </template>
-  </el-dialog>
+  </el-drawer>
 </template>

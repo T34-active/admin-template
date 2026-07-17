@@ -97,40 +97,42 @@
     </BottomFixed>
 
     <!-- 调度日志详细 -->
-    <el-dialog
+    <el-drawer
       v-model="open"
       title="调度日志详细"
-      width="700px"
+      size="700px"
       append-to-body
       :close-on-click-modal="false"
+      direction="rtl"
+      resizable
     >
       <el-form :model="form" label-width="auto">
         <el-row>
-          <el-col :span="12">
+          <ColBox half>
             <el-form-item label="日志序号">{{ form.jobLogId }}</el-form-item>
             <el-form-item label="任务名称">{{ form.jobName }}</el-form-item>
-          </el-col>
-          <el-col :span="12">
+          </ColBox>
+          <ColBox half>
             <el-form-item label="任务分组">{{ form.jobGroup }}</el-form-item>
             <el-form-item label="执行时间">{{ form.createTime }}</el-form-item>
-          </el-col>
-          <el-col :span="24">
+          </ColBox>
+          <ColBox full>
             <el-form-item label="调用方法">{{ form.invokeTarget }}</el-form-item>
-          </el-col>
-          <el-col :span="24">
+          </ColBox>
+          <ColBox full>
             <el-form-item label="日志信息">{{ form.jobMessage }}</el-form-item>
-          </el-col>
-          <el-col :span="24">
+          </ColBox>
+          <ColBox full>
             <el-form-item label="执行状态">
               <div v-if="form.status === 0">正常</div>
               <div v-else-if="form.status === 1">失败</div>
             </el-form-item>
-          </el-col>
-          <el-col :span="24">
+          </ColBox>
+          <ColBox full>
             <el-form-item v-if="form.status === 1" label="异常信息">
               {{ form.exceptionInfo }}
             </el-form-item>
-          </el-col>
+          </ColBox>
         </el-row>
       </el-form>
       <template #footer>
@@ -138,7 +140,7 @@
           <el-button @click="open = false">关 闭</el-button>
         </div>
       </template>
-    </el-dialog>
+    </el-drawer>
   </div>
 </template>
 
@@ -149,6 +151,7 @@ import { oneOf } from '@zeronejs/utils'
 
 import { useRoute } from 'vue-router'
 import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
+import ColBox from '@/components/ColBox/index.vue'
 
 const { proxy } = getCurrentInstance()
 const { sys_common_status, sys_job_group } = proxy.useDict('sys_common_status', 'sys_job_group')
