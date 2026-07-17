@@ -82,8 +82,8 @@ const files = computed<PreviewFile[]>(() =>
   }),
 )
 
-const activeFile = computed(() =>
-  files.value.find((file) => file.name === preview.value.activeName) ?? files.value[0],
+const activeFile = computed(
+  () => files.value.find((file) => file.name === preview.value.activeName) ?? files.value[0],
 )
 
 function copyTextSuccess() {
@@ -142,7 +142,9 @@ onMounted(async () => {
             </h1>
           </div>
         </div>
-        <div class="flex w-full shrink-0 items-center justify-between gap-12 md:w-auto md:justify-start">
+        <div
+          class="flex w-full shrink-0 items-center justify-between gap-12 md:w-auto md:justify-start"
+        >
           <el-tag effect="plain" round>{{ files.length }} 个文件</el-tag>
           <el-button
             v-if="activeFile"

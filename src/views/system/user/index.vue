@@ -15,6 +15,7 @@ import { type ElTree, type FormInstance, type FormRules } from 'element-plus'
 import { createRules } from '@/utils'
 import { createPhoneRules } from '@/utils/validate'
 import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
+import ColBox from '@/components/ColBox/index.vue'
 
 const router = useRouter()
 const { proxy } = getCurrentInstance()
@@ -518,16 +519,18 @@ onMounted(async () => {
       </el-col>
     </el-row>
     <!-- 添加或修改用户配置对话框 -->
-    <el-dialog
+    <el-drawer
       v-model="open"
       :title="title"
-      width="650px"
+      size="650px"
       append-to-body
       :close-on-click-modal="false"
+      direction="rtl"
+      resizable
     >
       <el-form ref="userRef" :model="form" :rules="rules" label-width="auto">
         <el-row :gutter="10">
-          <el-col :span="24">
+          <ColBox full>
             <el-form-item label="归属部门" prop="deptId">
               <el-tree-select
                 v-model="form.deptId"
@@ -539,14 +542,14 @@ onMounted(async () => {
                 clearable
               />
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
+          </ColBox>
+          <ColBox half>
             <el-form-item label="用户昵称" prop="nickName">
               <el-input v-model="form.nickName" placeholder="请输入用户昵称" maxlength="30" />
             </el-form-item>
-          </el-col>
+          </ColBox>
 
-          <el-col :span="12">
+          <ColBox half>
             <el-form-item label="手机号码" prop="phonenumber">
               <el-input
                 v-model="form.phonenumber"
@@ -555,19 +558,19 @@ onMounted(async () => {
                 clearable
               />
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
+          </ColBox>
+          <ColBox half>
             <el-form-item label="邮箱" prop="email">
               <el-input v-model="form.email" placeholder="请输入邮箱" maxlength="50" clearable />
             </el-form-item>
-          </el-col>
+          </ColBox>
           <template v-if="form.userId === undefined">
-            <el-col :span="12">
+            <ColBox half>
               <el-form-item label="用户名称" prop="userName">
                 <el-input v-model="form.userName" placeholder="请输入用户名称" maxlength="30" />
               </el-form-item>
-            </el-col>
-            <el-col :span="12">
+            </ColBox>
+            <ColBox half>
               <el-form-item label="用户密码" prop="password">
                 <el-input
                   v-model="form.password"
@@ -577,9 +580,9 @@ onMounted(async () => {
                   show-password
                 />
               </el-form-item>
-            </el-col>
+            </ColBox>
           </template>
-          <el-col :span="12">
+          <ColBox half>
             <el-form-item label="用户性别">
               <el-select v-model="form.sex" placeholder="请选择">
                 <el-option
@@ -590,8 +593,8 @@ onMounted(async () => {
                 />
               </el-select>
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
+          </ColBox>
+          <ColBox half>
             <el-form-item label="状态">
               <el-radio-group v-model="form.status">
                 <el-radio v-for="dict in sys_normal_disable" :key="dict.value" :value="dict.value">
@@ -599,8 +602,8 @@ onMounted(async () => {
                 </el-radio>
               </el-radio-group>
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
+          </ColBox>
+          <ColBox half>
             <el-form-item label="岗位">
               <el-select v-model="form.postIds" multiple placeholder="请选择岗位">
                 <el-option
@@ -612,8 +615,8 @@ onMounted(async () => {
                 />
               </el-select>
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
+          </ColBox>
+          <ColBox half>
             <el-form-item label="角色">
               <el-select v-model="form.roleIds" multiple placeholder="请选择角色">
                 <el-option
@@ -625,12 +628,12 @@ onMounted(async () => {
                 />
               </el-select>
             </el-form-item>
-          </el-col>
-          <el-col :span="24">
+          </ColBox>
+          <ColBox full>
             <el-form-item label="备注">
               <el-input v-model="form.remark" type="textarea" placeholder="请输入备注" />
             </el-form-item>
-          </el-col>
+          </ColBox>
         </el-row>
       </el-form>
       <template #footer>
@@ -639,14 +642,16 @@ onMounted(async () => {
           <el-button @click="cancel">取 消</el-button>
         </div>
       </template>
-    </el-dialog>
+    </el-drawer>
     <!-- 用户导入对话框 -->
-    <el-dialog
+    <el-drawer
       v-model="upload.open"
       :title="upload.title"
-      width="400px"
+      size="400px"
       append-to-body
       :close-on-click-modal="false"
+      direction="rtl"
+      resizable
     >
       <el-upload
         ref="uploadRef"
@@ -691,6 +696,6 @@ onMounted(async () => {
           <el-button @click="upload.open = false">取 消</el-button>
         </div>
       </template>
-    </el-dialog>
+    </el-drawer>
   </div>
 </template>

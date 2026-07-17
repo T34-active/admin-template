@@ -11,6 +11,7 @@ import type { FormInstance, FormRules } from 'element-plus'
 import { createRules } from '@/utils'
 import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
 import { cleanQueryParams } from '@/utils/ruoyi'
+import ColBox from '@/components/ColBox/index.vue'
 
 const { proxy } = getCurrentInstance()
 
@@ -253,16 +254,18 @@ onMounted(async () => {
     </el-table>
 
     <!-- 添加或修改部门对话框 -->
-    <el-dialog
+    <el-drawer
       v-model="open"
       :title="title"
-      width="600px"
+      size="600px"
       append-to-body
       :close-on-click-modal="false"
+      direction="rtl"
+      resizable
     >
       <el-form ref="deptRef" :model="form" :rules="rules" label-width="auto">
         <el-row>
-          <el-col v-if="form.parentId !== 0" :span="24">
+          <ColBox full>
             <el-form-item label="上级部门" prop="parentId">
               <el-tree-select
                 v-model="form.parentId"
@@ -273,33 +276,33 @@ onMounted(async () => {
                 check-strictly
               />
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
+          </ColBox>
+          <ColBox half>
             <el-form-item label="部门名称" prop="deptName">
               <el-input v-model="form.deptName" placeholder="请输入部门名称" />
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
+          </ColBox>
+          <ColBox half>
             <el-form-item label="显示排序" prop="orderNum">
               <el-input-number v-model="form.orderNum" controls-position="right" :min="0" />
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
+          </ColBox>
+          <ColBox half>
             <el-form-item label="负责人" prop="leader">
               <el-input v-model="form.leader" placeholder="请输入负责人" maxlength="20" />
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
+          </ColBox>
+          <ColBox half>
             <el-form-item label="联系电话" prop="phone">
               <el-input v-model="form.phone" placeholder="请输入联系电话" maxlength="11" />
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
+          </ColBox>
+          <ColBox half>
             <el-form-item label="邮箱" prop="email">
               <el-input v-model="form.email" placeholder="请输入邮箱" maxlength="50" />
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
+          </ColBox>
+          <ColBox half>
             <el-form-item label="部门状态">
               <el-radio-group v-model="form.status">
                 <el-radio v-for="dict in sys_normal_disable" :key="dict.value" :value="dict.value">
@@ -307,7 +310,7 @@ onMounted(async () => {
                 </el-radio>
               </el-radio-group>
             </el-form-item>
-          </el-col>
+          </ColBox>
         </el-row>
       </el-form>
       <template #footer>
@@ -316,6 +319,6 @@ onMounted(async () => {
           <el-button @click="cancel">取 消</el-button>
         </div>
       </template>
-    </el-dialog>
+    </el-drawer>
   </div>
 </template>

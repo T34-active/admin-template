@@ -11,6 +11,7 @@ import { createRules } from '@/utils'
 import type { FormInstance, FormRules } from 'element-plus'
 import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
 import { cleanQueryParams } from '@/utils/ruoyi'
+import ColBox from '@/components/ColBox/index.vue'
 
 const { proxy } = getCurrentInstance()
 const { sys_yes_no } = proxy.useDict('sys_yes_no')
@@ -330,33 +331,47 @@ onMounted(async () => {
     </BottomFixed>
 
     <!-- 添加或修改参数配置对话框 -->
-    <el-dialog
+    <el-drawer
       v-model="open"
       :title="title"
-      width="60%"
+      size="520px"
       append-to-body
       :close-on-click-modal="false"
+      direction="rtl"
+      resizable
     >
       <el-form ref="configRef" :model="form" :rules="rules" label-width="auto">
-        <el-form-item label="参数名称" prop="configName">
-          <el-input v-model="form.configName" placeholder="请输入参数名称" clearable />
-        </el-form-item>
-        <el-form-item label="参数键名" prop="configKey">
-          <el-input v-model="form.configKey" placeholder="请输入参数键名" clearable />
-        </el-form-item>
-        <el-form-item label="参数键值" prop="configValue">
-          <el-input v-model="form.configValue" placeholder="请输入参数键值" clearable />
-        </el-form-item>
-        <el-form-item label="系统内置" prop="configType">
-          <el-radio-group v-model="form.configType">
-            <el-radio v-for="dict in sys_yes_no" :key="dict.value" :value="dict.value">
-              {{ dict.label }}
-            </el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入备注" :rows="2" />
-        </el-form-item>
+        <el-row :gutter="10">
+          <ColBox half>
+            <el-form-item label="参数名称" prop="configName">
+              <el-input v-model="form.configName" placeholder="请输入参数名称" clearable />
+            </el-form-item>
+          </ColBox>
+          <ColBox half>
+            <el-form-item label="参数键名" prop="configKey">
+              <el-input v-model="form.configKey" placeholder="请输入参数键名" clearable />
+            </el-form-item>
+          </ColBox>
+          <ColBox half>
+            <el-form-item label="参数键值" prop="configValue">
+              <el-input v-model="form.configValue" placeholder="请输入参数键值" clearable />
+            </el-form-item>
+          </ColBox>
+          <ColBox half>
+            <el-form-item label="系统内置" prop="configType">
+              <el-radio-group v-model="form.configType">
+                <el-radio v-for="dict in sys_yes_no" :key="dict.value" :value="dict.value">
+                  {{ dict.label }}
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </ColBox>
+          <ColBox full>
+            <el-form-item label="备注" prop="remark">
+              <el-input v-model="form.remark" type="textarea" placeholder="请输入备注" :rows="2" />
+            </el-form-item>
+          </ColBox>
+        </el-row>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
@@ -364,6 +379,6 @@ onMounted(async () => {
           <el-button @click="cancel">取 消</el-button>
         </div>
       </template>
-    </el-dialog>
+    </el-drawer>
   </div>
 </template>

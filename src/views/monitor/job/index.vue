@@ -175,21 +175,23 @@
     </BottomFixed>
 
     <!-- 添加或修改定时任务对话框 -->
-    <el-dialog
+    <el-drawer
       v-model="open"
       :title="title"
-      width="800px"
+      size="560px"
       append-to-body
       :close-on-click-modal="false"
+      direction="rtl"
+      resizable
     >
       <el-form ref="jobRef" :model="form" :rules="rules" label-width="auto">
         <el-row>
-          <el-col :span="12">
+          <ColBox half>
             <el-form-item label="任务名称" prop="jobName">
               <el-input v-model="form.jobName" placeholder="请输入任务名称" clearable />
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
+          </ColBox>
+          <ColBox half>
             <el-form-item label="任务分组" prop="jobGroup">
               <el-select v-model="form.jobGroup" placeholder="请选择任务分组" clearable>
                 <el-option
@@ -200,8 +202,8 @@
                 />
               </el-select>
             </el-form-item>
-          </el-col>
-          <el-col :span="24">
+          </ColBox>
+          <ColBox full>
             <el-form-item prop="invokeTarget">
               <template #label>
                 <span>
@@ -222,8 +224,8 @@
               </template>
               <el-input v-model="form.invokeTarget" placeholder="请输入调用目标字符串" clearable />
             </el-form-item>
-          </el-col>
-          <el-col :span="24">
+          </ColBox>
+          <ColBox full>
             <el-form-item label="cron表达式" prop="cronExpression">
               <el-input v-model="form.cronExpression" placeholder="请输入cron执行表达式">
                 <template #append>
@@ -234,8 +236,8 @@
                 </template>
               </el-input>
             </el-form-item>
-          </el-col>
-          <el-col :span="24">
+          </ColBox>
+          <ColBox full>
             <el-form-item label="执行策略" prop="misfirePolicy">
               <el-radio-group v-model="form.misfirePolicy">
                 <el-radio-button value="1">立即执行</el-radio-button>
@@ -243,16 +245,16 @@
                 <el-radio-button value="3">放弃执行</el-radio-button>
               </el-radio-group>
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
+          </ColBox>
+          <ColBox half>
             <el-form-item label="是否并发" prop="concurrent">
               <el-radio-group v-model="form.concurrent">
                 <el-radio-button value="0">允许</el-radio-button>
                 <el-radio-button value="1">禁止</el-radio-button>
               </el-radio-group>
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
+          </ColBox>
+          <ColBox half>
             <el-form-item label="状态">
               <el-radio-group v-model="form.status">
                 <el-radio v-for="dict in sys_job_status" :key="dict.value" :value="dict.value">
@@ -260,7 +262,7 @@
                 </el-radio>
               </el-radio-group>
             </el-form-item>
-          </el-col>
+          </ColBox>
         </el-row>
       </el-form>
       <template #footer>
@@ -269,13 +271,16 @@
           <el-button @click="cancel">取 消</el-button>
         </div>
       </template>
-    </el-dialog>
-    <el-dialog
+    </el-drawer>
+    <el-drawer
       v-model="openCron"
       title="Cron表达式生成器"
       append-to-body
       destroy-on-close
       :close-on-click-modal="false"
+      size="520px"
+      direction="rtl"
+      resizable
     >
       <crontab
         ref="crontabRef"
@@ -283,54 +288,56 @@
         @hide="openCron = false"
         @fill="crontabFill"
       ></crontab>
-    </el-dialog>
+    </el-drawer>
     <!-- 任务日志详细 -->
-    <el-dialog
+    <el-drawer
       v-model="openView"
       title="任务详细"
-      width="700px"
+      size="700px"
       append-to-body
       :close-on-click-modal="false"
+      direction="rtl"
+      resizable
     >
       <el-form :model="form" label-width="auto">
         <el-row>
-          <el-col :span="12">
+          <ColBox half>
             <el-form-item label="任务编号">{{ form.jobId }}</el-form-item>
             <el-form-item label="任务名称">{{ form.jobName }}</el-form-item>
-          </el-col>
-          <el-col :span="12">
+          </ColBox>
+          <ColBox half>
             <el-form-item label="任务分组">{{ jobGroupFormat(form) }}</el-form-item>
             <el-form-item label="创建时间">{{ form.createTime }}</el-form-item>
-          </el-col>
-          <el-col :span="12">
+          </ColBox>
+          <ColBox half>
             <el-form-item label="cron表达式">{{ form.cronExpression }}</el-form-item>
-          </el-col>
-          <el-col :span="12">
+          </ColBox>
+          <ColBox half>
             <el-form-item label="下次执行时间">{{ parseTime(form.nextValidTime) }}</el-form-item>
-          </el-col>
-          <el-col :span="24">
+          </ColBox>
+          <ColBox full>
             <el-form-item label="调用目标方法">{{ form.invokeTarget }}</el-form-item>
-          </el-col>
-          <el-col :span="12">
+          </ColBox>
+          <ColBox half>
             <el-form-item label="任务状态">
               <div v-if="form.status === 0">正常</div>
               <div v-else-if="form.status === 1">失败</div>
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
+          </ColBox>
+          <ColBox half>
             <el-form-item label="是否并发">
               <div v-if="form.concurrent === 0">允许</div>
               <div v-else-if="form.concurrent === 1">禁止</div>
             </el-form-item>
-          </el-col>
-          <el-col :span="12">
+          </ColBox>
+          <ColBox half>
             <el-form-item label="执行策略">
               <div v-if="form.misfirePolicy === 0">默认策略</div>
               <div v-else-if="form.misfirePolicy === 1">立即执行</div>
               <div v-else-if="form.misfirePolicy === 2">执行一次</div>
               <div v-else-if="form.misfirePolicy === 3">放弃执行</div>
             </el-form-item>
-          </el-col>
+          </ColBox>
         </el-row>
       </el-form>
       <template #footer>
@@ -338,7 +345,7 @@
           <el-button @click="openView = false">关 闭</el-button>
         </div>
       </template>
-    </el-dialog>
+    </el-drawer>
   </div>
 </template>
 
@@ -358,6 +365,8 @@ import Crontab from '@/components/Crontab/index.vue'
 import type { FormInstance, FormRules } from 'element-plus'
 
 import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
+import { createRules } from '@/utils'
+import ColBox from '@/components/ColBox/index.vue'
 
 const router = useRouter()
 const { proxy } = getCurrentInstance()
@@ -410,20 +419,17 @@ const items = ref<QueryItemConfig[]>([
     label: '任务名称',
     prop: 'jobName',
     type: 'input',
-    placeholder: '请输入任务名称',
   },
   {
     label: '任务组名',
     prop: 'jobGroup',
     type: 'select',
-    placeholder: '请选择任务组名',
     dict: sys_job_group,
   },
   {
     label: '任务状态',
     prop: 'status',
     type: 'radio',
-    placeholder: '请选择任务状态',
     dict: sys_job_status,
   },
 ])

@@ -100,14 +100,16 @@ function closeDialog() {
     <div class="user-info-head" @click="editCropper()">
       <img :src="options.img" title="点击上传头像" class="rounded-full img-lg" alt="点击上传头像" />
     </div>
-    <el-dialog
+    <el-drawer
       v-model="open"
       :title="title"
-      width="800px"
+      size="560px"
       append-to-body
       @opened="modalOpened"
       @close="closeDialog"
       :close-on-click-modal="false"
+      direction="rtl"
+      resizable
     >
       <el-row :gutter="10">
         <el-col :xs="24" :md="12" :style="{ height: '350px' }">
@@ -162,7 +164,7 @@ function closeDialog() {
           <el-button type="primary" @click="uploadImg()">提 交</el-button>
         </el-col>
       </el-row>
-    </el-dialog>
+    </el-drawer>
   </div>
 </template>
 

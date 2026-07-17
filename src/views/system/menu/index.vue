@@ -8,6 +8,7 @@ import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
 import { menuTypeOptions } from '@/utils/column'
 import { ElButton, ElAutoResizer, ElTag } from 'element-plus'
 import { cleanQueryParams } from '@/utils/ruoyi'
+import ColBox from '@/components/ColBox/index.vue'
 const { proxy } = getCurrentInstance()
 
 const { sys_show_hide, sys_normal_disable } = proxy.useDict('sys_show_hide', 'sys_normal_disable')
@@ -426,16 +427,18 @@ onMounted(async () => {
     </div>
 
     <!-- 添加或修改菜单对话框 -->
-    <el-dialog
+    <el-drawer
       v-model="open"
       :title="title"
-      width="60%"
+      size="520px"
       append-to-body
       :close-on-click-modal="false"
+      direction="rtl"
+      resizable
     >
       <el-form ref="menuRef" :model="form" :rules="rules" label-width="auto">
-        <el-row>
-          <el-col :span="24">
+        <el-row :gutter="10">
+          <ColBox full>
             <el-form-item label="上级菜单">
               <el-tree-select
                 v-model="form.parentId"
@@ -446,8 +449,8 @@ onMounted(async () => {
                 check-strictly
               />
             </el-form-item>
-          </el-col>
-          <el-col :span="24">
+          </ColBox>
+          <ColBox full>
             <el-form-item label="菜单类型" prop="menuType">
               <el-radio-group v-model="form.menuType">
                 <el-radio v-for="dict in menuTypeOptions" :key="dict.value" :value="dict.value">
@@ -455,8 +458,8 @@ onMounted(async () => {
                 </el-radio>
               </el-radio-group>
             </el-form-item>
-          </el-col>
-          <el-col v-if="form.menuType !== 'F'" :span="24">
+          </ColBox>
+          <ColBox full>
             <el-form-item label="菜单图标" prop="icon">
               <el-popover
                 v-model:visible="showChooseIcon"
@@ -489,13 +492,13 @@ onMounted(async () => {
                 <icon-select ref="iconSelectRef" @selected="selected" />
               </el-popover>
             </el-form-item>
-          </el-col>
-          <el-col :span="12" :xs="24">
+          </ColBox>
+          <ColBox half>
             <el-form-item label="菜单名称" prop="menuName">
               <el-input v-model="form.menuName" placeholder="请输入菜单名称" clearable />
             </el-form-item>
-          </el-col>
-          <el-col :span="12" :xs="24" v-if="form.menuType === 'C'">
+          </ColBox>
+          <ColBox half>
             <el-form-item prop="routeName">
               <template #label>
                 <span>
@@ -510,14 +513,14 @@ onMounted(async () => {
               </template>
               <el-input v-model="form.routeName" placeholder="请输入路由名称" clearable />
             </el-form-item>
-          </el-col>
-          <el-col :span="12" :xs="24">
+          </ColBox>
+          <ColBox half>
             <el-form-item label="显示排序" prop="orderNum">
               <el-input-number v-model="form.orderNum" controls-position="right" :min="0" />
             </el-form-item>
-          </el-col>
+          </ColBox>
           <template v-if="form.menuType !== 'F'">
-            <el-col :span="12" :xs="24">
+            <ColBox half>
               <el-form-item>
                 <template #label>
                   <span>
@@ -535,8 +538,8 @@ onMounted(async () => {
                   <el-radio value="1">否</el-radio>
                 </el-radio-group>
               </el-form-item>
-            </el-col>
-            <el-col :span="12" :xs="24">
+            </ColBox>
+            <ColBox half>
               <el-form-item prop="path">
                 <template #label>
                   <span>
@@ -551,9 +554,9 @@ onMounted(async () => {
                 </template>
                 <el-input v-model="form.path" placeholder="请输入路由地址" clearable />
               </el-form-item>
-            </el-col>
+            </ColBox>
           </template>
-          <el-col v-if="form.menuType === 'C'" :span="12" :xs="24">
+          <ColBox half>
             <el-form-item prop="component">
               <template #label>
                 <span>
@@ -568,8 +571,8 @@ onMounted(async () => {
               </template>
               <el-input v-model="form.component" placeholder="请输入组件路径" clearable />
             </el-form-item>
-          </el-col>
-          <el-col v-if="form.menuType !== 'M'" :span="12" :xs="24">
+          </ColBox>
+          <ColBox half>
             <el-form-item>
               <el-input
                 v-model="form.perms"
@@ -589,9 +592,9 @@ onMounted(async () => {
                 </span>
               </template>
             </el-form-item>
-          </el-col>
+          </ColBox>
           <template v-if="form.menuType === 'C'">
-            <el-col :span="12" :xs="24">
+            <ColBox half>
               <el-form-item>
                 <el-input
                   v-model="form.query"
@@ -611,8 +614,8 @@ onMounted(async () => {
                   </span>
                 </template>
               </el-form-item>
-            </el-col>
-            <el-col :span="12" :xs="24">
+            </ColBox>
+            <ColBox half>
               <el-form-item>
                 <template #label>
                   <span>
@@ -630,10 +633,10 @@ onMounted(async () => {
                   <el-radio value="1">不缓存</el-radio>
                 </el-radio-group>
               </el-form-item>
-            </el-col>
+            </ColBox>
           </template>
           <template v-if="form.menuType !== 'F'">
-            <el-col :span="12" :xs="24">
+            <ColBox half>
               <el-form-item>
                 <template #label>
                   <span>
@@ -652,8 +655,8 @@ onMounted(async () => {
                   </el-radio>
                 </el-radio-group>
               </el-form-item>
-            </el-col>
-            <el-col :span="12" :xs="24">
+            </ColBox>
+            <ColBox half>
               <el-form-item>
                 <template #label>
                   <span>
@@ -676,7 +679,7 @@ onMounted(async () => {
                   </el-radio>
                 </el-radio-group>
               </el-form-item>
-            </el-col>
+            </ColBox>
           </template>
         </el-row>
       </el-form>
@@ -686,6 +689,6 @@ onMounted(async () => {
           <el-button @click="cancel">取 消</el-button>
         </div>
       </template>
-    </el-dialog>
+    </el-drawer>
   </div>
 </template>

@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { listDbTable, importTable } from '@/api/tool/gen'
 import type { QueryItemConfig } from '@/components/QueryForm/index.vue'
-import { cleanQueryParams } from '@/utils/ruoyi'
+import type { TableInstance } from 'element-plus'
 
 const total = ref(0)
 const visible = ref(false)
 const tables = ref([])
 const dbTableList = ref([])
+const tableRef = ref<TableInstance>()
 const { proxy } = getCurrentInstance()
 
 const queryParams = reactive({
@@ -39,8 +40,8 @@ function show() {
 }
 
 /** 单击选择行 */
-function clickRow(row) {
-  proxy.$refs.table.toggleRowSelection(row)
+function clickRow(row: any) {
+  tableRef.value?.toggleRowSelection(row)
 }
 
 /** 多选框选中数据 */
@@ -89,14 +90,16 @@ defineExpose({
 
 <template>
   <!-- 导入表 -->
-  <el-dialog
+  <el-drawer
     title="导入表"
     v-model="visible"
-    width="60%"
-    top="5vh"
+    size="520px"
+
     append-to-body
     :close-on-click-modal="false"
-  >
+    direction="rtl"
+    resizable
+    >
     <el-form :model="queryParams" ref="queryRef" label-width="auto">
       <el-row :gutter="10">
         <QueryForm :model="queryParams" :items="items" @change="handleQuery" />
@@ -112,9 +115,9 @@ defineExpose({
     </el-row>
     <el-row>
       <el-table
-        @row-click="clickRow"
-        ref="table"
+        ref="tableRef"
         :data="dbTableList"
+        @row-click="clickRow"
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" />
@@ -139,5 +142,5 @@ defineExpose({
         <el-button plain @click="visible = false">取 消</el-button>
       </div>
     </template>
-  </el-dialog>
+  </el-drawer>
 </template>
