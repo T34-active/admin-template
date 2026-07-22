@@ -142,7 +142,7 @@ function handleToggle() {
       >
         <template #reference>
           <button
-            type="button"
+
             class="nts-sidebar-menu__trigger"
             :class="{ 'is-active': isBranchActive }"
             @click="handleToggle"
@@ -171,7 +171,7 @@ function handleToggle() {
 
       <template v-else>
         <button
-          type="button"
+
           class="nts-sidebar-menu__trigger"
           :class="{ 'is-active': isBranchActive }"
           @click="handleToggle"

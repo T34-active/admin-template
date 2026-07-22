@@ -13,7 +13,7 @@
             ? 'calc(100% - 216px)'
             : 'calc(100% - 70px)',
     }"
-    class="top-fixed-bar fixed w-full right-0 z-30 transition-all duration-300"
+    class="top-fixed-bar fixed w-full right-0 z-30 transition-all duration-300 border border-[var(--layout-glass-border)] border-r-0 rounded-l-[20px] bg-[var(--layout-glass-bg)] shadow-[var(--layout-shadow)] backdrop-blur-[18px]"
   >
     <slot />
   </div>
@@ -32,13 +32,3 @@ const TRIGGER_SCROLL_TOP = 100
 const topOffset = computed(() => (y.value >= TRIGGER_SCROLL_TOP ? 0 : 84))
 </script>
 
-<style scoped lang="scss">
-.top-fixed-bar {
-  border: 1px solid var(--layout-glass-border);
-  border-right: 0;
-  border-radius: 20px 0 0 20px;
-  background: var(--layout-glass-bg);
-  box-shadow: var(--layout-shadow);
-  backdrop-filter: blur(18px);
-}
-</style>

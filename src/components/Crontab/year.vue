@@ -1,5 +1,5 @@
 <template>
-  <el-form size="small">
+  <el-form size="small" class="cron-tab-form">
     <el-form-item>
       <el-radio v-model="radioValue" :value="1">不填，允许的通配符[, - * /]</el-radio>
     </el-form-item>
@@ -151,14 +151,15 @@ onMounted(() => {
 })
 </script>
 
-<style lang="scss" scoped>
-.el-input-number--small,
-.el-select,
-.el-select--small {
-  margin: 0 0.2rem;
+<style scoped>
+.cron-tab-form :deep(.el-input-number--small),
+.cron-tab-form :deep(.el-select),
+.cron-tab-form :deep(.el-select--small) {
+  margin: 0 3px;
 }
-.el-select,
-.el-select--small {
-  width: 18.8rem;
+
+.cron-tab-form :deep(.el-select),
+.cron-tab-form :deep(.el-select--small) {
+  width: 301px;
 }
 </style>

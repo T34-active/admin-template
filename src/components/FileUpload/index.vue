@@ -18,7 +18,7 @@
     </el-upload>
     <!-- 上传提示 -->
     <template v-if="isShowTip">
-      <div v-if="!$slots.tip && tip === ''" class="el-upload__tip">
+      <div v-if="!$slots.tip && tip === ''" class="el-upload__tip mt-8 text-[var(--tags-item-text)]">
         请上传
         <template v-if="fileSize">
           大小不超过
@@ -33,7 +33,7 @@
       <template v-else-if="$slots.tip">
         <slot name="tip" />
       </template>
-      <div v-else class="text-secondaryText">
+      <div v-else class="text-secondaryText mt-8 text-[var(--tags-item-text)]">
         {{ tip }}
       </div>
     </template>
@@ -209,15 +209,7 @@ function listToString(list: any, separator?: any) {
 }
 </script>
 
-<style scoped lang="scss">
-.upload-file {
-  :deep(.el-upload__tip),
-  .text-secondaryText {
-    margin-top: 8px;
-    color: var(--tags-item-text);
-  }
-}
-
+<style scoped>
 :deep(.el-button) {
   border-radius: 999px;
 }
@@ -236,9 +228,9 @@ function listToString(list: any, separator?: any) {
   padding: 8px 10px !important;
   border-radius: 12px;
   transition: background 0.2s ease;
+}
 
-  &:hover {
-    background: var(--menu-hover);
-  }
+:deep(li:hover) {
+  background: var(--menu-hover);
 }
 </style>

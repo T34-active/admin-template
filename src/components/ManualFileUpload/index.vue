@@ -139,7 +139,7 @@ defineExpose({
 })
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 :deep(.el-upload-dragger) {
   padding: 20px 0 !important;
   border-color: var(--layout-glass-border);
@@ -149,12 +149,12 @@ defineExpose({
     border-color 0.2s ease,
     background 0.2s ease,
     transform 0.2s ease;
+}
 
-  &:hover {
-    border-color: var(--current-color, var(--el-color-primary));
-    background: var(--menu-hover);
-    transform: translateY(-1px);
-  }
+:deep(.el-upload-dragger:hover) {
+  border-color: var(--current-color, var(--el-color-primary));
+  background: var(--menu-hover);
+  transform: translateY(-1px);
 }
 
 :deep(.el-icon--upload) {

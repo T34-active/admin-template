@@ -229,11 +229,11 @@ function listToString(list: any, separator?: any) {
 }
 </script>
 
-<style scoped lang="scss">
-// .el-upload--picture-card 控制加号部分
+<style scoped>
 :deep(.hide .el-upload--picture-card) {
   display: none;
 }
+
 :deep(.el-upload-list__item) {
   width: 100px;
   height: 100px;
@@ -242,6 +242,7 @@ function listToString(list: any, separator?: any) {
   overflow: hidden;
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
 }
+
 :deep(.el-upload--picture-card) {
   width: 100px;
   height: 100px;
@@ -252,12 +253,12 @@ function listToString(list: any, separator?: any) {
     border-color 0.2s ease,
     background 0.2s ease,
     transform 0.2s ease;
+}
 
-  &:hover {
-    border-color: var(--current-color, var(--el-color-primary));
-    background: var(--menu-hover);
-    transform: translateY(-1px);
-  }
+:deep(.el-upload--picture-card:hover) {
+  border-color: var(--current-color, var(--el-color-primary));
+  background: var(--menu-hover);
+  transform: translateY(-1px);
 }
 
 :deep(.avatar-uploader-icon) {

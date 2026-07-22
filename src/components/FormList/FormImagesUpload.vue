@@ -220,10 +220,11 @@ function handleExceed() {
 }
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 :deep(.hide .el-upload--picture-card) {
   display: none;
 }
+
 :deep(.el-upload-list__item),
 :deep(.el-upload--picture-card) {
   width: 100px;
@@ -244,12 +245,12 @@ function handleExceed() {
     border-color 0.2s ease,
     background 0.2s ease,
     transform 0.2s ease;
+}
 
-  &:hover {
-    border-color: var(--current-color, var(--el-color-primary));
-    background: var(--menu-hover);
-    transform: translateY(-1px);
-  }
+:deep(.el-upload--picture-card:hover) {
+  border-color: var(--current-color, var(--el-color-primary));
+  background: var(--menu-hover);
+  transform: translateY(-1px);
 }
 
 :deep(.el-icon) {

@@ -1,6 +1,6 @@
 <template>
   <el-dropdown trigger="click" @command="handleSetSize">
-    <div class="size-icon--style">
+    <div class="text-18 leading-[50px] pr-7">
       <svg-icon class-name="size-icon" icon-class="size" />
     </div>
     <template #dropdown>
@@ -34,10 +34,3 @@ function handleSetSize(size) {
 }
 </script>
 
-<style lang="scss" scoped>
-.size-icon--style {
-  font-size: 18px;
-  line-height: 50px;
-  padding-right: 7px;
-}
-</style>

@@ -1,5 +1,5 @@
 <template>
-  <el-form size="small">
+  <el-form size="small" class="cron-tab-form">
     <el-form-item>
       <el-radio v-model="radioValue" :value="1">周，允许的通配符[, - * ? / L #]</el-radio>
     </el-form-item>
@@ -209,18 +209,20 @@ function onRadioChange() {
 }
 </script>
 
-<style lang="scss" scoped>
-.el-input-number--small,
-.el-select,
-.el-select--small {
-  margin: 0 0.2rem;
+<style scoped>
+.cron-tab-form :deep(.el-input-number--small),
+.cron-tab-form :deep(.el-select),
+.cron-tab-form :deep(.el-select--small) {
+  margin: 0 3px;
 }
-.el-select,
-.el-select--small {
-  width: 8rem;
+
+.cron-tab-form :deep(.el-select:not(.multiselect)),
+.cron-tab-form :deep(.el-select--small:not(.multiselect)) {
+  width: 128px;
 }
-.el-select.multiselect,
-.el-select--small.multiselect {
-  width: 17.8rem;
+
+.cron-tab-form :deep(.el-select.multiselect),
+.cron-tab-form :deep(.el-select--small.multiselect) {
+  width: 285px;
 }
 </style>

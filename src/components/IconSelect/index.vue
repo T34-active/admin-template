@@ -12,13 +12,15 @@
       </el-icon>
     </template>
   </el-input>
-  <div class="icon-select-list w-full overflow-y-scroll mt-12 h-200">
+  <div
+    class="icon-select-list w-full overflow-y-scroll mt-12 h-200 p-8 border border-[var(--layout-glass-border)] rounded-[18px] bg-[var(--layout-glass-bg)] shadow-[0_10px_24px_rgba(15,23,42,0.06)] backdrop-blur-[16px]"
+  >
     <div class="icon-list flex flex-wrap">
       <div
         v-for="item in iconList"
         :key="item"
         @click="selectedIcon(item)"
-        class="icon-select-item w-1/3 flex items-center gap-x-10 py-16 px-12 h-25 cursor-pointer"
+        class="icon-select-item w-1/3 flex items-center gap-x-10 py-16 px-12 h-25 cursor-pointer rounded-xl text-[var(--navbar-text)] transition-[color,background,transform] duration-200 hover:text-[var(--current-color,var(--el-color-primary))] hover:bg-[var(--menu-hover)] hover:-translate-y-1"
       >
         <svg-icon :icon-class="item" class="size-20" />
         <span>{{ item }}</span>
@@ -56,7 +58,7 @@ defineExpose({
 })
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 :deep(.el-input__wrapper) {
   border-radius: 14px;
   background: var(--input-bg);
@@ -67,29 +69,5 @@ defineExpose({
   box-shadow:
     0 0 0 1px var(--current-color, var(--el-color-primary)) inset,
     0 0 0 3px var(--input-focus-ring);
-}
-
-.icon-select-list {
-  padding: 8px;
-  border: 1px solid var(--layout-glass-border);
-  border-radius: 18px;
-  background: var(--layout-glass-bg);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
-  backdrop-filter: blur(16px);
-}
-
-.icon-select-item {
-  border-radius: 12px;
-  color: var(--navbar-text);
-  transition:
-    color 0.2s ease,
-    background 0.2s ease,
-    transform 0.2s ease;
-
-  &:hover {
-    color: var(--current-color, var(--el-color-primary));
-    background: var(--menu-hover);
-    transform: translateY(-1px);
-  }
 }
 </style>

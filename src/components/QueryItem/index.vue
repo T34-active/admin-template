@@ -118,7 +118,7 @@ const innerValue = computed({
   </colBox>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 :deep(.el-input__wrapper),
 :deep(.el-select-v2__wrapper),
 :deep(.el-select__wrapper),
@@ -147,5 +147,4 @@ const innerValue = computed({
   box-shadow: 0 0 0 1px var(--el-disabled-border-color) inset;
   background: var(--el-disabled-bg-color);
 }
-
 </style>

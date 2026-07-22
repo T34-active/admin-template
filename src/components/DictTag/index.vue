@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="flex flex-wrap gap-10">
     <template v-for="(item, index) in options">
       <template v-if="values.includes(item.value)">
         <span
@@ -44,8 +44,3 @@ const values = computed(() => {
 })
 </script>
 
-<style scoped>
-.el-tag + .el-tag {
-  margin-left: 10px;
-}
-</style>

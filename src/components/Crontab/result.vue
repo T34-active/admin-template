@@ -1,11 +1,28 @@
 <template>
-  <div class="popup-result">
-    <p class="title">最近5次运行时间</p>
-    <ul class="popup-result-scroll">
+  <div
+    class="popup-result p-14 border border-[var(--layout-glass-border)] rounded-[18px] bg-[var(--layout-glass-bg)] shadow-[0_10px_24px_rgba(15,23,42,0.06)] backdrop-blur-[16px]"
+  >
+    <p
+      class="title relative m-0 mb-12 py-10 px-12 pl-16 border border-[var(--layout-glass-border)] rounded-[14px] text-[var(--navbar-text)] font-[650] bg-[var(--panel-bg)]"
+    >
+      最近5次运行时间
+    </p>
+    <ul class="popup-result-scroll m-0 p-0 list-none text-xs leading-24 h-[10em] overflow-y-auto">
       <template v-if="isShow">
-        <li v-for="item in resultList" :key="item">{{ item }}</li>
+        <li
+          v-for="item in resultList"
+          :key="item"
+          class="py-9 px-12 rounded-xl text-[var(--navbar-text)] transition-[background] duration-200 hover:bg-[var(--menu-hover)]"
+        >
+          {{ item }}
+        </li>
       </template>
-      <li v-else>计算结果中...</li>
+      <li
+        v-else
+        class="py-9 px-12 rounded-xl text-[var(--navbar-text)] transition-[background] duration-200 hover:bg-[var(--menu-hover)]"
+      >
+        计算结果中...
+      </li>
     </ul>
   </div>
 </template>
@@ -560,52 +577,15 @@ onMounted(() => {
 })
 </script>
 
-<style scoped lang="scss">
-.popup-result {
-  padding: 14px;
-  border: 1px solid var(--layout-glass-border);
-  border-radius: 18px;
-  background: var(--layout-glass-bg);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
-  backdrop-filter: blur(16px);
-}
-
-.title {
-  position: relative;
-  margin: 0 0 12px;
-  padding: 10px 12px 10px 16px;
-  border: 1px solid var(--layout-glass-border);
-  border-radius: 14px;
-  color: var(--navbar-text);
-  font-weight: 650;
-  background: var(--panel-bg);
-
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 10px;
-    bottom: 10px;
-    width: 4px;
-    border-radius: 999px;
-    background: var(--current-color, var(--el-color-primary));
-  }
-}
-
-.popup-result-scroll {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-
-  li {
-    padding: 9px 12px;
-    border-radius: 12px;
-    color: var(--navbar-text);
-    transition: background 0.2s ease;
-
-    &:hover {
-      background: var(--menu-hover);
-    }
-  }
+<style scoped>
+.title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  bottom: 10px;
+  width: 4px;
+  border-radius: 999px;
+  background: var(--current-color, var(--el-color-primary));
 }
 </style>

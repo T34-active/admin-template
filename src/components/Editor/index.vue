@@ -122,10 +122,12 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="editor-wrapper">
+  <div
+    class="editor-wrapper overflow-hidden border border-[var(--layout-glass-border)] rounded-[18px] w-full bg-[var(--layout-glass-bg)] shadow-[var(--layout-shadow)] backdrop-blur-[16px]"
+  >
     <Toolbar
       :editor="editorRef"
-      class="editor-toolbar"
+      class="editor-toolbar border-b border-[var(--layout-glass-border)] bg-[var(--panel-bg)]"
       :defaultConfig="toolbarConfig"
     />
     <Editor
@@ -138,19 +140,3 @@ onBeforeUnmount(() => {
 </template>
 
 <style src="@wangeditor/editor/dist/css/style.css"></style>
-<style scoped lang="scss">
-.editor-wrapper {
-  overflow: hidden;
-  border: 1px solid var(--layout-glass-border);
-  border-radius: 18px;
-  width: 100%;
-  background: var(--layout-glass-bg);
-  box-shadow: var(--layout-shadow);
-  backdrop-filter: blur(16px);
-}
-
-.editor-toolbar {
-  border-bottom: 1px solid var(--layout-glass-border);
-  background: var(--panel-bg);
-}
-</style>

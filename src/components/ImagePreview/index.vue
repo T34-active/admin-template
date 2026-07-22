@@ -2,12 +2,13 @@
   <el-image
     :src="`${realSrc}`"
     fit="cover"
+    class="rounded-[5px] bg-[#ebeef5] shadow-[0_0_5px_1px_#ccc]"
     :style="`width:${realWidth};height:${realHeight};`"
     :preview-src-list="realSrcList"
     preview-teleported
   >
     <template #error>
-      <div class="image-slot">
+      <div class="image-slot center w-full h-full text-[#909399] text-30">
         <el-icon><picture-filled /></el-icon>
       </div>
     </template>
@@ -67,26 +68,13 @@ const realHeight = computed(() =>
 )
 </script>
 
-<style lang="scss" scoped>
-.el-image {
-  border-radius: 5px;
-  background-color: #ebeef5;
-  box-shadow: 0 0 5px 1px #ccc;
-  :deep(.el-image__inner) {
-    transition: all 0.3s;
-    cursor: pointer;
-    &:hover {
-      transform: scale(1.2);
-    }
-  }
-  :deep(.image-slot) {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    color: #909399;
-    font-size: 30px;
-  }
+<style scoped>
+:deep(.el-image__inner) {
+  transition: all 0.3s;
+  cursor: pointer;
+}
+
+:deep(.el-image__inner:hover) {
+  transform: scale(1.2);
 }
 </style>

@@ -65,10 +65,18 @@
       </el-tab-pane>
     </el-tabs>
 
-    <div class="popup-main">
-      <div class="popup-result">
-        <p class="title">时间表达式</p>
-        <table>
+    <div
+      class="relative mx-10 my-10 overflow-hidden rounded-xl bg-[var(--app-surface)] text-[var(--app-text)] text-xs"
+    >
+      <div
+        class="relative mx-auto my-25 box-border border border-[var(--app-border)] py-15 px-10 pt-15 leading-24"
+      >
+        <p
+          class="title absolute top-[-28px] left-1/2 w-140 -ml-70 text-center text-14 leading-30 bg-[var(--app-surface)] text-[var(--app-text)]"
+        >
+          时间表达式
+        </p>
+        <table class="cron-result-table w-full mx-auto text-center">
           <thead>
             <tr>
               <th v-for="item of tabTitles" :key="item">{{ item }}</th>
@@ -131,7 +139,7 @@
       </div>
       <CrontabResult :ex="crontabValueString"></CrontabResult>
 
-      <div class="pop_btn">
+      <div class="text-center mt-20">
         <el-button type="primary" @click="submitFill">确定</el-button>
         <el-button type="warning" @click="clearCron">重置</el-button>
         <el-button @click="hidePopup">取消</el-button>
@@ -268,77 +276,22 @@ onMounted(() => {
 })
 </script>
 
-<style lang="scss" scoped>
-.pop_btn {
-  text-align: center;
-  margin-top: 20px;
-}
-
-.popup-main {
-  position: relative;
-  margin: 10px auto;
-  background: var(--app-surface);
-  color: var(--app-text);
-  border-radius: 12px;
-  font-size: 12px;
+<style scoped>
+.cron-result-table span {
+  display: block;
+  width: 100%;
+  font-family: arial;
+  line-height: 30px;
+  height: 30px;
+  white-space: nowrap;
   overflow: hidden;
-}
-
-.popup-title {
-  overflow: hidden;
-  line-height: 34px;
-  padding-top: 6px;
-  background: var(--app-surface-soft);
-  color: var(--app-text);
-}
-
-.popup-result {
-  box-sizing: border-box;
-  line-height: 24px;
-  margin: 25px auto;
-  padding: 15px 10px 10px;
   border: 1px solid var(--app-border);
-  position: relative;
-  .title {
-    position: absolute;
-    top: -28px;
-    left: 50%;
-    width: 140px;
-    font-size: 14px;
-    margin-left: -70px;
-    text-align: center;
-    line-height: 30px;
-    background: var(--app-surface);
-    color: var(--app-text);
-  }
-  table {
-    text-align: center;
-    width: 100%;
-    margin: 0 auto;
-    span {
-      display: block;
-      width: 100%;
-      font-family: arial;
-      line-height: 30px;
-      height: 30px;
-      white-space: nowrap;
-      overflow: hidden;
-      border: 1px solid var(--app-border);
-      color: var(--app-text);
-    }
-  }
+  color: var(--app-text);
 }
 
-.popup-result table td:not(.result) {
+.cron-result-table td:not(.result) {
   width: 3.5rem;
   min-width: 3.5rem;
   max-width: 3.5rem;
-}
-
-.popup-result-scroll {
-  font-size: 12px;
-  line-height: 24px;
-  height: 10em;
-  overflow-y: auto;
 }
 </style>

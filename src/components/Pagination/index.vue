@@ -93,8 +93,3 @@ function handleCurrentChange(val: number) {
 }
 </script>
 
-<style scoped lang="scss">
-.hidden {
-  display: none;
-}
-</style>

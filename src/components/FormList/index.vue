@@ -99,7 +99,9 @@ function onItemChange(item: FormItemConfig, value: any) {
   <el-row :gutter="10">
     <template v-for="(group, gIdx) in items" :key="gIdx">
       <colBox full>
-        <div class="form-group-title">
+        <div
+          class="form-group-title relative mb-16 py-14 px-16 pl-18 overflow-hidden border border-[var(--layout-glass-border)] rounded-2xl text-[var(--navbar-text)] font-[650] bg-[var(--layout-glass-bg)] shadow-[0_10px_24px_rgba(15,23,42,0.06)] backdrop-blur-[16px]"
+        >
           {{ group.title }}
         </div>
       </colBox>
@@ -125,29 +127,15 @@ function onItemChange(item: FormItemConfig, value: any) {
   </el-row>
 </template>
 
-<style scoped lang="scss">
-.form-group-title {
-  position: relative;
-  margin-bottom: 16px;
-  padding: 14px 16px 14px 18px;
-  overflow: hidden;
-  border: 1px solid var(--layout-glass-border);
-  border-radius: 16px;
-  color: var(--navbar-text);
-  font-weight: 650;
-  background: var(--layout-glass-bg);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
-  backdrop-filter: blur(16px);
-
-  &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 12px;
-    bottom: 12px;
-    width: 4px;
-    border-radius: 999px;
-    background: var(--current-color, var(--el-color-primary));
-  }
+<style scoped>
+.form-group-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 4px;
+  border-radius: 999px;
+  background: var(--current-color, var(--el-color-primary));
 }
 </style>

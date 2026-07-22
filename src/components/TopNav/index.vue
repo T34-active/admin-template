@@ -157,7 +157,7 @@ onMounted(() => {
 })
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 .topmenu-container.el-menu--horizontal > .el-menu-item {
   height: 50px !important;
   line-height: 50px !important;
@@ -168,11 +168,10 @@ onMounted(() => {
 
 .topmenu-container.el-menu--horizontal > .el-menu-item.is-active,
 .el-menu--horizontal > .el-sub-menu.is-active .el-submenu__title {
-  border-bottom: 2px solid #{'var(--theme)'} !important;
+  border-bottom: 2px solid var(--theme) !important;
   color: #303133;
 }
 
-/* sub-menu item */
 .topmenu-container.el-menu--horizontal > .el-sub-menu .el-sub-menu__title {
   height: 50px !important;
   line-height: 50px !important;

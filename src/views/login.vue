@@ -1,65 +1,109 @@
 <template>
-  <div class="login-page" :class="{ 'is-dark': settingsStore.isDark }">
-    <div class="login-bg" />
-    <div class="login-grid" />
-    <div class="login-orb login-orb-primary" />
-    <div class="login-orb login-orb-secondary" />
+  <div
+    class="relative min-h-screen overflow-hidden center p-48 text-[#111827] max-lg:p-36 max-md:px-18 max-md:py-28 dark:text-[#f8fafc] bg-[radial-gradient(circle_at_20%_20%,rgba(64,158,255,0.24),transparent_30%),radial-gradient(circle_at_80%_20%,rgba(103,194,58,0.2),transparent_26%),linear-gradient(135deg,#eef5ff_0%,#f7fbff_45%,#eef7f4_100%)] dark:bg-[radial-gradient(circle_at_20%_20%,rgba(37,99,235,0.2),transparent_32%),radial-gradient(circle_at_80%_12%,rgba(20,184,166,0.12),transparent_28%),linear-gradient(135deg,#050816_0%,#0f172a_48%,#111827_100%)]"
+  >
+    <div
+      class="login-bg-image absolute inset-0 bg-cover bg-center opacity-8 pointer-events-none dark:opacity-6"
+    />
+    <div
+      class="absolute inset-24 border border-white/48 rounded-[36px] bg-white/24 shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] pointer-events-none max-md:inset-12 max-md:rounded-3xl dark:border-slate-400/12 dark:bg-slate-950/28 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
+    />
+    <div
+      class="absolute inset-0 opacity-40 pointer-events-none dark:opacity-22 [background-image:linear-gradient(rgba(64,158,255,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(64,158,255,0.12)_1px,transparent_1px)] [background-size:42px_42px] [mask-image:linear-gradient(to_bottom,transparent,#000_18%,#000_72%,transparent)] dark:[background-image:linear-gradient(rgba(96,165,250,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(96,165,250,0.08)_1px,transparent_1px)]"
+    />
+    <div
+      class="absolute w-280 h-280 rounded-full blur-[12px] pointer-events-none left-[7%] bottom-[8%] bg-[rgba(64,158,255,0.16)] dark:bg-[rgba(37,99,235,0.12)]"
+    />
+    <div
+      class="absolute w-280 h-280 rounded-full blur-[12px] pointer-events-none top-[8%] right-[10%] bg-[rgba(103,194,58,0.14)] dark:bg-[rgba(20,184,166,0.08)]"
+    />
 
-    <button class="theme-switch" type="button" aria-label="切换主题" @click="toggleTheme">
+    <button
+      class="fixed top-24 right-24 z-3 size-44 border border-white/50 rounded-full center cursor-pointer text-slate-700 bg-white/72 shadow-[0_16px_40px_rgba(15,23,42,0.12)] backdrop-blur-[16px] transition-[transform,background] duration-200 hover:-translate-y-2 hover:bg-white/92 max-[480px]:top-16 max-[480px]:right-16 dark:text-white dark:border-white/12 dark:bg-slate-900/72 dark:hover:bg-slate-800/90"
+      aria-label="切换主题"
+      @click="toggleTheme"
+    >
       <svg-icon v-if="settingsStore.isDark" icon-class="sunny" />
       <svg-icon v-else icon-class="moon" />
     </button>
 
-    <main class="login-shell">
-      <section class="login-hero">
-        <div class="brand-mark">
-          <img src="@/assets/logo/logo.png" :alt="title" />
-          <span>{{ title }}</span>
+    <main
+      class="relative z-2 w-[min(1180px,100%)] min-h-640 grid grid-cols-[minmax(0,1fr)_430px] gap-42 items-center max-lg:grid-cols-[minmax(0,0.9fr)_410px] max-lg:gap-28 max-md:min-h-[auto] max-md:flex max-md:justify-center"
+    >
+      <section class="p-[36px_20px] max-md:hidden">
+        <div
+          class="inline-flex items-center gap-12 py-10 px-16 border border-[rgba(64,158,255,0.18)] rounded-full text-[#1d4ed8] bg-white/54 backdrop-blur-[16px] dark:text-[#bfdbfe] dark:border-[rgba(147,197,253,0.18)] dark:bg-slate-900/54"
+        >
+          <img class="size-34" src="@/assets/logo/logo.png" :alt="title" />
+          <span class="text-14 font-semibold">{{ title }}</span>
         </div>
 
-        <h1>{{ title }}</h1>
-        <p class="hero-desc">
+        <h1
+          class="max-w-620 m-[34px_0_18px] text-[clamp(42px,5vw,68px)] leading-[1.08] font-extrabold tracking-[-2px]"
+        >
+          {{ title }}
+        </h1>
+        <p class="max-w-580 m-0 text-slate-600 text-17 leading-[1.9] dark:text-slate-300">
           基于 Vue3 + Element Plus 构建的通用后台管理模板，提供用户、角色、菜单、字典等基础能力，开箱即用。
         </p>
 
-        <div class="hero-tags">
-          <span>用户权限管理</span>
-          <span>菜单动态配置</span>
-          <span>系统参数设置</span>
+        <div class="flex flex-wrap gap-12 my-28 mb-34">
+          <span
+            v-for="tag in heroTags"
+            :key="tag"
+            class="py-8 px-12 rounded-full text-[#2563eb] text-13 bg-white/56 border border-[rgba(37,99,235,0.12)] dark:text-[#bfdbfe] dark:bg-slate-900/58 dark:border-[rgba(147,197,253,0.12)]"
+          >
+            {{ tag }}
+          </span>
         </div>
 
-        <div class="feature-list">
-          <div class="feature-card">
-            <span class="feature-icon"><svg-icon icon-class="user" /></span>
+        <div class="grid gap-14 max-w-590">
+          <div
+            v-for="item in featureList"
+            :key="item.title"
+            class="flex gap-16 items-start p-18 border border-white/56 rounded-[20px] bg-white/58 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-[18px] max-lg:p-16 dark:border-white/10 dark:bg-slate-900/52"
+          >
+            <span
+              class="size-42 rounded-[14px] center text-[#2563eb] bg-[rgba(37,99,235,0.1)] shrink-0"
+            >
+              <svg-icon :icon-class="item.icon" />
+            </span>
             <div>
-              <strong>用户与角色</strong>
-              <p>支持用户、部门、岗位与角色的灵活配置，满足多层级组织架构需求。</p>
-            </div>
-          </div>
-          <div class="feature-card">
-            <span class="feature-icon"><svg-icon icon-class="monitor" /></span>
-            <div>
-              <strong>数据可视化</strong>
-              <p>内置常用管理页面与组件，快速搭建业务后台与数据展示界面。</p>
-            </div>
-          </div>
-          <div class="feature-card">
-            <span class="feature-icon"><svg-icon icon-class="lock" /></span>
-            <div>
-              <strong>安全可靠</strong>
-              <p>集成权限校验、操作日志与登录认证，保障系统访问与数据安全。</p>
+              <strong class="block mb-6 text-slate-900 text-15 dark:text-[#f8fafc]">{{
+                item.title
+              }}</strong>
+              <p class="m-0 text-slate-500 text-13 leading-[1.7] dark:text-slate-400">
+                {{ item.desc }}
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section class="login-panel">
-        <el-form ref="loginRef" :model="loginForm" :rules="loginRules" class="login-form">
-          <div class="form-header">
-            <img src="@/assets/logo/logo.png" :alt="title" />
+      <section class="w-full max-md:w-[min(100%,420px)]">
+        <el-form
+          ref="loginRef"
+          :model="loginForm"
+          :rules="loginRules"
+          class="login-form relative w-full p-42 border border-white/66 rounded-[30px] bg-white/78 shadow-[0_30px_80px_rgba(15,23,42,0.18)] backdrop-blur-[22px] max-[480px]:p-[30px_22px] max-[480px]:rounded-3xl dark:border-slate-400/14 dark:bg-slate-900/82 dark:shadow-[0_30px_80px_rgba(0,0,0,0.42)]"
+        >
+          <div
+            class="flex items-center gap-16 mb-32 max-[480px]:items-start max-[480px]:mb-26"
+          >
+            <img
+              class="size-60 rounded-[18px] shadow-[0_12px_30px_rgba(64,158,255,0.18)] max-[480px]:size-52"
+              src="@/assets/logo/logo.png"
+              :alt="title"
+            />
             <div>
-              <h2>欢迎回来</h2>
-              <p>请登录您的账号继续访问系统</p>
+              <h2
+                class="m-0 mb-6 text-slate-900 text-28 font-bold max-[480px]:text-24 dark:text-[#f8fafc]"
+              >
+                欢迎回来
+              </h2>
+              <p class="m-0 text-slate-500 text-14 dark:text-slate-400">
+                请登录您的账号继续访问系统
+              </p>
             </div>
           </div>
 
@@ -96,7 +140,9 @@
           </el-form-item>
 
           <el-form-item v-if="captchaEnabled" prop="code">
-            <div class="captcha-row">
+            <div
+              class="grid w-full grid-cols-[minmax(0,1fr)_128px] gap-12 items-center max-[480px]:grid-cols-1"
+            >
               <el-input
                 v-model="loginForm.code"
                 size="large"
@@ -108,13 +154,23 @@
                   <svg-icon icon-class="validCode" class="el-input__icon input-icon" />
                 </template>
               </el-input>
-              <button class="login-code" type="button" title="点击刷新验证码" @click="getCode">
-                <img :src="codeUrl" class="login-code-img" :alt="codeUrl" />
+              <button
+                class="h-46 p-0 overflow-hidden border border-slate-400/22 rounded-[14px] cursor-pointer bg-white/76 max-[480px]:w-full dark:border-slate-400/24 dark:bg-slate-950/56"
+                title="点击刷新验证码"
+                @click="getCode"
+              >
+                <img
+                  :src="codeUrl"
+                  class="block size-full object-cover"
+                  :alt="codeUrl"
+                />
               </button>
             </div>
           </el-form-item>
 
-          <div class="form-options">
+          <div
+            class="flex items-center justify-between gap-12 mt-[-2px] mb-24 text-slate-500 text-13 dark:text-slate-400 max-[480px]:items-start max-[480px]:flex-col"
+          >
             <el-checkbox v-model="loginForm.rememberMe">记住密码</el-checkbox>
             <span>安全登录 · 数据加密传输</span>
           </div>
@@ -123,7 +179,7 @@
             :loading="loading"
             size="large"
             type="primary"
-            class="login-button"
+            class="w-full h-48 border-none rounded-[14px] text-16 font-semibold tracking-[2px] bg-[linear-gradient(135deg,#1677ff,#35b6ff)] shadow-[0_16px_34px_rgba(22,119,255,0.28)]"
             @click.prevent="handleLogin"
           >
             {{ !loading ? '立即登录' : '登录中...' }}
@@ -143,10 +199,30 @@ import useSettingsStore from '@/store/modules/settings'
 import { useRouter } from 'vue-router'
 import type { FormInstance, FormRules } from 'element-plus'
 import { createRules } from '@/utils'
+
 const { proxy } = getCurrentInstance()
 const userStore = useUserStore()
 const settingsStore = useSettingsStore()
 const router = useRouter()
+
+const heroTags = ['用户权限管理', '菜单动态配置', '系统参数设置']
+const featureList = [
+  {
+    icon: 'user',
+    title: '用户与角色',
+    desc: '支持用户、部门、岗位与角色的灵活配置，满足多层级组织架构需求。',
+  },
+  {
+    icon: 'monitor',
+    title: '数据可视化',
+    desc: '内置常用管理页面与组件，快速搭建业务后台与数据展示界面。',
+  },
+  {
+    icon: 'lock',
+    title: '安全可靠',
+    desc: '集成权限校验、操作日志与登录认证，保障系统访问与数据安全。',
+  },
+]
 
 function toggleTheme() {
   settingsStore.toggleTheme()
@@ -241,540 +317,69 @@ onMounted(async () => {
 })
 </script>
 
-<style lang="scss" scoped>
-.login-page {
-  position: relative;
-  min-height: 100vh;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 48px;
-  color: #111827;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(64, 158, 255, 0.24), transparent 30%),
-    radial-gradient(circle at 80% 20%, rgba(103, 194, 58, 0.2), transparent 26%),
-    linear-gradient(135deg, #eef5ff 0%, #f7fbff 45%, #eef7f4 100%);
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: url('@/assets/images/login-background.png');
-    background-size: cover;
-    background-position: center;
-    opacity: 0.08;
-    pointer-events: none;
-  }
+<style scoped>
+.login-bg-image {
+  background-image: url('@/assets/images/login-background.png');
 }
 
-.login-page.is-dark {
-  color: #f8fafc;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(37, 99, 235, 0.2), transparent 32%),
-    radial-gradient(circle at 80% 12%, rgba(20, 184, 166, 0.12), transparent 28%),
-    linear-gradient(135deg, #050816 0%, #0f172a 48%, #111827 100%);
-
-  &::after {
-    opacity: 0.06;
-  }
-}
-
-.login-bg,
-.login-grid,
-.login-orb {
-  position: absolute;
-  pointer-events: none;
-}
-
-.login-bg {
-  inset: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.48);
-  border-radius: 36px;
-  background: rgba(255, 255, 255, 0.24);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
-}
-
-.login-page.is-dark .login-bg {
-  border-color: rgba(148, 163, 184, 0.12);
-  background: rgba(2, 6, 23, 0.28);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-}
-
-.login-grid {
-  inset: 0;
-  opacity: 0.4;
-  background-image:
-    linear-gradient(rgba(64, 158, 255, 0.12) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(64, 158, 255, 0.12) 1px, transparent 1px);
-  background-size: 42px 42px;
-  mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 72%, transparent);
-}
-
-.login-page.is-dark .login-grid {
-  opacity: 0.22;
-  background-image:
-    linear-gradient(rgba(96, 165, 250, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(96, 165, 250, 0.08) 1px, transparent 1px);
-}
-
-.login-orb {
-  width: 280px;
-  height: 280px;
-  border-radius: 999px;
-  filter: blur(12px);
-}
-
-.login-orb-primary {
-  left: 7%;
-  bottom: 8%;
-  background: rgba(64, 158, 255, 0.16);
-}
-
-.login-orb-secondary {
-  top: 8%;
-  right: 10%;
-  background: rgba(103, 194, 58, 0.14);
-}
-
-.login-page.is-dark .login-orb-primary {
-  background: rgba(37, 99, 235, 0.12);
-}
-
-.login-page.is-dark .login-orb-secondary {
-  background: rgba(20, 184, 166, 0.08);
-}
-
-.theme-switch {
-  position: fixed;
-  top: 24px;
-  right: 24px;
-  z-index: 3;
-  width: 44px;
-  height: 44px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: #334155;
-  background: rgba(255, 255, 255, 0.72);
-  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
-  backdrop-filter: blur(16px);
-  transition:
-    transform 0.2s ease,
-    background 0.2s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    background: rgba(255, 255, 255, 0.92);
-  }
-}
-
-.login-page.is-dark .theme-switch {
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.12);
-  background: rgba(15, 23, 42, 0.72);
-
-  &:hover {
-    background: rgba(30, 41, 59, 0.9);
-  }
-}
-
-.login-shell {
-  position: relative;
-  z-index: 2;
-  width: min(1180px, 100%);
-  min-height: 640px;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 430px;
-  gap: 42px;
-  align-items: center;
-}
-
-.login-hero {
-  padding: 36px 20px;
-}
-
-.brand-mark {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 16px;
-  border: 1px solid rgba(64, 158, 255, 0.18);
-  border-radius: 999px;
-  color: #1d4ed8;
-  background: rgba(255, 255, 255, 0.54);
-  backdrop-filter: blur(16px);
-
-  img {
-    width: 34px;
-    height: 34px;
-  }
-
-  span {
-    font-size: 14px;
-    font-weight: 600;
-  }
-}
-
-.login-page.is-dark .brand-mark {
-  color: #bfdbfe;
-  border-color: rgba(147, 197, 253, 0.18);
-  background: rgba(15, 23, 42, 0.54);
-}
-
-.login-hero h1 {
-  max-width: 620px;
-  margin: 34px 0 18px;
-  font-size: clamp(42px, 5vw, 68px);
-  line-height: 1.08;
-  font-weight: 800;
-  letter-spacing: -2px;
-}
-
-.hero-desc {
-  max-width: 580px;
-  margin: 0;
-  color: #475569;
-  font-size: 17px;
-  line-height: 1.9;
-}
-
-.login-page.is-dark .hero-desc {
-  color: #cbd5e1;
-}
-
-.hero-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin: 28px 0 34px;
-
-  span {
-    padding: 8px 12px;
-    border-radius: 999px;
-    color: #2563eb;
-    font-size: 13px;
-    background: rgba(255, 255, 255, 0.56);
-    border: 1px solid rgba(37, 99, 235, 0.12);
-  }
-}
-
-.login-page.is-dark .hero-tags span {
-  color: #bfdbfe;
-  background: rgba(15, 23, 42, 0.58);
-  border-color: rgba(147, 197, 253, 0.12);
-}
-
-.feature-list {
-  display: grid;
-  gap: 14px;
-  max-width: 590px;
-}
-
-.feature-card {
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
-  padding: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.56);
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.58);
-  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
-  backdrop-filter: blur(18px);
-
-  strong {
-    display: block;
-    margin-bottom: 6px;
-    color: #0f172a;
-    font-size: 15px;
-  }
-
-  p {
-    margin: 0;
-    color: #64748b;
-    font-size: 13px;
-    line-height: 1.7;
-  }
-}
-
-.login-page.is-dark .feature-card {
-  border-color: rgba(255, 255, 255, 0.1);
-  background: rgba(15, 23, 42, 0.52);
-
-  strong {
-    color: #f8fafc;
-  }
-
-  p {
-    color: #94a3b8;
-  }
-}
-
-.feature-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #2563eb;
-  background: rgba(37, 99, 235, 0.1);
-}
-
-.login-panel {
-  width: 100%;
-}
-
-.login-form {
-  position: relative;
-  width: 100%;
-  padding: 42px;
-  border: 1px solid rgba(255, 255, 255, 0.66);
-  border-radius: 30px;
-  background: rgba(255, 255, 255, 0.78);
-  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.18);
-  backdrop-filter: blur(22px);
-
-  :deep(.el-input) {
-    height: 46px;
-  }
-
-  :deep(.el-input__wrapper) {
-    border-radius: 14px;
-    background: rgba(248, 250, 252, 0.88);
-    box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.18) inset;
-  }
-
-  :deep(.el-input__inner) {
-    height: 46px;
-  }
-
-  .input-icon {
-    width: 15px;
-    height: 46px;
-    margin-left: 0;
-  }
-}
-
-.login-page.is-dark .login-form {
-  border-color: rgba(148, 163, 184, 0.14);
-  background: rgba(15, 23, 42, 0.82);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.42);
-
-  :deep(.el-input__wrapper) {
-    background: rgba(2, 6, 23, 0.58);
-    box-shadow:
-      0 0 0 1px rgba(148, 163, 184, 0.22) inset,
-      0 10px 24px rgba(0, 0, 0, 0.16);
-  }
-
-  :deep(.el-input__wrapper.is-focus) {
-    box-shadow:
-      0 0 0 1px rgba(96, 165, 250, 0.85) inset,
-      0 0 0 3px rgba(59, 130, 246, 0.16);
-  }
-
-  :deep(.el-input__inner) {
-    color: #f8fafc;
-  }
-
-  :deep(.el-input__inner::placeholder) {
-    color: #64748b;
-  }
-
-  :deep(.el-input__prefix),
-  :deep(.el-input__suffix),
-  :deep(.el-input__icon) {
-    color: #94a3b8;
-  }
-
-  :deep(.el-checkbox__label) {
-    color: #cbd5e1;
-  }
-
-  :deep(.el-checkbox__inner) {
-    border-color: rgba(148, 163, 184, 0.5);
-    background: rgba(2, 6, 23, 0.45);
-  }
-
-  :deep(.el-checkbox__input.is-checked .el-checkbox__inner) {
-    border-color: var(--el-color-primary);
-    background: var(--el-color-primary);
-  }
-}
-
-.form-header {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 32px;
-
-  img {
-    width: 60px;
-    height: 60px;
-    border-radius: 18px;
-    box-shadow: 0 12px 30px rgba(64, 158, 255, 0.18);
-  }
-
-  h2 {
-    margin: 0 0 6px;
-    color: #0f172a;
-    font-size: 28px;
-    font-weight: 750;
-  }
-
-  p {
-    margin: 0;
-    color: #64748b;
-    font-size: 14px;
-  }
-}
-
-.login-page.is-dark .form-header {
-  h2 {
-    color: #f8fafc;
-  }
-
-  p {
-    color: #94a3b8;
-  }
-}
-
-.captcha-row {
-  display: grid;
-  width: 100%;
-  grid-template-columns: minmax(0, 1fr) 128px;
-  gap: 12px;
-  align-items: center;
-}
-
-.login-code {
+.login-form :deep(.el-input) {
   height: 46px;
-  padding: 0;
-  overflow: hidden;
-  border: 1px solid rgba(148, 163, 184, 0.22);
+}
+
+.login-form :deep(.el-input__wrapper) {
   border-radius: 14px;
-  cursor: pointer;
-  background: rgba(255, 255, 255, 0.76);
+  background: rgba(248, 250, 252, 0.88);
+  box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.18) inset;
 }
 
-.login-page.is-dark .login-code {
-  border-color: rgba(148, 163, 184, 0.24);
-  background: rgba(2, 6, 23, 0.56);
+.login-form :deep(.el-input__inner) {
+  height: 46px;
 }
 
-.login-code-img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.login-form .input-icon {
+  width: 15px;
+  height: 46px;
+  margin-left: 0;
 }
 
-.form-options {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin: -2px 0 24px;
+:global(html.dark) .login-form :deep(.el-input__wrapper) {
+  background: rgba(2, 6, 23, 0.58);
+  box-shadow:
+    0 0 0 1px rgba(148, 163, 184, 0.22) inset,
+    0 10px 24px rgba(0, 0, 0, 0.16);
+}
+
+:global(html.dark) .login-form :deep(.el-input__wrapper.is-focus) {
+  box-shadow:
+    0 0 0 1px rgba(96, 165, 250, 0.85) inset,
+    0 0 0 3px rgba(59, 130, 246, 0.16);
+}
+
+:global(html.dark) .login-form :deep(.el-input__inner) {
+  color: #f8fafc;
+}
+
+:global(html.dark) .login-form :deep(.el-input__inner::placeholder) {
   color: #64748b;
-  font-size: 13px;
 }
 
-.login-page.is-dark .form-options {
+:global(html.dark) .login-form :deep(.el-input__prefix),
+:global(html.dark) .login-form :deep(.el-input__suffix),
+:global(html.dark) .login-form :deep(.el-input__icon) {
   color: #94a3b8;
 }
 
-.login-button {
-  width: 100%;
-  height: 48px;
-  border: none;
-  border-radius: 14px;
-  font-size: 16px;
-  font-weight: 650;
-  letter-spacing: 2px;
-  background: linear-gradient(135deg, #1677ff, #35b6ff);
-  box-shadow: 0 16px 34px rgba(22, 119, 255, 0.28);
+:global(html.dark) .login-form :deep(.el-checkbox__label) {
+  color: #cbd5e1;
 }
 
-@media (max-width: 1024px) {
-  .login-page {
-    padding: 36px;
-  }
-
-  .login-shell {
-    grid-template-columns: minmax(0, 0.9fr) 410px;
-    gap: 28px;
-  }
-
-  .feature-card {
-    padding: 16px;
-  }
+:global(html.dark) .login-form :deep(.el-checkbox__inner) {
+  border-color: rgba(148, 163, 184, 0.5);
+  background: rgba(2, 6, 23, 0.45);
 }
 
-@media (max-width: 768px) {
-  .login-page {
-    padding: 28px 18px;
-  }
-
-  .login-bg {
-    inset: 12px;
-    border-radius: 24px;
-  }
-
-  .login-shell {
-    min-height: auto;
-    display: flex;
-    justify-content: center;
-  }
-
-  .login-hero {
-    display: none;
-  }
-
-  .login-panel {
-    width: min(100%, 420px);
-  }
-}
-
-@media (max-width: 480px) {
-  .theme-switch {
-    top: 16px;
-    right: 16px;
-  }
-
-  .login-form {
-    padding: 30px 22px;
-    border-radius: 24px;
-  }
-
-  .form-header {
-    align-items: flex-start;
-    margin-bottom: 26px;
-
-    img {
-      width: 52px;
-      height: 52px;
-    }
-
-    h2 {
-      font-size: 24px;
-    }
-  }
-
-  .captcha-row {
-    grid-template-columns: 1fr;
-  }
-
-  .login-code {
-    width: 100%;
-  }
-
-  .form-options {
-    align-items: flex-start;
-    flex-direction: column;
-  }
+:global(html.dark) .login-form :deep(.el-checkbox__input.is-checked .el-checkbox__inner) {
+  border-color: var(--el-color-primary);
+  background: var(--el-color-primary);
 }
 </style>

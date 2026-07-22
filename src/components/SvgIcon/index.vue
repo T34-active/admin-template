@@ -26,30 +26,14 @@ export default defineComponent({
     return {
       iconName: computed(() => `#icon-${props.iconClass}`),
       svgClass: computed(() => {
+        const base = 'svg-icon inline-block w-[1em] h-[1em] relative fill-current align-[-2px]'
         if (props.className) {
-          return `svg-icon ${props.className}`
+          return `${base} ${props.className}`
         }
-        return 'svg-icon'
+        return base
       }),
     }
   },
 })
 </script>
 
-<style scope lang="scss">
-.sub-el-icon,
-.nav-icon {
-  display: inline-block;
-  font-size: 15px;
-  margin-right: 12px;
-  position: relative;
-}
-
-.svg-icon {
-  width: 1em;
-  height: 1em;
-  position: relative;
-  fill: currentColor;
-  vertical-align: -2px;
-}
-</style>

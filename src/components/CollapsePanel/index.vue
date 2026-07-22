@@ -1,13 +1,16 @@
 <template>
-  <div class="collapse-panel mb-16 text-base" :class="{ 'is-open': modelValue }">
-    <div class="collapse-panel__header" @click="$emit('update:modelValue', !modelValue)">
-      <div class="collapse-panel__title">
+  <div
+    class="mb-16 text-base overflow-hidden border border-[var(--layout-glass-border)] rounded-[22px] bg-[var(--layout-glass-bg)] shadow-[var(--layout-shadow)] backdrop-blur-[18px]"
+  >
+    <div
+      class="overflow-hidden py-14 px-16 text-[var(--navbar-text)] cursor-pointer border-b border-transparent transition-[background] duration-200 hover:bg-[var(--menu-hover)]"
+      :class="{ 'border-b-[var(--layout-glass-border)]': modelValue }"
+      @click="$emit('update:modelValue', !modelValue)"
+    >
+      <div class="flex items-center gap-14 font-[650]">
         <el-icon
           size="16"
-          :class="[
-            'collapse-panel__icon transition-transform duration-200',
-            modelValue ? 'rotate-0' : '-rotate-90',
-          ]"
+          :class="['inline-flex items-center justify-center w-26 h-26 rounded-full text-[var(--current-color,var(--el-color-primary))] bg-[var(--menu-hover)] transition-transform duration-200', modelValue ? 'rotate-0' : '-rotate-90']"
         >
           <ArrowDown />
         </el-icon>
@@ -23,7 +26,7 @@
       @leave="leave"
       @after-leave="afterLeave"
     >
-      <div v-show="modelValue" ref="wrapperRef" class="collapse-panel__body">
+      <div v-show="modelValue" ref="wrapperRef" class="overflow-hidden">
         <slot />
       </div>
     </transition>
@@ -82,53 +85,3 @@ function afterLeave(el: Element) {
 
 defineEmits(['update:modelValue'])
 </script>
-
-<style scoped lang="scss">
-.collapse-panel {
-  overflow: hidden;
-  border: 1px solid var(--layout-glass-border);
-  border-radius: 22px;
-  background: var(--layout-glass-bg);
-  box-shadow: var(--layout-shadow);
-  backdrop-filter: blur(18px);
-}
-
-.collapse-panel__header {
-  overflow: hidden;
-  padding: 14px 16px;
-  color: var(--navbar-text);
-  cursor: pointer;
-  border-bottom: 1px solid transparent;
-  transition: background 0.2s ease;
-
-  &:hover {
-    background: var(--menu-hover);
-  }
-}
-
-.collapse-panel.is-open .collapse-panel__header {
-  border-bottom-color: var(--layout-glass-border);
-}
-
-.collapse-panel__title {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  font-weight: 650;
-}
-
-.collapse-panel__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 999px;
-  color: var(--current-color, var(--el-color-primary));
-  background: var(--menu-hover);
-}
-
-.collapse-panel__body {
-  overflow: hidden;
-}
-</style>

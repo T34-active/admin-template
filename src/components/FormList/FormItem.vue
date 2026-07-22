@@ -200,7 +200,7 @@ onMounted(async () => {
   </el-form-item>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 :deep(.el-input__wrapper),
 :deep(.el-textarea__inner),
 :deep(.el-select-v2__wrapper),

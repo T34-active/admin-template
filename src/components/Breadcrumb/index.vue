@@ -1,10 +1,13 @@
 <template>
-  <el-breadcrumb class="app-breadcrumb" separator="/">
+  <el-breadcrumb
+    class="inline-block text-14 leading-[50px] ml-8 py-0 px-12 rounded-full transition-[background] duration-200 hover:bg-[var(--navbar-hover)]"
+    separator="/"
+  >
     <transition-group name="breadcrumb" tag="div">
       <el-breadcrumb-item v-for="(item, index) in levelList" :key="item.path">
         <span
           v-if="item.redirect === 'noRedirect' || index === levelList.length - 1"
-          class="no-redirect"
+          class="text-[var(--tags-item-text)] cursor-text"
         >
           {{ item.meta.title }}
         </span>
@@ -63,33 +66,14 @@ onMounted(async () => {
 })
 </script>
 
-<style lang="scss" scoped>
-.app-breadcrumb.el-breadcrumb {
-  display: inline-block;
-  font-size: 14px;
-  line-height: 50px;
-  margin-left: 8px;
-  padding: 0 12px;
-  border-radius: 999px;
-  transition: background 0.2s ease;
+<style scoped>
+:deep(.el-breadcrumb__inner a),
+:deep(.el-breadcrumb__inner.is-link) {
+  color: var(--navbar-text);
+  font-weight: 600;
+}
 
-  &:hover {
-    background: var(--navbar-hover);
-  }
-
-  .no-redirect {
-    color: var(--tags-item-text);
-    cursor: text;
-  }
-
-  :deep(.el-breadcrumb__inner a),
-  :deep(.el-breadcrumb__inner.is-link) {
-    color: var(--navbar-text);
-    font-weight: 600;
-  }
-
-  :deep(.el-breadcrumb__separator) {
-    color: var(--tags-item-text);
-  }
+:deep(.el-breadcrumb__separator) {
+  color: var(--tags-item-text);
 }
 </style>

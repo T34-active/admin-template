@@ -167,7 +167,7 @@ onMounted(async () => {
         <button
           v-for="file in files"
           :key="file.key"
-          type="button"
+
           class="inline-flex cursor-pointer items-center gap-8 rounded-full border bg-transparent px-14 py-8 text-[13px] leading-none whitespace-nowrap transition-all"
           :class="
             preview.activeName === file.name
