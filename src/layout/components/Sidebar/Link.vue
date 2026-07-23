@@ -6,6 +6,7 @@
 
 <script setup lang="ts">
 import { isExternal } from '@/utils/validate'
+import { openExternal } from '@/utils/openExternal'
 
 const props = defineProps({
   to: {
@@ -25,12 +26,18 @@ const type = computed(() => {
   return 'router-link'
 })
 
+async function onExternalClick(event: MouseEvent) {
+  event.preventDefault()
+  await openExternal(String(props.to))
+}
+
 function linkProps() {
   if (isExt.value) {
     return {
       href: props.to,
       target: '_blank',
-      rel: 'noopener',
+      rel: 'noopener noreferrer',
+      onClick: onExternalClick,
     }
   }
   return {

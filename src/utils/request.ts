@@ -1,9 +1,8 @@
-import axios, { type AxiosResponse } from 'axios'
+import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios'
 import { ElNotification, ElMessageBox, ElMessage, ElLoading } from 'element-plus'
 import { getToken } from '@/utils/auth'
 import errorCode from '@/utils/errorCode'
 import { tansParams, blobValidate } from '@/utils/ruoyi'
-import cache from '@/plugins/cache'
 import { saveAs } from 'file-saver'
 import useUserStore from '@/store/modules/user'
 
@@ -23,6 +22,26 @@ const service = axios.create({
 
 let downloadLoadingInstance
 
+interface RecentSubmit {
+  fingerprint: string
+  time: number
+}
+
+/** 防重复提交状态仅保存在当前页面内存，禁止将请求正文持久化到 Web Storage。 */
+const recentSubmits = new Map<string, RecentSubmit>()
+const REPEAT_SUBMIT_INTERVAL = 1000
+
+/** FNV-1a 非加密指纹：只用于短时间内判断请求正文是否相同。 */
+function createBodyFingerprint(data: unknown): string {
+  const content = typeof data === 'string' ? data : JSON.stringify(data ?? null)
+  let hash = 2166136261
+  for (let index = 0; index < content.length; index += 1) {
+    hash ^= content.charCodeAt(index)
+    hash = Math.imul(hash, 16777619)
+  }
+  return (hash >>> 0).toString(36)
+}
+
 // request拦截器
 service.interceptors.request.use(
   (config) => {
@@ -41,32 +60,28 @@ service.interceptors.request.use(
       config.url = url
     }
     if (!isRepeatSubmit && (config.method === 'post' || config.method === 'put')) {
+      const url = config.url || ''
+      const now = Date.now()
       const requestObj = {
-        url: config.url,
-        data: typeof config.data === 'object' ? JSON.stringify(config.data) : config.data,
-        time: new Date().getTime(),
+        fingerprint: createBodyFingerprint(config.data),
+        time: now,
       }
-      const sessionObj = cache.session.getJSON('sessionObj')
-      if (!sessionObj) {
-        cache.session.setJSON('sessionObj', requestObj)
-      } else {
-        const sUrl = sessionObj.url // 请求地址
-        const sData = sessionObj.data // 请求数据
-        const sTime = sessionObj.time // 请求时间
-        const interval = 1000 // 间隔时间(ms)，小于此时间视为重复提交
+      const previous = recentSubmits.get(url)
 
-        if (
-          sData === requestObj.data &&
-          requestObj.time - sTime < interval &&
-          sUrl === requestObj.url
-        ) {
-          const message = '数据正在处理，请勿重复提交'
-          console.warn(`[${sUrl}]: ` + message)
-          return Promise.reject(new Error(message))
-        } else {
-          cache.session.setJSON('sessionObj', requestObj)
-        }
+      if (
+        previous &&
+        previous.fingerprint === requestObj.fingerprint &&
+        requestObj.time - previous.time < REPEAT_SUBMIT_INTERVAL
+      ) {
+        const message = '数据正在处理，请勿重复提交'
+        console.warn(`[${url}]: ` + message)
+        return Promise.reject(new Error(message))
       }
+
+      recentSubmits.set(url, requestObj)
+      window.setTimeout(() => {
+        if (recentSubmits.get(url) === requestObj) recentSubmits.delete(url)
+      }, REPEAT_SUBMIT_INTERVAL)
     }
     return config
   },
@@ -171,4 +186,15 @@ export function download(url: string, params: any, filename: string, config: any
     })
 }
 
-export default service
+/**
+ * 业务请求封装。
+ *
+ * 响应拦截器已返回 `res.data`，因此这里将 Axios 默认的
+ * `Promise<AxiosResponse<T>>` 收窄为实际业务响应 `Promise<T>`。
+ * 默认 any 仅用于兼容尚未迁移的旧 API；新接口必须显式传入 T。
+ */
+function request<T = any>(config: AxiosRequestConfig): Promise<T> {
+  return service.request<T, T>(config)
+}
+
+export default request
