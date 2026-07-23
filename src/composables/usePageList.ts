@@ -47,6 +47,7 @@ export function usePageList(options: UsePageListOptions) {
   const ids = ref<string[]>([])
   const multiple = ref(true)
   const total = ref(0)
+  let latestRequestId = 0
 
   function buildSafeRange(): [Date | string | undefined, Date | string | undefined] {
     if (!dateRangeProp) return [undefined, undefined]
@@ -57,13 +58,21 @@ export function usePageList(options: UsePageListOptions) {
   }
 
   async function getList() {
+    const requestId = ++latestRequestId
     loading.value = true
     const obj = paramsObj()
     const params = dateRangeProp ? proxy.addDateRange({ ...obj }, buildSafeRange()) : { ...obj }
-    const response = await listApi(params)
-    loading.value = false
-    list.value = response.rows ?? []
-    total.value = response.total ?? 0
+    try {
+      const response = await listApi(params)
+      // 旧请求即使更晚返回，也不能覆盖最后一次查询结果
+      if (requestId !== latestRequestId) return
+      list.value = response.rows ?? []
+      total.value = response.total ?? 0
+    } finally {
+      if (requestId === latestRequestId) {
+        loading.value = false
+      }
+    }
   }
 
   function handleQuery() {

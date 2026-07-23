@@ -27,10 +27,7 @@
       :style="{ left: left + 'px', top: top + 'px' }"
       class="contextmenu tags-view-contextmenu flex flex-col absolute text-xs font-medium py-4 z-3000 overflow-hidden"
     >
-      <li
-        @click="refreshSelectedTag(selectedTag)"
-        class="flex items-center gap-x-2 cursor-pointer"
-      >
+      <li @click="refreshSelectedTag(selectedTag)" class="flex items-center gap-x-2 cursor-pointer">
         <refresh-right class="size-12" />
         刷新页面
       </li>
@@ -42,10 +39,7 @@
         <close class="size-12" />
         关闭当前
       </li>
-      <li
-        @click="closeOthersTags"
-        class="flex items-center gap-x-2 cursor-pointer"
-      >
+      <li @click="closeOthersTags" class="flex items-center gap-x-2 cursor-pointer">
         <circle-close class="size-12" />
         关闭其他
       </li>
@@ -65,10 +59,7 @@
         <right class="size-12" />
         关闭右侧
       </li>
-      <li
-        @click="closeAllTags(selectedTag)"
-        class="flex items-center gap-x-2 cursor-pointer"
-      >
+      <li @click="closeAllTags(selectedTag)" class="flex items-center gap-x-2 cursor-pointer">
         <circle-close class="size-12" />
         全部关闭
       </li>
@@ -258,8 +249,11 @@ function toLastView(visitedViews: any, view?: any) {
 function openMenu(tag: any, e: MouseEvent) {
   const menuMinWidth = 128
   const container = proxy!.$el as HTMLElement
-  const { left: containerLeft, top: containerTop, width: containerWidth } =
-    container.getBoundingClientRect()
+  const {
+    left: containerLeft,
+    top: containerTop,
+    width: containerWidth,
+  } = container.getBoundingClientRect()
   const maxLeft = containerWidth - menuMinWidth
   const l = e.clientX - containerLeft + 4
 

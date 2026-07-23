@@ -122,10 +122,7 @@ export function resolveSidebarItem(
   }
 }
 
-export function collectOpenKeys(
-  routes: SidebarRoute[],
-  activeMenu: string,
-): string[] {
+export function collectOpenKeys(routes: SidebarRoute[], activeMenu: string): string[] {
   const keys: string[] = []
 
   function walk(items: SidebarRoute[], parentPath: string): boolean {

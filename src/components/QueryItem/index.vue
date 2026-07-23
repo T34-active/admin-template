@@ -42,11 +42,11 @@ const props = defineProps({
   },
 })
 
-// 定义事件：支持 v-model 的 update:modelValue 事件和自定义 change 事件
-const emit = defineEmits(['update:modelValue', 'change'])
+// input 表示值正在编辑；commit 表示选择、回车或清空等明确提交动作
+const emit = defineEmits(['update:modelValue', 'input', 'commit'])
 
 // 定义一个计算属性 innerValue，用于实现 v-model 双向绑定
-// get 时读取 props.modelValue，set 时触发 update:modelValue 和 change 事件
+// get 时读取 props.modelValue，set 时仅同步模型并发出 input，避免逐字符触发查询
 const innerValue = computed({
   get() {
     return props.modelValue
@@ -54,10 +54,13 @@ const innerValue = computed({
   set(val) {
     // 向父组件发送更新事件，通知 v-model 绑定的值发生变化
     emit('update:modelValue', val)
-    // 发送自定义 change 事件，父组件可监听执行额外逻辑
-    emit('change', val)
+    emit('input', val)
   },
 })
+
+function handleCommit() {
+  emit('commit', innerValue.value)
+}
 </script>
 
 <template>
@@ -72,6 +75,8 @@ const innerValue = computed({
         :maxlength="maxlength || null"
         :rows="2"
         clearable
+        @keyup.enter="handleCommit"
+        @clear="handleCommit"
       />
       <!-- 下拉选择类型 -->
       <el-select-v2
@@ -81,6 +86,7 @@ const innerValue = computed({
         :options="dict"
         clearable
         filterable
+        @change="handleCommit"
       />
       <!-- 日期范围选择 -->
       <el-date-picker
@@ -94,6 +100,7 @@ const innerValue = computed({
         :end-placeholder="endPlaceholder"
         :disabled-date="disabledFutureDate"
         clearable
+        @change="handleCommit"
       />
       <!-- 日期时间范围选择 -->
       <el-date-picker
@@ -107,9 +114,10 @@ const innerValue = computed({
         :end-placeholder="endPlaceholder"
         :disabled-date="disabledFutureDate"
         clearable
+        @change="handleCommit"
       />
       <!-- 单选框 -->
-      <el-radio-group v-if="type === 'radio'" v-model="innerValue">
+      <el-radio-group v-if="type === 'radio'" v-model="innerValue" @change="handleCommit">
         <el-radio v-for="dict in dict || []" :key="dict.value" :value="dict.value">
           {{ dict.label }}
         </el-radio>
@@ -118,7 +126,7 @@ const innerValue = computed({
   </colBox>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 :deep(.el-input__wrapper),
 :deep(.el-select-v2__wrapper),
 :deep(.el-select__wrapper),

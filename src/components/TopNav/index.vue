@@ -31,6 +31,7 @@
 <script setup lang="ts">
 import { constantRoutes } from '@/router'
 import { isHttp } from '@/utils/validate'
+import { openExternal } from '@/utils/openExternal'
 import useAppStore from '@/store/modules/app'
 import useSettingsStore from '@/store/modules/settings'
 import usePermissionStore from '@/store/modules/permission'
@@ -116,8 +117,8 @@ function handleSelect(key, keyPath) {
   currentIndex.value = key
   const route = routers.value.find((item) => item.path === key)
   if (isHttp(key)) {
-    // http(s):// 路径新窗口打开
-    window.open(key, '_blank')
+    // http(s):// 路径经白名单校验后新窗口打开
+    void openExternal(key)
   } else if (!route || !route.children) {
     // 没有子路由路径内部打开
     router.push({ path: key })
@@ -157,7 +158,7 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .topmenu-container.el-menu--horizontal > .el-menu-item {
   height: 50px !important;
   line-height: 50px !important;
@@ -168,10 +169,11 @@ onMounted(() => {
 
 .topmenu-container.el-menu--horizontal > .el-menu-item.is-active,
 .el-menu--horizontal > .el-sub-menu.is-active .el-submenu__title {
-  border-bottom: 2px solid var(--theme) !important;
+  border-bottom: 2px solid #{'var(--theme)'} !important;
   color: #303133;
 }
 
+/* sub-menu item */
 .topmenu-container.el-menu--horizontal > .el-sub-menu .el-sub-menu__title {
   height: 50px !important;
   line-height: 50px !important;

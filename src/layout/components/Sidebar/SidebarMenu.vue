@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import SidebarMenuItem from './SidebarMenuItem.vue'
-import { collectOpenKeys, resolveChildBasePath, resolveSidebarItem, type SidebarRoute } from './useSidebarMenu'
+import {
+  collectOpenKeys,
+  resolveChildBasePath,
+  resolveSidebarItem,
+  type SidebarRoute,
+} from './useSidebarMenu'
 
 const props = defineProps({
   routes: {

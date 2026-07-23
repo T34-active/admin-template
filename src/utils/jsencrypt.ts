@@ -23,7 +23,7 @@ export function encrypt(txt: string) {
   return encryptor.encrypt(txt) // 对数据进行加密
 }
 
-// 解密
+// 解密（登录页记住密码用）
 export function decrypt(txt: string) {
   const encryptor = new JSEncrypt()
   encryptor.setPrivateKey(privateKey) // 设置私钥

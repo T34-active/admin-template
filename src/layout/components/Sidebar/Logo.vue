@@ -3,11 +3,7 @@
     <transition name="sidebarLogoFade">
       <router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
         <img alt="" v-if="logo" :src="logo" class="sidebar-logo rounded-50%" />
-        <h1
-          v-else
-          class="sidebar-title"
-          :style="{ color: getLogoTextColor }"
-        >
+        <h1 v-else class="sidebar-title" :style="{ color: getLogoTextColor }">
           {{ title }}
         </h1>
       </router-link>

@@ -11,7 +11,8 @@
     :dict="item.dict"
     :maxlength="item.maxlength"
     v-model="proxyModel[item.prop]"
-    @change="(val) => handleItemChange(item, val)"
+    @input="(val) => handleItemInput(item, val)"
+    @commit="(val) => handleItemCommit(item, val)"
   />
 </template>
 
@@ -68,9 +69,17 @@ export interface QueryItemConfig {
   endPlaceholder?: string // daterange 的结束占位符
   dict?: DictItem[] | Ref<DictItem[]> // 允许传 ref // 下拉列表项，只有 select 类型用到
   maxlength?: number // 最大输入长度
+  /** 输入框自动查询防抖时间；设为 0 表示仅回车或清空时查询 */
+  debounce?: number
 }
 
-const AUTO_SEARCH_TYPES = ['select', 'radio', 'daterange', 'datetimerange'] as const
+export interface QueryFormEvent {
+  prop?: string
+  value: unknown
+  type?: QueryItemConfig['type']
+}
+
+const DEFAULT_INPUT_DEBOUNCE = 400
 
 // 接收父组件传入的 model 数据和查询项配置数组
 const props = defineProps<{
@@ -82,13 +91,72 @@ const proxyModel = computed({
   get: () => props.model,
   set: (val) => emit('update:model', val),
 })
-// 声明自定义事件，用于向父组件通知更新
-const emit = defineEmits(['update:model', 'change', 'search'])
+// input：模型输入；commit：明确提交；change/search：兼容现有列表页的查询触发事件
+const emit = defineEmits<{
+  'update:model': [value: Record<string, any>]
+  input: [event: QueryFormEvent]
+  commit: [event: QueryFormEvent]
+  reset: []
+  change: [event: QueryFormEvent]
+  search: [event: QueryFormEvent]
+}>()
 
-function handleItemChange(item: QueryItemConfig, value: unknown) {
-  emit('change', { prop: item.prop, value, type: item.type })
-  if (item.type && AUTO_SEARCH_TYPES.includes(item.type as (typeof AUTO_SEARCH_TYPES)[number])) {
-    emit('search', { prop: item.prop, value, type: item.type })
+const inputTimers = new Map<string, ReturnType<typeof setTimeout>>()
+
+function eventOf(item: QueryItemConfig, value: unknown): QueryFormEvent {
+  return { prop: item.prop, value, type: item.type }
+}
+
+function clearInputTimer(prop?: string) {
+  const key = prop || ''
+  const timer = inputTimers.get(key)
+  if (timer) {
+    clearTimeout(timer)
+    inputTimers.delete(key)
   }
 }
+
+function emitSearch(event: QueryFormEvent) {
+  emit('change', event)
+  emit('search', event)
+}
+
+function handleItemInput(item: QueryItemConfig, value: unknown) {
+  const event = eventOf(item, value)
+  emit('input', event)
+  if (item.type !== 'input') return
+
+  clearInputTimer(item.prop)
+  const delay = item.debounce ?? DEFAULT_INPUT_DEBOUNCE
+  if (delay <= 0) return
+
+  const key = item.prop || ''
+  inputTimers.set(
+    key,
+    setTimeout(() => {
+      inputTimers.delete(key)
+      emitSearch(event)
+    }, delay),
+  )
+}
+
+function handleItemCommit(item: QueryItemConfig, value: unknown) {
+  clearInputTimer(item.prop)
+  const event = eventOf(item, value)
+  emit('commit', event)
+  emitSearch(event)
+}
+
+function notifyReset() {
+  inputTimers.forEach((timer) => clearTimeout(timer))
+  inputTimers.clear()
+  emit('reset')
+}
+
+onBeforeUnmount(() => {
+  inputTimers.forEach((timer) => clearTimeout(timer))
+  inputTimers.clear()
+})
+
+defineExpose({ notifyReset })
 </script>

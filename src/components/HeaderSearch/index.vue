@@ -1,10 +1,6 @@
 <template>
-  <div :class="{ show }" class="header-search text-0">
-    <svg-icon
-      class-name="search-icon cursor-pointer text-18 align-middle"
-      icon-class="search"
-      @click.stop="click"
-    />
+  <div :class="{ show: show }" class="header-search">
+    <svg-icon class-name="search-icon" icon-class="search" @click.stop="click" />
     <el-select
       ref="headerSearchSelectRef"
       v-model="search"
@@ -30,6 +26,7 @@
 import Fuse from 'fuse.js'
 import { getNormalPath } from '@/utils/ruoyi'
 import { isHttp } from '@/utils/validate'
+import { openExternal } from '@/utils/openExternal'
 import usePermissionStore from '@/store/modules/permission'
 import { useRouter } from 'vue-router'
 
@@ -56,9 +53,8 @@ function close() {
 function change(val: any) {
   const path = val.path
   if (isHttp(path)) {
-    // http(s):// 路径新窗口打开
-    const pindex = path.indexOf('http')
-    window.open(path.substr(pindex, path.length), '_blank')
+    // http(s):// 路径经白名单校验后新窗口打开
+    void openExternal(path)
   } else {
     router.push(path)
   }
@@ -153,46 +149,58 @@ watch(searchPool, (list) => {
 })
 </script>
 
-<style scoped>
-.header-search-select {
-  font-size: 18px;
-  transition:
-    width 0.2s,
-    background 0.2s ease,
-    box-shadow 0.2s ease;
-  width: 0;
-  overflow: hidden;
-  background: transparent;
-  border-radius: 999px;
-  display: inline-block;
-  vertical-align: middle;
-}
+<style lang="scss" scoped>
+.header-search {
+  font-size: 0 !important;
 
-.header-search-select :deep(.el-select__wrapper) {
-  min-height: 32px;
-  padding: 0 12px;
-  border-radius: 999px;
-  background: transparent;
-  box-shadow: none !important;
-}
+  .search-icon {
+    cursor: pointer;
+    font-size: 18px;
+    vertical-align: middle;
+  }
 
-.header-search-select :deep(.el-input__inner) {
-  border-radius: 999px;
-  border: 0;
-  padding-left: 0;
-  padding-right: 0;
-  box-shadow: none !important;
-  color: var(--navbar-text);
-  vertical-align: middle;
-}
+  .header-search-select {
+    font-size: 18px;
+    transition:
+      width 0.2s,
+      background 0.2s ease,
+      box-shadow 0.2s ease;
+    width: 0;
+    overflow: hidden;
+    background: transparent;
+    border-radius: 999px;
+    display: inline-block;
+    vertical-align: middle;
 
-.header-search.show .header-search-select {
-  width: 210px;
-  margin-left: 10px;
-  padding: 3px;
-  border: 1px solid var(--layout-glass-border);
-  background: var(--layout-glass-bg);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
-  backdrop-filter: blur(16px);
+    :deep(.el-select__wrapper) {
+      min-height: 32px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: transparent;
+      box-shadow: none !important;
+    }
+
+    :deep(.el-input__inner) {
+      border-radius: 999px;
+      border: 0;
+      padding-left: 0;
+      padding-right: 0;
+      box-shadow: none !important;
+      color: var(--navbar-text);
+      vertical-align: middle;
+    }
+  }
+
+  &.show {
+    .header-search-select {
+      width: 210px;
+      margin-left: 10px;
+      padding: 3px;
+      border: 1px solid var(--layout-glass-border);
+      background: var(--layout-glass-bg);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+      backdrop-filter: blur(16px);
+    }
+  }
 }
 </style>
