@@ -27,7 +27,7 @@ export default defineConfig(({ mode, command }) => {
     },
     // vite 相关配置
     server: {
-      port: 1234,
+      port: 10000,
       host: true,
       proxy: {
         // https://cn.vitejs.dev/config/#server-proxy
