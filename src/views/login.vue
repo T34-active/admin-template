@@ -44,7 +44,8 @@
           {{ title }}
         </h1>
         <p class="max-w-580 m-0 text-slate-600 text-17 leading-[1.9] dark:text-slate-300">
-          基于 Vue3 + Element Plus 构建的通用后台管理模板，提供用户、角色、菜单、字典等基础能力，开箱即用。
+          基于 Vue3 + Element Plus
+          构建的通用后台管理模板，提供用户、角色、菜单、字典等基础能力，开箱即用。
         </p>
 
         <div class="flex flex-wrap gap-12 my-28 mb-34">
@@ -69,9 +70,9 @@
               <svg-icon :icon-class="item.icon" />
             </span>
             <div>
-              <strong class="block mb-6 text-slate-900 text-15 dark:text-[#f8fafc]">{{
-                item.title
-              }}</strong>
+              <strong class="block mb-6 text-slate-900 text-15 dark:text-[#f8fafc]">
+                {{ item.title }}
+              </strong>
               <p class="m-0 text-slate-500 text-13 leading-[1.7] dark:text-slate-400">
                 {{ item.desc }}
               </p>
@@ -86,10 +87,9 @@
           :model="loginForm"
           :rules="loginRules"
           class="login-form relative w-full p-42 border border-white/66 rounded-[30px] bg-white/78 shadow-[0_30px_80px_rgba(15,23,42,0.18)] backdrop-blur-[22px] max-[480px]:p-[30px_22px] max-[480px]:rounded-3xl dark:border-slate-400/14 dark:bg-slate-900/82 dark:shadow-[0_30px_80px_rgba(0,0,0,0.42)]"
+          @submit.prevent
         >
-          <div
-            class="flex items-center gap-16 mb-32 max-[480px]:items-start max-[480px]:mb-26"
-          >
+          <div class="flex items-center gap-16 mb-32 max-[480px]:items-start max-[480px]:mb-26">
             <img
               class="size-60 rounded-[18px] shadow-[0_12px_30px_rgba(64,158,255,0.18)] max-[480px]:size-52"
               src="@/assets/logo/logo.png"
@@ -154,24 +154,20 @@
                   <svg-icon icon-class="validCode" class="el-input__icon input-icon" />
                 </template>
               </el-input>
-              <button
+              <div
                 class="h-46 p-0 overflow-hidden border border-slate-400/22 rounded-[14px] cursor-pointer bg-white/76 max-[480px]:w-full dark:border-slate-400/24 dark:bg-slate-950/56"
                 title="点击刷新验证码"
                 @click="getCode"
               >
-                <img
-                  :src="codeUrl"
-                  class="block size-full object-cover"
-                  :alt="codeUrl"
-                />
-              </button>
+                <img :src="codeUrl" class="block size-full object-cover" :alt="codeUrl" />
+              </div>
             </div>
           </el-form-item>
 
           <div
             class="flex items-center justify-between gap-12 mt-[-2px] mb-24 text-slate-500 text-13 dark:text-slate-400 max-[480px]:items-start max-[480px]:flex-col"
           >
-            <el-checkbox v-model="loginForm.rememberMe">记住密码</el-checkbox>
+            <el-checkbox v-model="loginForm.rememberMe">记住账号</el-checkbox>
             <span>安全登录 · 数据加密传输</span>
           </div>
 
@@ -193,7 +189,6 @@
 <script setup lang="ts">
 import { getCodeImg } from '@/api/login'
 import Cookies from 'js-cookie'
-import { encrypt, decrypt } from '@/utils/jsencrypt'
 import useUserStore from '@/store/modules/user'
 import useSettingsStore from '@/store/modules/settings'
 import { useRouter } from 'vue-router'
@@ -255,26 +250,18 @@ async function handleLogin() {
   const valid = await proxy.$refs.loginRef.validate()
   if (!valid) return
   loading.value = true
-  // 勾选了需要记住密码设置在 cookie 中设置记住用户名和密码
+  // 只允许记住用户名，禁止在 Cookie / Web Storage 中保存可恢复的密码。
   if (loginForm.value.rememberMe) {
-    Cookies.set('username', loginForm.value.username, {
+    Cookies.set('username', String(loginForm.value.username || ''), {
       expires: 30,
+      sameSite: 'strict',
     })
-    const enPwd = encrypt(loginForm.value.password)
-    if (enPwd) {
-      Cookies.set('password', enPwd, { expires: 30 })
-    }
-    if (loginForm.value.rememberMe) {
-      Cookies.set('rememberMe', String(loginForm.value.rememberMe), {
-        expires: 30,
-      })
-    }
   } else {
-    // 否则移除
     Cookies.remove('username')
-    Cookies.remove('password')
-    Cookies.remove('rememberMe')
   }
+  // 清理旧版本遗留的可解密密码与记住密码标记。
+  Cookies.remove('password')
+  Cookies.remove('rememberMe')
   // 调用action的登录方法
   loginForm.value.uuid = uuid.value
 
@@ -299,14 +286,14 @@ async function getCode() {
   }
 }
 
-async function getCookie() {
+function getCookie() {
   const username = Cookies.get('username')
-  const password = Cookies.get('password')
-  const rememberMe = Cookies.get('rememberMe')
+  Cookies.remove('password')
+  Cookies.remove('rememberMe')
   loginForm.value = {
     username: username === undefined ? loginForm.value.username : username,
-    password: password === undefined ? loginForm.value.password : decrypt(password) || '',
-    rememberMe: rememberMe === undefined ? false : Boolean(rememberMe),
+    password: null,
+    rememberMe: username !== undefined,
     code: null,
     uuid: null,
   }
