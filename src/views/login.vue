@@ -87,6 +87,7 @@
           :model="loginForm"
           :rules="loginRules"
           class="login-form relative w-full p-42 border border-white/66 rounded-[30px] bg-white/78 shadow-[0_30px_80px_rgba(15,23,42,0.18)] backdrop-blur-[22px] max-[480px]:p-[30px_22px] max-[480px]:rounded-3xl dark:border-slate-400/14 dark:bg-slate-900/82 dark:shadow-[0_30px_80px_rgba(0,0,0,0.42)]"
+          :class="{ 'login-form--dark': settingsStore.isDark }"
           @submit.prevent
         >
           <div class="flex items-center gap-16 mb-32 max-[480px]:items-start max-[480px]:mb-26">
@@ -309,18 +310,57 @@ onMounted(async () => {
   background-image: url('@/assets/images/login-background.png');
 }
 
+.login-form {
+  --login-input-bg: rgba(248, 250, 252, 0.88);
+  --login-input-shadow: 0 0 0 1px rgba(148, 163, 184, 0.18) inset;
+}
+
+.login-form--dark {
+  --login-input-bg: rgba(15, 23, 42, 0.72);
+  --login-input-shadow:
+    0 0 0 1px rgba(148, 163, 184, 0.22) inset,
+    0 10px 24px rgba(0, 0, 0, 0.16);
+}
+
 .login-form :deep(.el-input) {
+  --el-input-height: 46px;
   height: 46px;
 }
 
 .login-form :deep(.el-input__wrapper) {
   border-radius: 14px;
-  background: rgba(248, 250, 252, 0.88);
-  box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.18) inset;
+  background-color: var(--login-input-bg);
+  box-shadow: var(--login-input-shadow);
+}
+
+.login-form :deep(.el-input__wrapper.is-focus) {
+  box-shadow:
+    0 0 0 1px var(--el-color-primary) inset,
+    0 0 0 3px var(--input-focus-ring);
 }
 
 .login-form :deep(.el-input__inner) {
-  height: 46px;
+  background-color: transparent;
+  color: var(--el-text-color-primary);
+}
+
+.login-form :deep(.el-input__inner::placeholder) {
+  color: var(--el-text-color-placeholder);
+}
+
+.login-form :deep(.el-input__prefix),
+.login-form :deep(.el-input__suffix),
+.login-form :deep(.el-input__icon) {
+  color: var(--el-text-color-secondary);
+}
+
+.login-form :deep(.el-input__inner:-webkit-autofill),
+.login-form :deep(.el-input__inner:-webkit-autofill:hover),
+.login-form :deep(.el-input__inner:-webkit-autofill:focus) {
+  -webkit-text-fill-color: var(--el-text-color-primary);
+  caret-color: var(--el-text-color-primary);
+  box-shadow: 0 0 0 1000px var(--login-input-bg) inset;
+  transition: background-color 99999s ease-out 0s;
 }
 
 .login-form .input-icon {
@@ -329,44 +369,17 @@ onMounted(async () => {
   margin-left: 0;
 }
 
-:global(html.dark) .login-form :deep(.el-input__wrapper) {
-  background: rgba(2, 6, 23, 0.58);
-  box-shadow:
-    0 0 0 1px rgba(148, 163, 184, 0.22) inset,
-    0 10px 24px rgba(0, 0, 0, 0.16);
+.login-form :deep(.el-checkbox__label) {
+  color: var(--el-text-color-regular);
 }
 
-:global(html.dark) .login-form :deep(.el-input__wrapper.is-focus) {
-  box-shadow:
-    0 0 0 1px rgba(96, 165, 250, 0.85) inset,
-    0 0 0 3px rgba(59, 130, 246, 0.16);
+.login-form :deep(.el-checkbox__inner) {
+  border-color: var(--el-border-color);
+  background-color: var(--login-input-bg);
 }
 
-:global(html.dark) .login-form :deep(.el-input__inner) {
-  color: #f8fafc;
-}
-
-:global(html.dark) .login-form :deep(.el-input__inner::placeholder) {
-  color: #64748b;
-}
-
-:global(html.dark) .login-form :deep(.el-input__prefix),
-:global(html.dark) .login-form :deep(.el-input__suffix),
-:global(html.dark) .login-form :deep(.el-input__icon) {
-  color: #94a3b8;
-}
-
-:global(html.dark) .login-form :deep(.el-checkbox__label) {
-  color: #cbd5e1;
-}
-
-:global(html.dark) .login-form :deep(.el-checkbox__inner) {
-  border-color: rgba(148, 163, 184, 0.5);
-  background: rgba(2, 6, 23, 0.45);
-}
-
-:global(html.dark) .login-form :deep(.el-checkbox__input.is-checked .el-checkbox__inner) {
+.login-form :deep(.el-checkbox__input.is-checked .el-checkbox__inner) {
   border-color: var(--el-color-primary);
-  background: var(--el-color-primary);
+  background-color: var(--el-color-primary);
 }
 </style>
